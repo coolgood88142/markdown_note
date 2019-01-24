@@ -8,20 +8,36 @@ webpack是來自於npm底下其中一個套件，主要是3個步驟：輸入、
 4. plugins(插件)：使用require可以自行定義使用多個插件同一個檔案。
 5. mode(模型)：只有development或production來設定mode參數
 
-```
-const path = require('path');	//宣告常數 path為
-const webpack = require('webpack');
+webpack.config.js內容
 
+```
+//宣告常數 path為webpack設定檔路徑
+const path = require('path');
+
+//宣告常數 webpack為webpack設定檔路徑
+const webpack = require('webpack');			
+
+//設定檔匯出函數
 module.exports = {
-	entry: './entry.js',						//入口指定entry.js檔案
+	//輸入指定entry.js檔案
+	entry: './entry.js',
+	
+	//輸出bundle.js檔案
     output: {
-        filename: 'bundle.js',					//輸出bundle.js檔案
+    	//檔案名稱
+        filename: 'bundle.js',
+        
+        //定義檔案根目錄
         path: path.resolve(__dirname, './'),
     },
+    //模型定義使用哪些loader
 	module: {
+		//陣列存放物件
         rules: [
             {
+            	//轉換msg.vue
                 test: '/.msg.vue',
+                //要轉換哪個loader
                 loader: 'vue-loader'
             }
         ]
