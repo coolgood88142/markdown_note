@@ -42,10 +42,13 @@ module.exports = {
             }
         ]
     },
+    //解析
 	resolve: {
+		//定義模組別名選擇路徑檔案
         alias: {
 			'vue': "vue/dist/vue.js"
         },
+        //自動拓展文件副檔名js、vue，可以不必使用require模組
 		extensions: ['.js', '.vue']
     }
 };
