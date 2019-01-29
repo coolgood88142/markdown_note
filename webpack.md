@@ -24,10 +24,10 @@ module.exports = {
 	
 	//輸出bundle.js檔案
     output: {
-    	//檔案名稱
+    	//輸出檔案名稱為bundle.js
         filename: 'bundle.js',
         
-        //定義檔案根目錄
+        //定義檔案根目錄，將相對路徑換成絕對路徑
         path: path.resolve(__dirname, './'),
     },
     //模型定義使用哪些loader
