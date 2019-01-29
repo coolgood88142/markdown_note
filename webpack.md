@@ -42,9 +42,9 @@ module.exports = {
             }
         ]
     },
-    //解析
+    //解析模組
 	resolve: {
-		//定義模組別名選擇路徑檔案
+		//定義模組別名選擇路徑檔案，寫到resolve區域裡可以用變數=require('vue')
         alias: {
 			'vue': "vue/dist/vue.js"
         },
