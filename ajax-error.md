@@ -2,6 +2,8 @@ ajax error(xhr, status, error)
 
 用登入頁面做範例
 
+```
+
 login.jsp
 
 <html>
@@ -15,30 +17,18 @@ login.jsp
  <body>
 
    <table id="example">
-
-​       <tr>
-
-​         <td>學號</td>
-
-​         <td>姓名</td>
-
-​         <td>成績</td>
-
-​       </tr>
-
-​     <?php foreach($row as $key => $value){?>
-
-​       <tr>
-
-​         <td class="ts_no"><?=$value['ts_no']?></td>
-
-​         <td><input type="text" name="ts_name[]" value="<?=$value['ts_name']?>"/></td>
-
-​         <td><input type="text" name="ts_grade[]" value="<?=$value['ts_grade']?>" size="3"/></td>
-
-​       </tr>
-
-​     <?php }?>
+   	<tr>
+   		<td>學號</td>
+   		<td>姓名</td>
+   		<td>成績</td>
+        </tr>
+        <?php foreach($row as $key => $value){?>
+        <tr>
+        <td class="ts_no"><?=$value['ts_no']?></td>
+        <td><input type="text" name="ts_name[]" value="<?=$value['ts_name']?>"/></td>
+		<td><input type="text" name="ts_grade[]" value="<?=$value['ts_grade']?>" size="3"/></td>
+   </tr>
+   	<?php }?>
 
    </table>
 
@@ -125,7 +115,9 @@ login.jsp
  </script>
 
 </html>
+```
 
+```
 mysql.php
 
 <?php
@@ -217,6 +209,7 @@ test_score.php
    }
 
 ?>
+```
 
 以上面SQL錯誤回傳說明
 
