@@ -30,25 +30,25 @@ module.exports = {
         //定義檔案根目錄，將相對路徑換成絕對路徑
         path: path.resolve(__dirname, './'),
     },
-    //模型定義使用哪些loader
+    //自訂模組
 	module: {
 		//陣列存放物件
         rules: [
             {
-            	//轉換msg.vue
+            	//指定msg.vue檔(路徑)
                 test: '/.msg.vue',
-                //要轉換哪個loader
-                loader: 'vue-loader'
+                //要轉換哪個loader(插件)
+                use: 'vue-loader'
             }
         ]
     },
     //解析模組
 	resolve: {
-		//定義模組別名選擇路徑檔案，寫到resolve區域裡可以用變數=require('vue')
+		//原本模組上的vue替換成新的路徑指定檔案
         alias: {
 			'vue': "vue/dist/vue.js"
         },
-        //自動拓展文件副檔名js、vue，可以不必使用require模組
+        //可以省略js、vue
 		extensions: ['.js', '.vue']
     }
 };
@@ -57,3 +57,9 @@ module.exports = {
 ```
 
 參考資料：https://www.webpackjs.com/concepts/
+
+https://ithelp.ithome.com.tw/articles/10193788
+
+https://segmentfault.com/a/1190000013176083
+
+https://rhadow.github.io/2015/03/23/webpackIntro/
