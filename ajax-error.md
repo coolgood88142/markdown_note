@@ -37,48 +37,31 @@ login.jsp
  </body>
 
  <script language="JavaScript">
+	
+	function update(){
+	var ts_no="",ts_name="",ts_grade="";
+	$('#example .ts_no').each(function(i) {
+		ts_no = ts_no + $(this).text() + ",";
+	});
 
-   function update(){
+	$("input[name='ts_name[]']").each(function(i) {
+		ts_name = ts_name + $(this).val() + ",";
+	});
 
-​     var ts_no="",ts_name="",ts_grade="";
+	$("input[name='ts_grade[]']").each(function(i) {
+		ts_grade = ts_grade + $(this).val() + ",";
+	});
 
-​    
-
-​     $('#example .ts_no').each(function(i) {
-
-​       ts_no = ts_no + $(this).text() + ",";
-
-​     });
-
-​     $("input[name='ts_name[]']").each(function(i) {
-
-​       ts_name = ts_name + $(this).val() + ",";
-
-​     });
-
-​     $("input[name='ts_grade[]']").each(function(i) {
-
-​       ts_grade = ts_grade + $(this).val() + ",";
-
-​     });
-
-​     ts_no = ts_no.substring(0, ts_no.length-1);
-
-​     ts_name = ts_name.substring(0, ts_name.length-1);
-
-​     ts_grade = ts_grade.substring(0, ts_grade.length-1);
-
-​     var data = {
-
-​         'isStatus':'update',
-
-​         'ts_no': ts_no,
-
-​         'ts_name': ts_name,
-
-​         'ts_grade': ts_grade,
-
-​       };
+	ts_no = ts_no.substring(0, ts_no.length-1);
+	ts_name = ts_name.substring(0, ts_name.length-1);
+	ts_grade = ts_grade.substring(0, ts_grade.length-1);
+	
+	var data = {
+		'isStatus':'update',
+		'ts_no': ts_no,
+		'ts_name': ts_name,
+		'ts_grade': ts_grade,
+	};
 
 ​     $.ajax({
 

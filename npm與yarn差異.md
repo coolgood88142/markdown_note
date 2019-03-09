@@ -17,27 +17,6 @@ npm與yarn一樣都是套件管理工具，但是yarn的安裝速度比npm快很
 
 
 
-**相同的指令**
-
-| npm                            | yarn                            | 功能描述                             |
-| ------------------------------ | ------------------------------- | ------------------------------------ |
-| npm run                        | yarn run                        | 執行package.json上的腳本             |
-| npm config list                | yarn config list                | 查詢目前的配置                       |
-| npm config set registry [網址] | yarn config set registry [網址] | 修改npm或yarn存放套件的網址          |
-| npm init                       | yarn init                       | 建立package.json                     |
-| npm list                       | yarn list                       | 查詢目前已安裝的套件                 |
-| npm login                      | yarn login                      | 登入使用者                           |
-| npm logout                     | yarn logout                     | 登出使用者                           |
-| npm outdated                   | yarn outdated                   | 檢查依賴相關套件                     |
-| npm link                       | yarn link                       | 建立模組連結                         |
-| npm unlink                     | yarn unlink                     | 移除模組連結(要先確定是移除哪個連結) |
-| npm publish                    | yarn publish                    | 將npm或yarn底下的套件上線            |
-| npm test                       | yarn test                       | 執行腳本上的"test"=>npm run test     |
-| npm bin                        | yarn bin                        | 顯示bin文件的安裝路徑                |
-| npm info                       | yarn info                       | 顯示npm或yarn的套件訊息              |
-
-
-
 **yarn**優點
 
 **離線模式**
