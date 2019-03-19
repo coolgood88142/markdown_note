@@ -4,9 +4,11 @@
 
 使用geocoder api 可在頁面元素顯示地圖，從2018年6月11日起google map api要開始進行收費，
 
-在專案因使用想查詢地點或地址時都需要用geocoder api 回傳查詢到的經緯度才可以使用地圖，以及複製功能需要將geocoder api查詢到的完整地址進行複製到文字框，使用無需在輸入
+在專案因使用想查詢地點或地址時都需要用geocoder api 回傳查詢到的經緯度才可以使用地圖，以及複製功能需要將geocoder api查詢到的完整地址進行複製到文字框無需在輸入，前面要先查詢到地圖，取得查詢地圖的經緯度
 
 
+
+目前使用Geocoding API與Map JavaScript API
 
 以下用openAddressMap與copyAddress說明
 
@@ -17,7 +19,7 @@
 		
 		//判斷查詢的地點或地址確認是否為空值
 		if(address!='' && address!=undefined){
-			//使用API geocoder
+			//使用Geocoding API，目前要收費
 	        var geocoder = new google.maps.Geocoder(); 
 	        //用地點或地址先取得經緯度
 	        geocoder.geocode( { 'address': address}, function(results, status) {
@@ -26,31 +28,33 @@
 	                var latitude = results[0].geometry.location.lat(); 
 	                var longitude = results[0].geometry.location.lng();
 	                
-	                //使用google api LatLng 物件當經緯度
+	                //使用Map JavaScript API的LatLng物件當經緯度
 	                Latlng = new google.maps.LatLng(latitude,longitude);
-	                
 	                $("input[name='copy_address']").val(results[0].formatted_address);
 	                
-	                
-	            //用變數在地圖使用哪些參數
-	            var mapOptions = {
-	                zoom:17,
-	                zoomControl:true,
-	                center:Latlng,
-	                mapTypeId: google.maps.MapTypeId.ROADMAP
-	            }
-	
-				//在頁面上使用google api Map 物件檔地圖(map與copy_map)
+	            	//用變數在地圖使用哪些參數
+	            	var mapOptions = {
+	                	zoom:17,
+	                	zoomControl:true,
+	                	center:Latlng,
+	                	mapTypeId: google.maps.MapTypeId.ROADMAP
+	            	}
+	            
+	            //在頁面上使用Map JavaScript API的Map物件檔地圖(map與copy_map)
 	            var map = new google.maps.Map(document.getElementById('map'),mapOptions);
 	    		var copy_map = new google.maps.Map(
 	                            document.getElementById('copy_map'),
 	    						mapOptions);
-	    		//使用google api marker 物件 
+	    		//使用Map JavaScript API的marker物件設定經緯度 
 	            var marker = new google.maps.Marker({
 	                position: Latlng
 	            });
-	            marker.setMap(map);
-	            marker.setMap(copy_map);
+	            
+	            	//id為map與copy_map區塊 set地圖物件
+	            	marker.setMap(map);
+	            	marker.setMap(copy_map);
+	            	
+	            	//顯示id為map區塊，隱藏id為copy_map區塊
 	                $("#map").show();
 	                $("#copy_map").hide();
 	                console.log(results[0].formatted_address);
