@@ -1,18 +1,37 @@
-**google map**
+## **使用Google Map**取得地址
+
+什麼是Google Map?是由Google公司像全球提供的電子地圖服務，用地圖規劃出地表、線條、符號等資訊。
+
+圖片
 
 
 
-使用geocoder api 可在頁面元素顯示地圖，從2018年6月11日起google map api要開始進行收費，
+### 架構
 
-在專案因使用想查詢地點或地址時都需要用geocoder api 回傳查詢到的經緯度才可以使用地圖，以及複製功能需要將geocoder api查詢到的完整地址進行複製到文字框無需在輸入，前面要先查詢到地圖，取得查詢地圖的經緯度
+我們比較常看到的用法，在文字框輸入想要地點或地址之後點查詢，地圖會自動刷新顯示地標以及相關資訊。
 
-
-
-目前使用Geocoding API與Map JavaScript API
-
-以下用openAddressMap與copyAddress說明
+流程圖
 
 
+
+製作Google Map需要google提供的google map API才能實做，今天我們使用Geocoding API與Map JavaScript API來實做，以下介紹兩種的簡介
+
+### 1. Geocoding API
+
+Geocoding為地理編碼，將地址（如“1600 Amphitheatre Parkway，Mountain View，CA”）轉換為地理坐標（如緯度37.423021和經度-122.083739）的過程，您可以使用它來在地圖上放置標記或定位地圖。
+
+
+
+### 2. Map JavaScript API 
+
+通過Maps JavaScript API，您可以使用自己的內容和圖像自定義地圖，以便在網頁和移動設備上顯示。Maps JavaScript API具有四種基本地圖類型（路線圖，衛星，混合和地形），您可以使用圖層和样式，控件和事件以及各種服務和庫來修改這些類型。
+
+#### 
+
+以下範例使用Google Map API的Geocoding API與Map JavaScript API的程式碼
+
+
+	//打開地圖
 	function openAddressMap(address,number){
 		//經緯度變數
 		var Latlng=null;
@@ -80,3 +99,17 @@
 	        $("input[name='address']").val(address);
 	    }
 	}
+
+
+
+6.使用圖文並茂，圖片與文字搭配使得整個文件容易閱讀
+
+7.把實做的部分放進來，附上說明
+
+
+
+參考資料:https://zh.wikipedia.org/wiki/Google%E5%9C%B0%E5%9B%BE
+
+https://developers.google.com/maps/documentation/geocoding/intro
+
+https://developers.google.com/maps/documentation/javascript/tutorial
