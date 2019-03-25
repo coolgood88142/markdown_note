@@ -14,21 +14,179 @@
 
 
 
-製作Google Map需要google提供的google map API才能實做，今天我們使用Geocoding API與Map JavaScript API來實做，以下介紹兩種的簡介
+製作Google Map需要google提供的google map API才能實做，今天我們使用Geocoding API裡的地理編碼請求與Map JavaScript API來實做，以下介紹兩種的官網文件資訊
 
 ### 1. Geocoding API
 
 Geocoding為地理編碼，將地址（如“1600 Amphitheatre Parkway，Mountain View，CA”）轉換為地理坐標（如緯度37.423021和經度-122.083739）的過程，您可以使用它來在地圖上放置標記或定位地圖。
 
+您可以通過HTTP接口訪問Geocoding API。以下是地理編碼請求的示例。
 
+### 地理編碼請求和響應（緯度/經度查找）
+
+以下示例請求“1600 Amphitheatre Parkway，Mountain View，CA”的緯度和經度，並指定輸出必須採用JSON格式。
+
+```
+https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KE
+```
+
+您可以通過在Web瀏覽器中輸入URL來進行測試（請務必`YOUR_API_KEY`使用[實際的API密鑰](https://developers.google.com/maps/documentation/geocoding/start?hl=zh-tw#get-a-key)替換 ）。響應包括地址的緯度和經度。
+
+以下是JSON中的地理編碼響應示例：
+
+```
+{
+   "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "1600",
+               "short_name" : "1600",
+               "types" : [ "street_number" ]
+            },
+            {
+               "long_name" : "Amphitheatre Pkwy",
+               "short_name" : "Amphitheatre Pkwy",
+               "types" : [ "route" ]
+            },
+            {
+               "long_name" : "Mountain View",
+               "short_name" : "Mountain View",
+               "types" : [ "locality", "political" ]
+            },
+            {
+               "long_name" : "Santa Clara County",
+               "short_name" : "Santa Clara County",
+               "types" : [ "administrative_area_level_2", "political" ]
+            },
+            {
+               "long_name" : "California",
+               "short_name" : "CA",
+               "types" : [ "administrative_area_level_1", "political" ]
+            },
+            {
+               "long_name" : "United States",
+               "short_name" : "US",
+               "types" : [ "country", "political" ]
+            },
+            {
+               "long_name" : "94043",
+               "short_name" : "94043",
+               "types" : [ "postal_code" ]
+            }
+         ],
+         "formatted_address" : "1600 Amphitheatre Parkway, Mountain View, CA 94043, USA",
+         "geometry" : {
+            "location" : {
+               "lat" : 37.4224764,
+               "lng" : -122.0842499
+            },
+            "location_type" : "ROOFTOP",
+            "viewport" : {
+               "northeast" : {
+                  "lat" : 37.4238253802915,
+                  "lng" : -122.0829009197085
+               },
+               "southwest" : {
+                  "lat" : 37.4211274197085,
+                  "lng" : -122.0855988802915
+               }
+            }
+         },
+         "place_id" : "ChIJ2eUgeAK6j4ARbn5u_wAGqWA",
+         "types" : [ "street_address" ]
+      }
+   ],
+   "status" : "OK"
+}
+```
+
+※要使用地理編碼API，您必須先在Google Cloud Platform控制台中激活API，然後獲取正確的身份驗證憑據。您需要在每個請求中提供**API密鑰**
+
+單擊下面的按鈕以完成您將要執行的過程：
+
+1. 創建或選擇一個項目
+2. 啟用API
+3. 獲取API密鑰
 
 ### 2. Map JavaScript API 
 
 通過Maps JavaScript API，您可以使用自己的內容和圖像自定義地圖，以便在網頁和移動設備上顯示。Maps JavaScript API具有四種基本地圖類型（路線圖，衛星，混合和地形），您可以使用圖層和样式，控件和事件以及各種服務和庫來修改這些類型。
 
-#### 
+以下網頁顯示以澳大利亞新南威爾士州悉尼為中心的地圖：
 
-以下範例使用Google Map API的Geocoding API與Map JavaScript API的程式碼
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -34.397, lng: 150.644},
+          zoom: 8
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+    async defer></script>
+  </body>
+</html>
+```
+
+即使在這個簡單的例子中，也有一些注意事項：
+
+1. 我們使用聲明將應用程序聲明為HTML5 `<!DOCTYPE html>`。
+2. 我們創建了一個`div`名為“map” 的元素來保存地圖。
+3. 我們定義了一個JavaScript函數，用於在中創建地圖 `div`。
+4. 我們使用`script`標記加載Maps JavaScript API 。
+
+要加載Maps JavaScript API，請使用
+
+```
+script
+```
+
+以下示例中的標記：
+
+```html
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
+</script>
+```
+
+`script`標記中包含的URL 是JavaScript文件的位置，該文件加載了使用Maps JavaScript API所需的所有符號和定義。此`script`標記是必需的。
+
+該`async`屬性允許瀏覽器在加載Maps JavaScript API時呈現您網站的其餘部分。API準備就緒後，將調用使用`callback`參數指定的函數。
+
+該`key`參數包含應用程序的API密鑰
+
+
+
+6.使用圖文並茂，圖片與文字搭配使得整個文件容易閱讀
+
+
+
+以下程式碼是我使用Google Map API的Geocoding API與Map JavaScript API的寫法
 
 
 	//打開地圖
@@ -99,12 +257,6 @@ Geocoding為地理編碼，將地址（如“1600 Amphitheatre Parkway，Mountai
 	        $("input[name='address']").val(address);
 	    }
 	}
-
-
-
-6.使用圖文並茂，圖片與文字搭配使得整個文件容易閱讀
-
-7.把實做的部分放進來，附上說明
 
 
 
