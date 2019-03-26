@@ -10,7 +10,9 @@
 
 我們比較常看到的用法，在文字框輸入想要地點或地址之後點查詢，地圖會自動刷新顯示地標以及相關資訊。
 
-流程圖
+以下是我們使用google map的架構圖：
+
+![map](C:\xampp\htdocs\markdown_note\map.png)
 
 
 
@@ -30,7 +32,7 @@ Geocoding為地理編碼，將地址（如“1600 Amphitheatre Parkway，Mountai
 https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KE
 ```
 
-您可以通過在Web瀏覽器中輸入URL來進行測試（請務必`YOUR_API_KEY`使用[實際的API密鑰](https://developers.google.com/maps/documentation/geocoding/start?hl=zh-tw#get-a-key)替換 ）。響應包括地址的緯度和經度。
+您可以通過在Web瀏覽器中輸入URL來進行測試（請務必`YOUR_API_KEY`使用實際的API密鑰替換 ）。響應包括地址的緯度和經度。
 
 以下是JSON中的地理編碼響應示例：
 
@@ -153,20 +155,14 @@ https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Park
 </html>
 ```
 
-即使在這個簡單的例子中，也有一些注意事項：
+使用div名為"map"區塊元素呈現google map，用API的Map物件設定經緯度參數與地圖比例大小，在設定script標記加載Maps JavaScript API 
 
 1. 我們使用聲明將應用程序聲明為HTML5 `<!DOCTYPE html>`。
 2. 我們創建了一個`div`名為“map” 的元素來保存地圖。
 3. 我們定義了一個JavaScript函數，用於在中創建地圖 `div`。
 4. 我們使用`script`標記加載Maps JavaScript API 。
 
-要加載Maps JavaScript API，請使用
-
-```
-script
-```
-
-以下示例中的標記：
+要加載Maps JavaScript API，請使用以下示例中的標記：
 
 ```html
 <script async defer
