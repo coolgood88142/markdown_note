@@ -1,3 +1,7 @@
+---
+typora-root-url: ./
+---
+
 ## **使用Google Map**取得地址
 
 什麼是Google Map?是由Google公司像全球提供的電子地圖服務，用地圖規劃出地表、線條、符號等資訊。
@@ -12,7 +16,9 @@
 
 以下是我們使用google map的架構圖：
 
-![map](C:\xampp\htdocs\markdown_note\map.png)
+
+
+![map](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/map.png>)
 
 
 
