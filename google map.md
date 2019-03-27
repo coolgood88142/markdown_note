@@ -1,7 +1,3 @@
----
-typora-root-url: ./
----
-
 ## **使用Google Map**取得地址
 
 什麼是Google Map?是由Google公司像全球提供的電子地圖服務，用地圖規劃出地表、線條、符號等資訊。
