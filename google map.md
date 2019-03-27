@@ -28,7 +28,7 @@ Geocoding為地理編碼，將地址（如“1600 Amphitheatre Parkway，Mountai
 
 以下示例請求“1600 Amphitheatre Parkway，Mountain View，CA”的緯度和經度，並指定輸出必須採用JSON格式。
 
-```
+```html
 https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KE
 ```
 
@@ -36,7 +36,7 @@ https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Park
 
 以下是JSON中的地理編碼響應示例：
 
-```
+```javascript
 {
    "results" : [
       {
@@ -178,7 +178,7 @@ https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Park
 
 
 
-6.使用圖文並茂，圖片與文字搭配使得整個文件容易閱讀
+6.使用圖文並茂，圖片與文字搭配使得整個文件容易閱讀 (放有關找地圖的圖片，文字要寫怎麼使用我的功能)
 
 
 
