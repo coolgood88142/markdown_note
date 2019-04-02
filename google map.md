@@ -2,7 +2,9 @@
 
 什麼是Google Map?是由Google公司像全球提供的電子地圖服務，用地圖規劃出地表、線條、符號等資訊。
 
-圖片
+
+
+![question](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/question.png>)
 
 
 
@@ -180,7 +182,21 @@ https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Park
 
 
 
-6.使用圖文並茂，圖片與文字搭配使得整個文件容易閱讀 (放有關找地圖的圖片，文字要寫怎麼使用我的功能)
+以下範例是在開啟地圖與查詢地圖時，顯示的google map的畫面:
+
+### 1.開啟地圖
+
+![open_map1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/open_map1.png>)
+
+剛開啟地圖時預設是帶台灣地圖，這時可直接輸入地點或地址之後點選查詢，google map會重新讀取地圖
+
+### 2.查詢地點
+
+![open_map2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/open_map2.png>)
+
+當查詢地點時，google map會重新讀取查詢到的地圖資訊，顯示地點的道路、附近地名等等。
+
+上面顯示剛查詢地點後google map API提供完整地址，可點選右邊的複製圖示，複製地址到文字框做儲存。
 
 
 
