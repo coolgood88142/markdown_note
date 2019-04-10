@@ -1,4 +1,4 @@
-## **使用Google Map**取得地址
+## Google Map教學：操作地址
 
 什麼是Google Map?是由Google公司像全球提供的電子地圖服務，用地圖規劃出地表、線條、符號等資訊。
 
@@ -13,6 +13,12 @@
 我們比較常看到的用法，在文字框輸入想要地點或地址之後點查詢，地圖會自動刷新顯示地標以及相關資訊。
 
 以下是我們使用google map的架構圖：
+
+
+
+補上3種架構圖:
+
+循序圖(UML)和流程圖(圓形為起點、結束，菱形為判斷是否)與架構面(https://dotblogs.com.tw/regionbbs/2016/05/05/the-cost-behind-the-architecture)
 
 
 
