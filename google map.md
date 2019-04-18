@@ -4,7 +4,7 @@
 
 
 
-![question](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/question.png>)
+![question](<https://raw.githubusercontent.com/coolgood88142/markdown_note/assets/images/master/question.png>)
 
 
 
@@ -20,9 +20,9 @@
 
 循序圖(UML)和流程圖(圓形為起點、結束，菱形為判斷是否)與架構面(https://dotblogs.com.tw/regionbbs/2016/05/05/the-cost-behind-the-architecture)
 
-![map](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/UML.png>)
+![map](<https://raw.githubusercontent.com/coolgood88142/markdown_note/assets/images/master/UML.png>)
 
-![map](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/map.png>)
+![map](<https://raw.githubusercontent.com/coolgood88142/markdown_note/assets/images/master/Flow Chart.png>)
 
 
 
@@ -192,13 +192,13 @@ https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Park
 
 ### 1.開啟地圖
 
-![open_map1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/open_map1.png>)
+![open_map1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/assets/images/master/open_map1.png>)
 
 剛開啟地圖時預設是帶台灣地圖，這時可直接輸入地點或地址之後點選查詢，google map會重新讀取地圖
 
 ### 2.查詢地點
 
-![open_map2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/open_map2.png>)
+![open_map2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/assets/images/master/open_map2.png>)
 
 當查詢地點時，google map會重新讀取查詢到的地圖資訊，顯示地點的道路、附近地名等等。
 
