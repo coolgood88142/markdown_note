@@ -37,4 +37,18 @@ sessionStorage僅在當前畫面下有效，關閉頁面或瀏覽器後被清除
 
 
 
+三種適用的例子，含說明，為什麼適用?
+
+cookie:網頁關鍵字記錄，當網頁一直沒動作，因cookie時間關係會自動清除
+
+localStorage:購物車，使用者一直篩選想要的項目，但是項目可能較多，適用於5M大小做存取，若沒有清除當下次開啟瀏覽器，購物車的篩選項目還是會存在
+
+seesoinStorage :搜尋關鍵字搜尋不同關鍵字，用分頁時紀錄只存在當前的頁面，可適用多個分頁做相同的事情
+
+
+
+實做cookie 新增記錄讓網頁效能變慢
+
+
+
 參考資料:[https://medium.com/@jscinin/javascript-cookie-localstorage-sessionstorage-%E4%B8%89%E7%A8%AE%E5%B7%AE%E7%95%B0-fe7f38260439](https://medium.com/@jscinin/javascript-cookie-localstorage-sessionstorage-三種差異-fe7f38260439)、<https://www.itread01.com/articles/1501797427.html>、<https://dotblogs.com.tw/shadow/2014/07/10/145879>
