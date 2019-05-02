@@ -12,19 +12,19 @@
 
 我們比較常看到的用法，在文字框輸入想要地點或地址之後點查詢，地圖會自動刷新顯示地標以及相關資訊。
 
-以下是我們使用google map的架構圖：
+以下是我們使用google map的3種圖：
 
-
-
-補上3種架構圖:
-
-循序圖(UML)和流程圖(圓形為起點、結束，菱形為判斷是否)與架構面(https://dotblogs.com.tw/regionbbs/2016/05/05/the-cost-behind-the-architecture)
+#### 1.google map API如何實做地圖的循序圖：
 
 ![map](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/UML.png>)
 
+#### 2.google map API實做的流程圖：
+
 ![map](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/Flow Chart.png>)
 
+#### 3.google map API實做時包含哪些物件的架構圖：
 
+![map](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/Frame.png>)
 
 製作Google Map需要google提供的google map API才能實做，今天我們使用Geocoding API裡的地理編碼請求與Map JavaScript API來實做，以下介紹兩種的官網文件資訊
 
