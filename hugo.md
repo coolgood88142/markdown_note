@@ -66,7 +66,7 @@ theme = "hamburg"
 disqus = "Kai88142"
 ```
 
-disqus放你的Disqus帳號的Username，**在Disqus要先填資料時要在語言的部分，填哪種語言留言板就顯示哪種呈現**，請在admin->Edit Settings->General裡的Language選擇Chinese，就可顯示中文樣式，目前Disqus沒有繁體中文只有簡體，先將就點用吧。
+disqus放你的Disqus帳號的`Username`，**在Disqus要先填資料時要在語言的部分，填哪種語言留言板就顯示哪種呈現**，請在admin->Edit Settings->General裡的Language選擇Chinese，就可顯示中文樣式，目前Disqus沒有繁體中文只有簡體，先將就點用吧。
 
 
 
@@ -98,7 +98,7 @@ theme = "hamburg" #主題名稱
 hugo server -D
 ```
 
-執行後，在瀏覽器輸入網址http://localhost:1313，可看剛建立的部落格網站
+執行後，在瀏覽器輸入網址`http://localhost:1313`，可看剛建立的部落格網站
 
 ![hugo-1](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/hugo-1.png)
 
@@ -112,7 +112,7 @@ hugo server -D
 
 ### 1.在GitHub建立兩個repositories
 
-在Github建立hugo_blog和coolgood88142.github.io(使用自己的GitHub帳號)
+在Github建立`hugo_blog`和`coolgood88142.github.io`(使用自己的GitHub帳號)
 
 
 
@@ -122,7 +122,7 @@ hugo server -D
 hugo
 ```
 
-執行hugo指令，資料夾會自動產生public資料夾
+執行`hugo`指令，資料夾會自動產生public資料夾
 
 
 
@@ -156,7 +156,7 @@ rm -r public
 git submodule add -f https://github.com/coolgood88142/coolgood88142.github.io.git public
 ```
 
-這時public資料夾是新增coolgood88142.github.io的連結而不是專案
+這時public資料夾是新增`coolgood88142.github.io`的連結而不是專案
 
 
 
@@ -168,7 +168,7 @@ git commit -m "my-hugo-file"
 git push origin master
 ```
 
-上版後，在瀏覽器輸入網址http://coolgood88142.github.io，會看到跟本機看到的部落格是一樣的。
+上版後，在瀏覽器輸入網址`http://coolgood88142.github.io`，會看到跟本機看到的部落格是一樣的。
 
 
 
