@@ -1,8 +1,15 @@
-## Hugo教學：部落格網站
+---
+title: "Hugo教學：部落格網站"
+date: "2019-05-12"
+author: "HeroKu"
+summary: "說明如何使用Hugo製作部落格網站"
+categories: ["Deployment Site"]
+tags: ["Hugo","Git"]
+---
 
 什麼是Hugo?是一個用 Go 語言編寫的靜態站點生成器，使用Hugo與Git來建立個人部落格。
 
-![question_hugo](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/question_hugo.png)
+![question_hugo](https://coolgood88142.github.io/images/question_hugo.png)
 
 
 
@@ -25,7 +32,7 @@ cd hugo_blog
 
 ### 3.新增[部落格主題](<https://themes.gohugo.io/>)，例如:[hamburg](https://themes.gohugo.io/hugo-theme-hamburg/)為例
 
-以下使用3種方式新增：
+以下使用2種方式新增：
 
 #### (1) 使用Git Clone，下載hamburg專案在themes/hamburg資料夾底下
 
@@ -42,12 +49,6 @@ git clone https://github.com/hauke96/hugo-theme-hamburg.git themes/hamburg
 ```
 
 
-
-#### (3) 直接下載[hamburg](https://themes.gohugo.io/hugo-theme-hamburg/)檔案，解壓縮到自己專案底下的`themes/hamburg`路徑
-
-
-
-如果想要找主題的話，依據上面的連結點選Download，進入GitHub的repositories，將上面的網址改成主題的網址，再將`themes/hamburg `改成`themes/你的主題名稱`。
 
 ### 4.建立新文章，例如:檔名為my-first-file
 
@@ -89,11 +90,11 @@ hugo server -D
 
 執行後，在瀏覽器輸入網址`http://localhost:1313`，可看剛建立的部落格網站
 
-![hugo-1](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/hugo-1.png)
+![hugo-1](https://coolgood88142.github.io/images/hugo-1.png)
 
 
 
-![hugo-2](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/hugo-2.png)
+![hugo-2](https://coolgood88142.github.io/images/hugo-2.png)
 
 
 
@@ -160,7 +161,7 @@ git push origin master
 
 
 
-## **備註：以下是留言版與標籤功能**
+## **備註**
 
 ### 1.新增留言版，建立[Disqus](https://help.disqus.com/)帳號，之後編輯config.toml
 
