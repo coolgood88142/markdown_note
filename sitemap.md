@@ -33,6 +33,10 @@ SiteMap做什麼用的?有利快速搜尋網站中的資訊，建立sitemap時�
 
 #### **changefreq**：表示「這個頁面」的更新頻率，並非以整個網站的更新頻率撰寫
 
+![sitemap](C:\xampp\htdocs\markdown_note\assets\images\sitemap.png)
+
+
+
 
 
 ## **Sitemap自動產生工具**
@@ -61,11 +65,17 @@ SiteMap做什麼用的?有利快速搜尋網站中的資訊，建立sitemap時�
 
 
 
+## Sitemap.xml檔案的提交
+
+以下範例使用sitemap自動產生工具與提交
+
+
+
 參考資料:
 
-[<https://www.eztrust.com.tw/html/faq/qa_show.aspx?id=125>](https://codertw.com/程式語言/540757/)、
+[https://www.eztrust.com.tw/html/faq/qa_show.aspx?id=125](https://codertw.com/程式語言/540757/)、
 
-<<https://www.awoo.com.tw/blog/2018/01/sitemap-xml/>>、
+<https://www.awoo.com.tw/blog/2018/01/sitemap-xml/>、
 
 <https://www.seoseo.com.tw/article_detail_637.html>、
 
