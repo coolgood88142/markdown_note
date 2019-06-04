@@ -29,13 +29,27 @@ SiteMap做什麼用的?有利快速搜尋網站中的資訊，建立sitemap時�
 
 #### **loc** ：指定要搜尋網站某個分頁完整的網址
 
+![sitemap](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/sitemap.png)
+
 #### **lastmod**：頁面最後更新的時間
+
+```
+<lastmod>2005-01-01</lastmod>
+```
 
 #### **changefreq**：表示「這個頁面」的更新頻率，並非以整個網站的更新頻率撰寫
 
-![sitemap](https://coolgood88142.github.io/images/sitemap.png)
+##### 以下是頻率提供一般的資訊給搜尋引擎
 
+- always ：表示頁面一直在變動，更新頻率非常高。新聞網站就會選擇這種標籤值。
+- hourly：每小時會變動。
+- daily：每天會變動。
+- weekly：每周會變動。**一般商家可以選擇這個標籤。**
+- monthly：每月會變動。月刊網站或者推出新產品、文章周期較長的網站可以使用這個標籤。
+- yearly：每年會變動。
+- never：永不變動。
 
+`always` 每次存取而變更的文件，網路爬蟲不會隨時來爬。`never` 描述已封存的 URL。
 
 
 
@@ -46,8 +60,6 @@ SiteMap做什麼用的?有利快速搜尋網站中的資訊，建立sitemap時�
 [Screaming Frog SEO Spider](https://www.seoseo.com.tw/article_detail_524.html)
 
 [Online XML Sitemap Generator](https://www.seoseo.com.tw/article_detail_559.html)
-
-
 
 
 
@@ -88,11 +100,11 @@ Sitemap:https://coolgood88142.github.io/zh-tw/sitemap.xml
 
 填寫 `robots.txt` 網址測試
 
-![search1](https://coolgood88142.github.io/images/search1.png)
+![search1](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/search1.png)
 
 填寫 `sitemap.xml` 網址測試，如果測試結果正常，就可以正式提交了！，過一段時間search console 就可以看到網頁被收錄的狀態。
 
-![search2](https://coolgood88142.github.io/images/search2.png)
+![search2](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/search2.png)
 
 ## 問題
 
@@ -108,4 +120,6 @@ Sitemap:https://coolgood88142.github.io/zh-tw/sitemap.xml
 
 <https://www.seoseo.com.tw/article_detail_637.html>、
 
-<https://www.seoseo.com.tw/article_detail_524.html>
+<https://www.seoseo.com.tw/article_detail_524.html>、
+
+<https://www.sitemaps.org/zh_TW/protocol.html>
