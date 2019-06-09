@@ -85,30 +85,34 @@ SiteMap做什麼用的?有利快速搜尋網站中的資訊，建立sitemap時�
 
 ## Sitemap.xml檔案的提交
 
-以下使用 [Google Search Console](https://search.google.com/search-console) 為例提交 sitemap。
+以下使用 [Google Search Console](https://search.google.com/search-console) 為例提交 sitemap；目前Google Search Console有區分舊版與新版的部分，新版暫時沒有robots.txt檔案測試工具。
 
-提交sitemap之前，請先建立`robots.txt`檔案，要透過檔案讓別人知道sitemap的網址，才可以快速搜尋到。
+提交sitemap之前，請先將`robots.txt`檔案建立在專案的根目錄裡，要透過檔案讓別人知道sitemap的網址，才可以快速搜尋到。
 
-例如：部落格網址(https://coolgood88142.github.io/zh-tw)
+例如：部落格網址(https://coolgood88142.github.io/)
+
+`robots.txt`的內容 
 
 ```
 User-agent *
 Sitemap:https://coolgood88142.github.io/zh-tw/sitemap.xml
 ```
 
-以下使用 [Google Search Console](https://search.google.com/search-console) 為例提交 sitemap。
-
-填寫 `robots.txt` 網址測試
+填寫 `robots.txt` 點選測試，成功會顯示已允選
 
 ![search1](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/search1.png)
 
-填寫 `sitemap.xml` 網址測試，如果測試結果正常，就可以正式提交了！，過一段時間search console 就可以看到網頁被收錄的狀態。
+將自己的上傳 `sitemap.xml` 提交上傳，狀態顯示成功就OK了。
 
 ![search2](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/search2.png)
 
 ## 問題
 
-一個網站有沒有sitemap差在哪?
+#### 一個網站有沒有sitemap差在哪?
+
+首先，一個網站對於電腦來説就是很多頁沒有排序的紙，而一本書與一堆紙的分別就在於紙是散亂的，而書是經過整理排序，所以我們的網站也需要一個排予的工具。
+
+很多人覺得把網站建立起來以後，Google 等搜尋引擎便會自已找到，但外國有人做過測試。如果建立一個網站後什麼都不做，Google 最快也需要 22 天才能找出你的網站，而且只有很少的資料，所以建立網站需要不少能力。
 
 
 
@@ -122,4 +126,6 @@ Sitemap:https://coolgood88142.github.io/zh-tw/sitemap.xml
 
 <https://www.seoseo.com.tw/article_detail_524.html>、
 
-<https://www.sitemaps.org/zh_TW/protocol.html>
+<https://www.sitemaps.org/zh_TW/protocol.html>、
+
+<https://www.cool3c.com/article/106684>
