@@ -87,7 +87,7 @@ $_SESSION['member']會隨著切換頁面存在，代表目前已登入的狀態
 
 #### session存在哪?client怎麼取得
 
-session存在於server端，會隨著切換頁面存在，當使用者操作頁面要跟server端要資料時，可由session的ID去跟取得資料，回傳到client端。
+session存在於server端，會隨著切換頁面存在，client端的seesion ID存在cookie裡，當使用者操作頁面要跟server端要資料時，可由session的ID去跟取得資料，回傳到client端。
 
 
 

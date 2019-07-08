@@ -57,9 +57,22 @@ SiteMap做什麼用的?有利快速搜尋網站中的資訊，建立sitemap時�
 
 產生sitemap的工具有幾百種，以上兩種工具都可以自動產生sitemap
 
-[Screaming Frog SEO Spider](https://www.seoseo.com.tw/article_detail_524.html)
+[Screaming Frog SEO Spider](https://www.seoseo.com.tw/article_detail_524.html)、[Online XML Sitemap Generator](https://www.seoseo.com.tw/article_detail_559.html)
 
-[Online XML Sitemap Generator](https://www.seoseo.com.tw/article_detail_559.html)
+以下介紹Screaming Frog SEO Spider
+
+### 1.輸入要建立sitemap的網址後按start，例如：[Yahoo](https://tw.yahoo.com/)
+
+![sitemap1](C:\xampp\htdocs\markdown_note\assets\images\sitemap1.png)
+
+2.上方sitemaps底下的XML sitemap，選擇匯出的sitemp需要哪些資料，另存sitemap檔案
+
+![sitemap2](C:\xampp\htdocs\markdown_note\assets\images\sitemap2.png)
+
+說明選項
+
+page:noindex pages 排除網址、Canonicalised 建立規範化URL，移除重複的URL、paginated URLs 建立分頁的URL Response codes 檢查網址有包含什麼錯誤代碼 例如:404
+Last Modified:修改日期、priority:建立優先度順序、Change Frequerency:建立更新頻率順序、image建立圖片索引
 
 
 
