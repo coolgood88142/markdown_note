@@ -87,7 +87,13 @@ $_SESSION['member']會隨著切換頁面存在，代表目前已登入的狀態
 
 #### session存在哪?client怎麼取得
 
-session存在於server端，會隨著切換頁面存在，client端的seesion ID存在cookie裡，當使用者操作頁面要跟server端要資料時，可由session的ID去跟取得資料，回傳到client端。
+session存在於server端，會隨著切換頁面存在，client端有seesion ID存在cookie裡，當使用者要轉頁面時會跟server端要資料時，可由session的ID去跟取得資料，回傳到client端確認目前是否已登入。
+
+
+
+#### 要如何識別已登入，例如:有個session id為member記錄已登入狀態
+
+第一次登入時，Client端向Server端檢查帳號密碼是否正確，確定後在設定session id名為member為true，存在Server端，之後將member回傳給Client端記錄在cookie裡，當網頁轉頁時Client端將cookie裡member傳給Server端，確認session id名為member的值是什麼，在回傳給Client端，表示目前已登入狀態，達到網頁保持已登入。
 
 
 
@@ -97,4 +103,4 @@ session存在於server端，會隨著切換頁面存在，client端的seesion ID
 
 <http://fred-zone.blogspot.com/2014/01/web-session.html>、
 
-<https://progressbar.tw/posts/92>
+<https://progressbar.tw/posts/92>、[https://codertw.com/%E4%BC%BA%E6%9C%8D%E5%99%A8/153752/](https://codertw.com/伺服器/153752/)

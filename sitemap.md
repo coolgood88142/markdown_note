@@ -131,11 +131,11 @@ Sitemap:https://coolgood88142.github.io/zh-tw/sitemap.xml
 
 #### Google Search Console 如何更新網址 
 
-利用sitemap檔案裡的網址，根據網址的更新頻率(changefreq)，Google網站管理工具會自動更新網址資訊。如果內容越來越豐富，更新頻率就要越來越好，Google網站管理工具會快速更新網址資訊。
-
-若要新增網址要更新sitemap，再由Google Search Console提交sitemap檔案就可以了。
-
 **如果網站結構改變了、或者是換網址了-->請記得更新sitemap**
+
+sitemap的更新頻率(changefreq)主要是更新索引，提高使用搜尋頻率，例如:新聞在同一個頁面不斷的更新內容，搜尋引擎會依據更新頻率確認什麼時候更新內容，有效的更新索引。
+
+更新頻率(changefreq)不一定要寫，要依據頁面內容更新，是否要讓使用者快速搜尋到最新內容。
 
 
 
@@ -146,6 +146,14 @@ Google Search Console可先的輸入網址後，使用測試線上網址，提�
 如果涵蓋範圍顯示「已建立索引，但沒提交sitemap」，代表網址有包含圖片、影音，sitemap檔案並沒有包含，
 
 [建立圖片、影音sitemap說明](<https://support.google.com/webmasters/answer/80471?hl=zh-Hant&ref_topic=4581190>)，內容要如何怎麼填寫。
+
+
+
+#### Google Search Console 網址包含圖片，如果不建立sitemap會怎麼樣?
+
+#### Google Search Console 涵蓋範圍:為什麼會有些網址要排除?
+
+#### Google Search Console Sitemap的類型為什麼有Sitemap、Sitemap索引?差別在哪?，確定要寫一起還是要分開?
 
 
 
@@ -165,4 +173,7 @@ Google Search Console可先的輸入網址後，使用測試線上網址，提�
 
 <https://www.awoo.com.tw/blog/new-searchconsole-introduction/>、
 
-<http://foreignsun.blogspot.com/2018/07/SEO-1.html>
+<http://foreignsun.blogspot.com/2018/07/SEO-1.html>、
+
+<https://support.google.com/webmasters/answer/156184?hl=zh-Hant>
+
