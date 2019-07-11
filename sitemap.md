@@ -69,10 +69,19 @@ SiteMap做什麼用的?有利快速搜尋網站中的資訊，建立sitemap時�
 
 ![sitemap2](C:\xampp\htdocs\markdown_note\assets\images\sitemap2.png)
 
-說明選項
+### **說明選項**
 
-page:noindex pages 排除網址、Canonicalised 建立規範化URL，移除重複的URL、paginated URLs 建立分頁的URL Response codes 檢查網址有包含什麼錯誤代碼 例如:404
-Last Modified:修改日期、priority:建立優先度順序、Change Frequerency:建立更新頻率順序、image建立圖片索引
+#### pages: noindex pages 排除網址、Canonicalised 建立規範化URL，移除重複的URL、paginated URLs 建立分頁的URL Response codes 檢查網址有包含什麼錯誤代碼 例如:404
+
+#### Last Modified:修改日期
+
+#### priority:建立優先度順序
+
+#### Change Frequerency:建立更新頻率順序
+
+#### Image:建立圖片索引
+
+#### Hrflang:
 
 
 
@@ -133,9 +142,11 @@ Sitemap:https://coolgood88142.github.io/zh-tw/sitemap.xml
 
 **如果網站結構改變了、或者是換網址了-->請記得更新sitemap**
 
-sitemap的更新頻率(changefreq)主要是更新索引，提高使用搜尋頻率，例如:新聞在同一個頁面不斷的更新內容，搜尋引擎會依據更新頻率確認什麼時候更新內容，有效的更新索引。
+sitemap的更新頻率(changefreq)主要是更新索引，提高使用搜尋頻率，例如:新聞在同一個頁面不斷的更新內容，搜尋引擎會依據更新頻率確認什麼時候更新內容。
 
 更新頻率(changefreq)不一定要寫，要依據頁面內容更新，是否要讓使用者快速搜尋到最新內容。
+
+
 
 
 
@@ -151,7 +162,15 @@ Google Search Console可先的輸入網址後，使用測試線上網址，提�
 
 #### Google Search Console 網址包含圖片，如果不建立sitemap會怎麼樣?
 
+
+
+
+
 #### Google Search Console 涵蓋範圍:為什麼會有些網址要排除?
+
+網站可能要包含圖片、影音等等，提交sitemap只有網址內容，但是網址內的東西卻沒提交上去，當Google Search Console建立索引，因為網只有少東西為提交，涵蓋範圍才會顯示「為什麼會有些網址要排除?」
+
+
 
 #### Google Search Console Sitemap的類型為什麼有Sitemap、Sitemap索引?差別在哪?，確定要寫一起還是要分開?
 

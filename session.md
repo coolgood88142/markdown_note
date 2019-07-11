@@ -97,6 +97,12 @@ session存在於server端，會隨著切換頁面存在，client端有seesion ID
 
 
 
+實做:1.輸入帳號密碼頁面 2.驗證帳號密碼資料與記錄session id與cookie的檔案 3.當cookie回傳到client端時，因為有cookie記錄命名session id的資料，再次與server端建立對話用cookie記錄命名session id，取得目前是否已登入
+
+
+
+
+
 參考資料:
 
 <https://ithelp.ithome.com.tw/articles/10185311>、
