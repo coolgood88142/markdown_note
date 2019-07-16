@@ -97,6 +97,14 @@ session存在於server端，會隨著切換頁面存在，client端有seesion ID
 
 
 
+#### 網頁執行記住我的話，client要怎麼在瀏覽器關閉的情況下，在開啟網頁達到自動登入?(session與cookie怎麼運作)
+
+當瀏覽器關閉時，背後的cookie記錄session id名為member的時間，可能一個禮拜或一個月會一直存在，如果的使用者沒有刻意刪除cookie的話，當網頁重新登入時，會先識別member資料傳到Server端，接收到時確認是使用者後，再回傳到網頁上，不用輸入帳號密碼直接轉到已登入。
+
+cookie端的session id存在時間是依據使用cookie的存活週期，例如:php.ini的session_cookie_lifetime的值。
+
+
+
 實做:1.輸入帳號密碼頁面 2.驗證帳號密碼資料與記錄session id與cookie的檔案 3.當cookie回傳到client端時，因為有cookie記錄命名session id的資料，再次與server端建立對話用cookie記錄命名session id，取得目前是否已登入
 
 
@@ -109,4 +117,13 @@ session存在於server端，會隨著切換頁面存在，client端有seesion ID
 
 <http://fred-zone.blogspot.com/2014/01/web-session.html>、
 
-<https://progressbar.tw/posts/92>、[https://codertw.com/%E4%BC%BA%E6%9C%8D%E5%99%A8/153752/](https://codertw.com/伺服器/153752/)
+<https://progressbar.tw/posts/92>、
+
+[https://codertw.com/%E4%BC%BA%E6%9C%8D%E5%99%A8/153752/](https://codertw.com/伺服器/153752/)、
+
+<https://www.lidemy.com/courses/cs101-coding/lectures/5942991>、
+
+<https://ithelp.ithome.com.tw/questions/10188708>、
+
+[https://james670818.pixnet.net/blog/post/2444045-%5Bphp%5D-session](https://james670818.pixnet.net/blog/post/2444045-[php]-session)
+
