@@ -13,6 +13,8 @@ summary: "說明登入流程使用session機制"
 
 ![session](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/session.png)
 
+補上記住我的循序圖(cookie、session id)
+
 
 
 以下使用會員登入說明Form Submit使用Session機制:
@@ -101,7 +103,9 @@ session存在於server端，會隨著切換頁面存在，client端有seesion ID
 
 當瀏覽器關閉時，背後的cookie記錄session id名為member的時間，可能一個禮拜或一個月會一直存在，如果的使用者沒有刻意刪除cookie的話，當網頁重新登入時，會先識別member資料傳到Server端，接收到時確認是使用者後，再回傳到網頁上，不用輸入帳號密碼直接轉到已登入。
 
-cookie端的session id存在時間是依據使用cookie的存活週期，例如:php.ini的session_cookie_lifetime的值。
+client端的session id存在時間是依據使用cookie的存活週期，例如:php.ini的session_cookie_lifetime的值。
+
+如何將cookie的session id防止別人攔截或著換哪種機制?
 
 
 
