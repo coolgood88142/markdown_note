@@ -1,31 +1,136 @@
 ---
-title: "爬蟲"
-date: "2019-09-09"
+title: "python"
+date: "2019-09-11"
 author: "python"
 summary: "說明爬蟲原理"
 ---
 
-什麼是爬蟲?是通過網頁的鏈接網址，模擬瀏覽器用GET或POST方式請求(Request)到Server端，當Server端接受後回傳網頁內容。
+以下使用python 將會員系統，使用POST提交方式，將登入後的頁面標籤做回傳
 
-使用爬蟲時我們會加入headers中的User-Agent來表示我們使用瀏覽器進行請求。
-
-headers包含html版本、瀏覽器、編碼、伺服器資訊等，用來提供 request 或 response 的資訊。
-
-當我們得到HTML內容後，解析內容透過字串處理、正規化等過濾抓取我們要的資料。
-
-
+介紹Form表單與java script的FormData兩種
 
 ### 架構
 
-![crawler](C:\Users\user\Desktop\crawler.png)
+![Form表單](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/Form表單.png>)
+
+![FormData](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/FormData.png>)
+
+
+
+### Form表單
+
+```
+import requests
+
+# 建立表頭
+headers = '''Accept:*/*
+Accept-Encoding:gzip, deflate, br
+Accept-Language:zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7
+Connection:keep-alive
+Host:scr.cyc.org.tw
+Referer:https://scr.cyc.org.tw/tp10.aspx?module=login_page&files=login
+User-Agent:Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36
+X-Requested-With:XMLHttpRequest'''
+
+# 建立帳號、密碼、驗證碼的物件
+account='帳號'
+password='密碼'
+formtable={
+    'loginid':'',
+    'loginpw':'',
+    'Captcha_text':''
+}
+
+formtable['loginid'] = account
+formtable['loginpw'] = password
+
+# 截取會員系統的驗證碼，進行匯出圖檔(ver_pic.png)
+pic = session_requests.get('https://scr.cyc.org.tw//NewCaptcha.aspx').content
+with open('ver_pic.png','wb') as f:
+    f.write(pic)
+
+# 執行時會要求輸入驗證碼，在專案路徑看驗證碼圖檔並輸入
+vercode=input('請輸入驗證碼：')
+formtable['Captcha_text']=vercode
+
+# 建立requests套件的Session
+session_requests = requests.Session()
+
+# 將登入系統用POST方式，提交帳密資訊與表頭進行登入
+url='https://scr.cyc.org.tw/tp10.aspx'
+res = session_requests.post(url+'?module=login_page&files=login', data = formtable, headers = login_header)
+
+# 登入後Session有記錄到，在導頁到登入後的頁面並將截取頁面標籤
+sign = session_requests.get(url+'?module=ind&files=ind')
+print(sign.text)
+
+```
+
+
+
+### FormData
+
+```
+import requests
+from requests_toolbelt  import MultipartEncoder
+
+# 建立表頭
+headers = '''Accept:*/*
+Accept-Encoding:gzip, deflate, br
+Accept-Language:zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7
+Connection:keep-alive
+Content-Type:
+Host:scr.cyc.org.tw
+Referer:https://scr.cyc.org.tw/tp10.aspx?module=login_page&files=login
+User-Agent:Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36
+X-Requested-With:XMLHttpRequest'''
+
+# 建立帳號、密碼、驗證碼的物件
+account='帳號'
+password='密碼'
+formtable={
+    'loginid':'',
+    'loginpw':'',
+    'Captcha_text':''
+}
+
+formtable['loginid'] = account
+formtable['loginpw'] = password
+
+# 截取會員系統的驗證碼，進行匯出圖檔(ver_pic.png)
+pic = session_requests.get('https://scr.cyc.org.tw//NewCaptcha.aspx').content
+with open('ver_pic.png','wb') as f:
+    f.write(pic)
+
+# 執行時會要求輸入驗證碼，在專案路徑看驗證碼圖檔並輸入
+vercode=input('請輸入驗證碼：')
+formtable['Captcha_text']=vercode
+
+# 將login_header的Content-Type，把帳密資訊建立FormData物件
+formdata = MultipartEncoder(fields=formtable)
+login_header['Content-Type'] = formdata.content_type
+
+# 建立requests套件的Session
+session_requests = requests.Session()
+
+# 將登入系統用POST方式，提交帳密資訊與表頭進行登入
+url='https://scr.cyc.org.tw/tp10.aspx'
+res = session_requests.post(url+'?module=login_page&files=login', data = formdata, headers = login_header)
+
+# 登入後Session有記錄到，在導頁到登入後的頁面並將截取頁面標籤
+sign = session_requests.get(url+'?module=ind&files=ind')
+print(sign.text)
+```
 
 
 
 參考資料:
 
-<http://yanlong4869.blogspot.com/2015/09/python-crawler.html>、
+<https://scr.cyc.org.tw/tp10.aspx?module=login_page&files=login>、
 
-[https://medium.com/dualcores-studio/python-x-%E7%B6%B2%E8%B7%AF%E7%88%AC%E8%9F%B2-c30ffda0ad78](https://medium.com/dualcores-studio/python-x-網路爬蟲-c30ffda0ad78)
+https://imququ.com/post/four-ways-to-post-data-in-http.html、
+
+<https://www.jianshu.com/p/902452189ca9>
 
 
 
