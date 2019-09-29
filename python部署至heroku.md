@@ -47,7 +47,7 @@ git
 
 #### 5.HeroKu建立專案目錄
 
-```
+```html
 heroku create
 Creating app... done, ⬢ aqueous-eyrie-33328
 https://aqueous-eyrie-33328.herokuapp.com/ | https://git.heroku.com/aqueous-eyrie-33328.git
@@ -59,7 +59,7 @@ aqueous-eyrie-33328代表，在heroku的專案名稱，稍後將專案上傳到h
 
 ## 安裝virtualenv
 
-在自己的專案，安裝virtualenv，用`pip`指令執行
+在自己的專案，安裝virtualenv，用`pip`指令安裝
 
 ```
 pip install virtualenv
@@ -101,7 +101,7 @@ deactivate
 
 將路徑回到專案底下並建立一個檔案為app.py，內容如下
 
-```
+```python
 from flask import Flask
 app = Flask(__name__)
 
