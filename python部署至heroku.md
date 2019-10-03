@@ -77,13 +77,19 @@ cd venv/Scripts
 activate
 ```
 
-進入虛擬環境之後，路徑旁邊會顯示剛剛安裝虛擬環境的資料夾，
+如果使用者用windows系統，會顯示`activate: command not found`錯誤，因為
+
+```
+source ./activate
+```
+
+進入虛擬環境之後，路徑旁邊會顯示剛剛安裝虛擬環境的資料夾
 
 ```
 (venv) C:\xampp\htdocs\test_python\venv\Scripts>
 ```
 
-安裝Flask Python套件，包含flask、gunicorn、jinja2
+安裝Flask Python套件，包含flask、gunicorn、jinja2，flask是python的框架，用來安裝web環境，gunicorn是支援框架運作，jinja2是python的板模套件，主要是頁面(html)，使用變數顯示頁面，不需要在寫值傳到前端。
 
 ```
 pip install flask gunicorn jinja2
@@ -135,7 +141,7 @@ python app.py
 pip freeze > requirements.txt
 ```
 
-requirements.txt文件，內容如下：
+主要是將虛擬環境目前所有的套件，記錄到`requirements.txt`，內容如下：
 
 ```
 Click==7.0
@@ -148,6 +154,8 @@ Werkzeug==0.16.0
 ```
 
 顯示安裝的套件名稱與版本，如果不想一個一個安裝的話，可以使用`requirements.txt`檔案，放在自己專案裡，打上`pip install -r requirements.txt`指令，系統會自動安裝套件
+
+當專案上傳至hoerku時，系統會建立虛擬環境，需要`requirements.txt`檔案進行套件安裝
 
 
 
@@ -164,6 +172,8 @@ Werkzeug==0.16.0
 ```
 web: gunicorn app:app
 ```
+
+`web: gunicorn app:app`是告訴heroku在開啟網頁時，執行app.py檔案裡的一個名為app的變數
 
 
 
