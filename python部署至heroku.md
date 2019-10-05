@@ -77,7 +77,7 @@ cd venv/Scripts
 activate
 ```
 
-如果使用者用windows系統，會顯示`activate: command not found`錯誤，因為
+如果使用者用windows系統的Git bash，會顯示`activate: command not found`錯誤，這句指令是要執行路徑有個`activate.bat`檔案，指令要改成下面內容。
 
 ```
 source ./activate
@@ -89,7 +89,7 @@ source ./activate
 (venv) C:\xampp\htdocs\test_python\venv\Scripts>
 ```
 
-安裝Flask Python套件，包含flask、gunicorn、jinja2，flask是python的框架，用來安裝web環境，gunicorn是支援框架運作，jinja2是python的板模套件，主要是頁面(html)，使用變數顯示頁面，不需要在寫值傳到前端。
+安裝Flask Python套件，包含flask、gunicorn、jinja2，flask是python的框架，用來安裝web環境，gunicorn是適用於Python WSGI HTTP 伺服器，支援框架運作，jinja2是python的板模套件，主要是頁面(html)，使用變數顯示頁面，不需要在寫值傳到前端。
 
 ```
 pip install flask gunicorn jinja2
@@ -195,4 +195,6 @@ git push heroku master
 
 http://www.gtlambert.com/blog/deploy-flask-app-to-heroku、
 
-https://www.evanlin.com/python-e5-a6-82-e4-bd-95-e5-9c-a8heroku-e4-b8-8a-e9-9d-a2-e5-bb-ba-e7-ab-8b-e7-ac-ac-e4-b8-80-e5-80-8bpython-app/
+https://www.evanlin.com/python-e5-a6-82-e4-bd-95-e5-9c-a8heroku-e4-b8-8a-e9-9d-a2-e5-bb-ba-e7-ab-8b-e7-ac-ac-e4-b8-80-e5-80-8bpython-app/、
+
+https://stackoverflow.com/questions/22397521/execute-commands-from-bat-file-on-git-bash-terminal/39032987
