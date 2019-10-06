@@ -5,6 +5,8 @@ author: "python"
 summary: "說明使用python的flask套件，怎麼部署在heroku上"
 ---
 
+要補上流程圖
+
 ## 安裝[python](https://www.python.org/downloads/)
 
 安裝完之後，打開cmd確認，是否安裝成功
@@ -28,7 +30,7 @@ heroku
 
 #### 3.登入剛剛註冊的HeroKu帳號
 
-```
+```bash
 heroku login
 Email: coolgood88142@gmail.com
 Password: xxxxxxx
@@ -37,11 +39,7 @@ Logged in as coolgood88142@gmail.com #登入成功
 
 
 
-#### 4.安裝[Git](https://git-scm.com/downloads)，安裝好之後用cmd執行Git
-
-```
-git
-```
+#### 4.安裝[Git](https://git-scm.com/downloads)
 
 
 
@@ -61,7 +59,7 @@ aqueous-eyrie-33328代表，在heroku的專案名稱，稍後將專案上傳到h
 
 在自己的專案，安裝virtualenv，用`pip`指令安裝
 
-```
+```bash
 pip install virtualenv
 ```
 
@@ -71,7 +69,7 @@ pip install virtualenv
 
 建立虛擬環境，資料夾名稱為venv，安裝好之後進去venv/Scripts路徑底下，然後開啟虛擬環境打`activate`進入
 
-```
+```bash
 virtualenv venv
 cd venv/Scripts
 activate
@@ -79,7 +77,7 @@ activate
 
 如果使用者用windows系統的Git bash，會顯示`activate: command not found`錯誤，這句指令是要執行路徑有個`activate.bat`檔案，指令要改成下面內容。
 
-```
+```bash
 source ./activate
 ```
 
@@ -174,6 +172,8 @@ web: gunicorn app:app
 ```
 
 `web: gunicorn app:app`是告訴heroku在開啟網頁時，執行app.py檔案裡的一個名為app的變數
+
+
 
 
 
