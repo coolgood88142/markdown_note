@@ -37,15 +37,7 @@ Logged in as coolgood88142@gmail.com #登入成功
 
 
 
-#### 4.安裝[Git](https://git-scm.com/downloads)，安裝好之後用cmd執行Git
-
-```
-git
-```
-
-
-
-#### 5.HeroKu建立專案目錄
+#### 4.HeroKu建立專案目錄
 
 ```html
 heroku create
@@ -173,7 +165,9 @@ Werkzeug==0.16.0
 web: gunicorn app:app
 ```
 
-`web: gunicorn app:app`是告訴heroku在開啟網頁時，執行app.py檔案裡的一個名為app的變數
+`web: gunicorn app:app`是執行app.py檔案裡的一個名為app的變數
+
+透過gunicorn套件告訴heroku，將flask框架建立web server環境，如果不建立的話，heroku不知道怎麼把專案要怎麼啟動。
 
 
 
@@ -190,6 +184,18 @@ git push heroku master
 上傳完之後，打上`https://aqueous-eyrie-33328.herokuapp.com/`網址，確認有頁面就完成了。
 
 ![python_web](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/python_web.PNG)
+
+
+
+## 問題
+
+#### 為什麼在本機執行python app.py，可以執行web環境，但是heroku的Procfile卻不行?
+
+本機執行`app.py`，是`flask`會透過瀏覽器執行web server環境，來執行檔案內容指定網址，在網頁上呈現或做什麼事情。
+
+但是`heroku`有執行檔案，確認不知道用什麼方式啟動web server環境。
+
+
 
 參考資料:
 
