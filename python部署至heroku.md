@@ -11,7 +11,7 @@ summary: "說明使用python的flask套件，怎麼部署在heroku上"
 
 安裝完之後，打開cmd確認，是否安裝成功
 
-```
+```bash
 python --version
 Python 3.7.4
 ```
@@ -22,7 +22,7 @@ Python 3.7.4
 
 #### 2.安裝[Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#windows)，用cmd執行HeroKu
 
-```
+```bash
 heroku
 ```
 
@@ -44,7 +44,7 @@ Logged in as coolgood88142@gmail.com #登入成功
 
 
 #### 5.HeroKu建立專案目錄
-```html
+```bash
 heroku create
 Creating app... done, ⬢ aqueous-eyrie-33328
 https://aqueous-eyrie-33328.herokuapp.com/ | https://git.heroku.com/aqueous-eyrie-33328.git
@@ -82,20 +82,21 @@ source ./activate
 
 進入虛擬環境之後，路徑旁邊會顯示剛剛安裝虛擬環境的資料夾
 
-```
-(venv) C:\xampp\htdocs\test_python\venv\Scripts>
+```bash
+(venv) C:\xampp\htdocs\test_python\venv\Scripts
 ```
 
 安裝Flask Python套件，包含flask、gunicorn、jinja2，flask是python的框架，用來安裝web環境，gunicorn是適用於Python WSGI HTTP 伺服器，支援框架運作，jinja2是python的板模套件，主要是頁面(html)，使用變數顯示頁面，不需要在寫值傳到前端。
 
-```
+```bash
 pip install flask gunicorn jinja2
 ```
 
-安裝好了之後打`deactivate`，離開虛擬環境
+將路徑回上兩層
 
 ```
-deactivate
+cd ../..
+(venv) C:\xampp\htdocs\test_python
 ```
 
 
@@ -118,7 +119,7 @@ if __name__ == '__main__':
 
 在本機執行app.py，打pytohn指令:`python app.py`，此時系統顯示`http://127.0.0.1:5000/`網址，內容為Hello World!
 
-```
+```bash
 python app.py
  * Serving Flask app "app" (lazy loading)
  * Environment: production
@@ -134,13 +135,13 @@ python app.py
 
 ## 建立requirements檔案
 
-```
+```bash
 pip freeze > requirements.txt
 ```
 
 主要是將虛擬環境目前所有的套件，記錄到`requirements.txt`，內容如下：
 
-```
+```python
 Click==7.0
 Flask==1.1.1
 gunicorn==19.9.0
@@ -150,9 +151,15 @@ MarkupSafe==1.1.1
 Werkzeug==0.16.0
 ```
 
-顯示安裝的套件名稱與版本，如果不想一個一個安裝的話，可以使用`requirements.txt`檔案，放在自己專案裡，打上`pip install -r requirements.txt`指令，系統會自動安裝套件
+顯示安裝的套件名稱與版本，如果不想一個一個安裝的話，可以使用`requirements.txt`檔案，放在自己專案裡，打上`pip install -r requirements.txt`指令，系統會自動安裝套件。
 
-當專案上傳至hoerku時，系統會建立虛擬環境，需要`requirements.txt`檔案進行套件安裝
+當專案上傳至hoerku時，系統會建立虛擬環境，需要`requirements.txt`檔案進行套件安裝。
+
+建立好了之後打`deactivate`，離開虛擬環境
+
+```
+deactivate
+```
 
 
 
@@ -166,7 +173,7 @@ Werkzeug==0.16.0
 
 每個部署到Heroku的Flask應用程序都需要一個Procfile，是為了要告訴heroku要怎麼執行專案
 
-```
+```python
 web: gunicorn app:app
 ```
 
@@ -178,7 +185,7 @@ web: gunicorn app:app
 
 ## 上傳至Heroku
 
-```
+```bash
 git init
 git remote add heroku https://git.heroku.com/aqueous-eyrie-33328.git
 git add .
