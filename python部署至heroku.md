@@ -5,7 +5,7 @@ author: "python"
 summary: "說明使用python的flask套件，怎麼部署在heroku上"
 ---
 
-要補上流程圖
+![python](https://coolgood88142.github.io/images/python.png)
 
 ## 安裝[python](https://www.python.org/downloads/)
 
