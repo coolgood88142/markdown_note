@@ -19,7 +19,7 @@ summary: "說明爬蟲原理"
 
 ### Form表單
 
-```
+```python
 import requests
 
 # 建立表頭
@@ -70,7 +70,7 @@ print(sign.text)
 
 ### FormData
 
-```
+```python
 import requests
 from requests_toolbelt  import MultipartEncoder
 
@@ -120,6 +120,84 @@ res = session_requests.post(url+'?module=login_page&files=login', data = formdat
 # 登入後Session有記錄到，在導頁到登入後的頁面並將截取頁面標籤
 sign = session_requests.get(url+'?module=ind&files=ind')
 print(sign.text)
+```
+
+
+
+### 四種常見的 POST 提交數據方式
+
+#### 1.application/x-www-form-urlencoded
+
+ HTTP POST 中很常見的提交數據的方式，form表單沒加enctype屬性，預設就會帶`application/x-www-form-urlencoded`，執行POST提交時就會將key與value用`key1=val1&key2=val2`的編碼格式。
+
+```javascript
+POST http://www.example.com HTTP/1.1
+Content-Type: application/x-www-form-urlencoded;charset=utf-8
+title=test&sub%5B%5D=1&sub%5B%5D=2&sub%5B%5D=3
+```
+
+
+
+#### 2.multipart/form-data
+
+form表單的enctype屬性加上`multipart/form-data`，會產生一個boundary用於分割部同的字段，為了避免與正文內容重復，描述提交內容或傳輸檔案
+
+```javascript
+POST http://www.example.com HTTP/1.1
+Content-Type:multipart/form-data; boundary=----WebKitFormBoundaryrGKCBY7qhFd3TrwA
+
+------WebKitFormBoundaryrGKCBY7qhFd3TrwA
+Content-Disposition: form-data; name="text"
+
+title
+------WebKitFormBoundaryrGKCBY7qhFd3TrwA
+Content-Disposition: form-data; name="file"; filename="chrome.png"
+Content-Type: image/png
+
+PNG ... content of chrome.png ...
+------WebKitFormBoundaryrGKCBY7qhFd3TrwA--
+```
+
+
+
+#### 3.application/json
+
+Content-Type為`application/json`，用來做表頭，將資料用JSON格式提交時，瀏覽器支援會JSON.stringify，處理JSON格式進行解析傳到server。
+
+```javascript
+var data = {‘title‘:‘test‘, ‘sub‘ : [1,2,3]};
+$http.post(url, data).success(function(result) {
+...
+});
+```
+
+發送請求內容：
+
+```
+POST http://www.example.com HTTP/1.1
+Content-Type: application/json;charset=utf-8
+{"title":"test","sub":[1,2,3]}
+```
+
+
+
+#### 4.text/xml
+
+是用[XML-RPC](http://www.imququ.com/post/64.html)(XML Remote Procedure Call) ，它是一種使用 HTTP 作為傳輸協議，XML 作為編碼方式的遠程調用規範。javascript 支援進行數據交互，能很好的支持已有的 XML-RPC 服務。 
+
+```javascript
+POST http://www.example.com HTTP/1.1 
+Content-Type: text/xml
+
+<?xml version="1.0"?>
+<methodCall>
+    <methodName>examples.getStateName</methodName>
+    <params>
+        <param>
+            <value><i4>41</i4></value>
+        </param>
+    </params>
+</methodCall>
 ```
 
 
