@@ -5,7 +5,7 @@ author: "python"
 summary: "說明使用python的flask套件，怎麼部署在heroku上"
 ---
 
-![python](https://coolgood88142.github.io/images/python.png)
+![python](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/python.png)
 
 ## 安裝[python](https://www.python.org/downloads/)
 
@@ -92,7 +92,7 @@ source ./activate
 pip install flask gunicorn jinja2
 ```
 
-將路徑回上兩層
+ 將路徑回上兩層 
 
 ```
 cd ../..
