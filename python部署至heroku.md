@@ -199,6 +199,26 @@ git push heroku master
 
 
 
+## 設定ClearDB MySQL
+
+用專案上的conn.py檔案，先建立DB連線，在建立資料表
+
+補上圖片
+
+
+
+
+
+
+
+## 設定信用卡
+
+要設定信用卡才可以用 `ClearDB MySQL`
+
+![card](C:\xampp\htdocs\markdown_note\assets\images\card.PNG)
+
+
+
 ## 問題
 
 #### 為什麼在本機執行python app.py，可以執行web環境，但是heroku的Procfile卻不行?
