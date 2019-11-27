@@ -199,6 +199,10 @@ git push heroku master
 
 
 
+apt-file
+
+
+
 ## 設定ClearDB MySQL
 
 用專案上的conn.py檔案，先建立DB連線，在建立資料表

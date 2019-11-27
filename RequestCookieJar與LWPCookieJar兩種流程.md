@@ -15,13 +15,25 @@ summary: "說明RequestCookieJar與LWPCookieJar兩種流程"
 
 ## 2.LWPCookieJar
 
-用`python`的`http`套件`cookiejar`的`library`，其中FilrCookieJar的類別，主要將RequestCookieJar物件的瀏覽器的`cookie`記錄，用檔案的方式做保存，將Set-Cookie在瀏覽器的描述內容，儲存到檔案裡。
+用`python`的`http`套件`cookiejar`的`library`，其中FileCookieJar的類別，主要將RequestCookieJar物件的瀏覽器的`cookie`記錄，用檔案的方式做保存，將Set-Cookie在瀏覽器的描述內容，儲存到檔案裡。
+
+補上另一種FileCookieJar的說明
+
+
+
+3.SimpleCookieJar
+
+
+
+這幾個用法與範例要寫出來(總共4個)
 
 
 
 ## 循序圖
 
 ![CookieJarUML](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/CookieJarUML.png)
+
+將cookie資料傳到首頁改成傳到瀏覽器上
 
 
 
