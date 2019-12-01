@@ -207,9 +207,15 @@ apt-file
 
 用專案上的conn.py檔案，先建立DB連線，在建立資料表
 
-補上圖片
 
 
+將`ClearDB`的database、user、password，更改為自己DB的連線資訊
+
+![image-20191201120013748](C:\Users\coolg\AppData\Roaming\Typora\typora-user-images\image-20191201120013748.png)
+
+1.請將sql、conn、coursor主解拿掉在執行
+
+![image-20191201115603397](C:\Users\coolg\AppData\Roaming\Typora\typora-user-images\image-20191201115603397.png)
 
 
 
