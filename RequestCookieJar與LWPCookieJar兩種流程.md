@@ -40,7 +40,7 @@ print(crawler.cookies)
 用`python`的`http`套件`cookiejar`的`library`，其中`FileCookieJar`的類別，主要將RequestCookieJar物件的瀏覽器的`cookie`記錄，用檔案的方式做保存，將Set-Cookie在瀏覽器的描述內容，儲存到檔案裡。
 
 ```python
-impoty requests
+import requests
 import http.cookiejar as cj
 
 #建立requests的session物件
@@ -76,13 +76,72 @@ jar.save(filename='cookies_scan.txt', ignore_discard=True, ignore_expires=True)
 
 `MozillaCookieJar`與`LWPCookieJar`一樣都是來自於`python`的`http`套件`cookiejar`的`FileCookieJar`的類別，這兩種都是將cookie資料用檔案的方式做保存，差在於檔案存的內容不一樣。
 
+```python
+import requests
+import http.cookiejar as cj
+
+#建立requests的session物件
+crawler = requests.Session()
+url = '登入的網址'
+
+formtable={
+    'account':'',
+    'password':''
+}
+formtable['account'] = '帳號'
+formtable['password'] = '密碼'
+
+#data就是帶帳號密碼的資料進行登入
+crawler.port(url, data = formtable)
+cookies = crawler.cookies
+
+#檔案名稱為cookies.txt
+cookies_file = 'cookies.txt'
+jar = cj.MozillaCookieJar()
+
+#設定session物件的cookie資料
+for c in cookies:
+    jar.set_cookie(c)
+
+#執行儲存
+jar.save(filename='cookies_scan.txt', ignore_discard=True, ignore_expires=True)
+```
 
 
-## 4.SimpleCookieJar
+
+#### 兩者檔案內容
+
+LWPCookieJar
+
+```
+#LWP-Cookies-2.0
+Set-Cookie3: ASP.NET_SessionId=5vys55k1ejyipd3efm4hed03; path="/"; domain="scr.cyc.org.tw"; path_spec; discard; HttpOnly=None; version=0
+```
+
+MozillaCookieJar
+
+```
+
+```
 
 
 
+## 4.SimpleCookie
 
+ `SimpleCookie`是`python`的`http`套件 `cookies` 的`library`，是一個cookie物件，可存放key跟value，在requests套件可以用這個物件帶cookie參數做爬蟲 
+
+```python
+import requests
+import http.cookies as ck
+
+cookie = ck.SimpleCookie()
+cookie['ASP.NET_SessionId'] = '5vys55k1ejyipd3efm4hed03'
+cookie['ASP.NET_SessionId']['domin'] = 'scr.cyc.org.tw'
+cookie['ASP.NET_SessionId']['path'] = '/'
+
+print(cookie.output())
+#Set-Cookie3: ASP.NET_SessionId=5vys55k1ejyipd3efm4hed03; path="/"; domain="scr.cyc.org.tw";
+```
 
 
 

@@ -205,27 +205,57 @@ apt-file
 
 ## 設定ClearDB MySQL
 
-用專案上的conn.py檔案，先建立DB連線，在建立資料表
-
-
-
-將`ClearDB`的database、user、password，更改為自己DB的連線資訊
-
-![image-20191201120013748](C:\Users\coolg\AppData\Roaming\Typora\typora-user-images\image-20191201120013748.png)
-
-1.請將sql、conn、coursor主解拿掉在執行
-
-![image-20191201115603397](C:\Users\coolg\AppData\Roaming\Typora\typora-user-images\image-20191201115603397.png)
-
-
-
-
-
-## 設定信用卡
+#### 1.設定信用卡
 
 要設定信用卡才可以用 `ClearDB MySQL`
 
-![card](C:\xampp\htdocs\markdown_note\assets\images\card.PNG)
+![card](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/card.PNG)
+
+
+
+![card-edit](ttps://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/card-edit.PNG)
+
+
+
+#### 2.用專案上的conn.py檔案，先建立DB連線
+
+從`heroku`的專案，從Installed add-ons安裝`ClearDB MySQL`
+
+![heroku-db](ttps://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-db.PNG)
+
+![heroku-db2](C:\xampp\htdocs\markdown_note\assets\images\heroku-db2.PNG)
+
+
+
+執行`Install ClearDB MySQL`
+
+![heroku-db3](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-db3.PNG)
+
+
+
+成功之後，就會顯示`ClearDB MySQL`
+
+![heroku-db5](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-db5.PNG)
+
+
+
+進入`ClearDB MySQL`，顯示DB名稱去查看帳號與密碼
+
+![heroku-db6](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-db6.PNG)
+
+![heroku-db7](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-db7.PNG)
+
+
+
+#### 3.建立資料表
+
+將`ClearDB`的database、user、password，更改為自己DB的連線資訊
+
+![heroku-db8](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-db8.PNG)
+
+再將sql、conn、coursor主解拿掉在執行`python conn.py`，一個sql為一個資料表
+
+![heroku-sql9](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-sql9.png)
 
 
 
