@@ -54,8 +54,11 @@ formtable={
 formtable['account'] = '帳號'
 formtable['password'] = '密碼'
 
+#設定表頭使用哪些瀏覽器
+headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+
 #data就是帶帳號密碼的資料進行登入
-crawler.port(url, data = formtable)
+crawler.port(url, data = formtable, headers = headers)
 cookies = crawler.cookies
 
 #檔案名稱為cookies.txt
@@ -91,8 +94,11 @@ formtable={
 formtable['account'] = '帳號'
 formtable['password'] = '密碼'
 
+#設定表頭使用哪些瀏覽器
+headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+
 #data就是帶帳號密碼的資料進行登入
-crawler.port(url, data = formtable)
+crawler.port(url, data = formtable, headers = headers)
 cookies = crawler.cookies
 
 #檔案名稱為cookies.txt
@@ -107,22 +113,30 @@ for c in cookies:
 jar.save(filename='cookies_scan.txt', ignore_discard=True, ignore_expires=True)
 ```
 
-
+ignore_discard是遺棄cookies記錄保存起來，ignore_expires 是如果cookie記錄已存在就直接覆蓋
 
 #### 兩者檔案內容
 
 LWPCookieJar
 
-```
+```python
 #LWP-Cookies-2.0
-Set-Cookie3: ASP.NET_SessionId=5vys55k1ejyipd3efm4hed03; path="/"; domain="scr.cyc.org.tw"; path_spec; discard; HttpOnly=None; version=0
+Set-Cookie3: ASP.NET_SessionId=ux23jhd4d204fo1qt5ysrtre; path="/"; domain="scr.cyc.org.tw"; path_spec; discard; HttpOnly=None; version=0
 ```
 
 MozillaCookieJar
 
+```python
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+scr.cyc.org.tw	FALSE	/	FALSE		ASP.NET_SessionId	ux23jhd4d204fo1qt5ysrtre
 ```
 
-```
+`LWPCookie`是用標準的Set-Cookie格式記錄的cookie，`MozillaCookieJar`是兼容火狐(file fox)瀏覽器的cookie
+
+在爬蟲的時候
 
 
 
@@ -149,8 +163,6 @@ print(cookie.output())
 
 ![CookieJarUML](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/CookieJarUML.png)
 
-將cookie資料傳到首頁改成傳到瀏覽器上
-
 
 
 ## 流程圖
@@ -158,6 +170,16 @@ print(cookie.output())
 ![sport-cookie](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/sport-cookie.png)
 
 參考資料:
+
+https://blog.csdn.net/qq_33689414/article/details/78553470、
+
+https://www.zhyea.com/2016/09/15/python-spider-7-using-cookie.html、
+
+https://stackoverflow.com/questions/27652543/how-to-use-python-requests-to-fake-a-browser-visit、
+
+https://wiki.jikexueyuan.com/project/python-crawler-guide/the-use-of-cookie.html、
+
+[https://codertw.com/%E7%A8%8B%E5%BC%8F%E8%AA%9E%E8%A8%80/374579/](https://codertw.com/程式語言/374579/)
 
 
 
