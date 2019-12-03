@@ -41,6 +41,12 @@ Logged in as coolgood88142@gmail.com #登入成功
 
 #### 4.安裝[Git](https://git-scm.com/downloads)
 
+將專案下載下來
+
+```bash
+git clone https://github.com/coolgood88142/python_login.git
+```
+
 
 
 #### 5.HeroKu建立專案目錄
@@ -199,7 +205,37 @@ git push heroku master
 
 
 
-apt-file
+## 設定tesseract、OpenCV參數
+
+因為登入帳號時，使用驗證碼解析有用`tesseract`、`OpenCV`套件，但是無法在heroku上安裝，要設定heroku的第三方套件`heroku-buildpack-apt`，在上版到heroku會自動安裝
+
+#### 安裝`heroku-buildpack-apt`
+
+```bash
+heroku buildpacks:add --index 1 https://github.com/heroku/heroku-buildpack-apt
+```
+
+heroku的Buildpacks就會顯示新增的`heroku-buildpack-apt`
+
+![heroku-buildpack](C:\xampp\htdocs\markdown_note\assets\images\heroku-buildpack.png)
+
+
+
+#### Apt-file
+
+因為python的pip並沒有，以下這些套件可以安裝，需要新增Aptfile檔案，`heroku-buildpack-apt`就可以幫我們安裝套件
+
+```python
+#tesseract需要的套件
+tesseract-ocr
+tesseract-ocr-eng
+
+#OpenCV需要的套件
+libsm6
+libxrender1
+libfontconfig1
+libice6
+```
 
 
 
