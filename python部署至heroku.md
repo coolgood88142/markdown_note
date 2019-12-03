@@ -217,7 +217,7 @@ heroku buildpacks:add --index 1 https://github.com/heroku/heroku-buildpack-apt
 
 heroku的Buildpacks就會顯示新增的`heroku-buildpack-apt`
 
-![heroku-buildpack](C:\xampp\htdocs\markdown_note\assets\images\heroku-buildpack.png)
+![heroku-buildpack](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-buildpack.png)
 
 
 
