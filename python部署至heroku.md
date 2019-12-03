@@ -249,7 +249,7 @@ libice6
 
 
 
-![card-edit](ttps://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/card-edit.PNG)
+![card-edit](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/card-edit.PNG)
 
 
 
@@ -257,9 +257,9 @@ libice6
 
 從`heroku`的專案，從Installed add-ons安裝`ClearDB MySQL`
 
-![heroku-db](ttps://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-db.PNG)
+![heroku-db](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-db.PNG)
 
-![heroku-db2](C:\xampp\htdocs\markdown_note\assets\images\heroku-db2.PNG)
+![heroku-db2](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/heroku-db2.PNG)
 
 
 
