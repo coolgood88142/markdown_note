@@ -12,7 +12,7 @@ summary: "說明RequestCookieJar與LWPCookieJar兩種流程"
 `RequestCookieJar`是`python`的`requests`套件的library，在請求任何網址時，會從中拿到瀏覽器的`cookie`記錄，在系統登入頁面輸入完帳號密碼，執行登入成功後，就會拿到`requests`套件的`cookie`。
 
 ```python
-impoty requests
+import requests
 
 #建立requests的session物件
 crawler = requests.Session()
@@ -136,8 +136,6 @@ scr.cyc.org.tw	FALSE	/	FALSE		ASP.NET_SessionId	ux23jhd4d204fo1qt5ysrtre
 
 `LWPCookie`是用標準的Set-Cookie格式記錄的cookie，`MozillaCookieJar`是兼容火狐(file fox)瀏覽器的cookie
 
-在爬蟲的時候
-
 
 
 ## 4.SimpleCookie
@@ -159,9 +157,23 @@ print(cookie.output())
 
 
 
+## 4種cookie物件差異
+
+|              | RequestCookieJar          | LWPCookieJar               | MozillaCookieJar           | SimpleCookie       |
+| ------------ | ------------------------- | -------------------------- | -------------------------- | ------------------ |
+| 類別         | cookieJar                 | FileCookieJar              | FileCookieJar              | cookieJar          |
+| 用途         | 指定url時，回傳cookie物件 | 使用cookie物件，用檔案儲存 | 使用cookie物件，用檔案儲存 | 建立cookie物件     |
+| 什麼時候適用 | 登入爬蟲                  | 儲存cookie記錄             | 儲存cookie記錄             | 可當作參數執行爬蟲 |
+
+想想還有哪些可以比較，(當要選擇其中一項時，要用什麼當作參考值??)
+
+
+
 ## 循序圖
 
 ![CookieJarUML](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/CookieJarUML.png)
+
+
 
 
 
