@@ -159,7 +159,7 @@ print(cookie.output())
 
 ## 4種cookie物件差異
 
-|              | RequestCookieJar          | LWPCookieJar               | MozillaCookieJar           | SimpleCookie       |
+|              | RequestsCookieJar         | LWPCookieJar               | MozillaCookieJar           | SimpleCookie       |
 | ------------ | ------------------------- | -------------------------- | -------------------------- | ------------------ |
 | 類別         | cookieJar                 | FileCookieJar              | FileCookieJar              | cookieJar          |
 | 用途         | 指定url時，回傳cookie物件 | 使用cookie物件，用檔案儲存 | 使用cookie物件，用檔案儲存 | 建立cookie物件     |
