@@ -97,10 +97,6 @@ let app = new Vue({
 
 
 
-## computed
-
-
-
 
 
 參考資料:
