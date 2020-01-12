@@ -21,11 +21,13 @@ summary: "說明vue流程"
 <script src="{{mix('js/city.js')}}"></script>
 ```
 
-以下範例有用到emit與props兩種傳地方式，`city.js`拆開講解
+以下範例有用到emit與props兩種傳遞方式，`city.js`拆開講解
 
 
 
 ### 1.emit
+
+補上emit用法與使用時機，用簡單的範例時做要可以跑起來，要放個連結(codepen)
 
 **counties.vue**
 
@@ -85,12 +87,20 @@ let app = new Vue({
 
 counties的componentes為下拉選單，綁定了counties_selected屬性。
 
-當選擇資料，使用emit將參數，整個包起來傳到外面去，名稱為change-counties。
-外面的city.blade接收時，change-counties去監聽包出去的事件，這時會執行showCounties，CountiesSelected就是emit帶來的參數。
+當選擇資料時，使用emit帶出事件名稱為名稱為change-counties，帶counties_selected參數，整個包起來傳到外面去。
+外面的city.blade接收時，change-counties去監聽包出去的事件，這時會執行updateDistricts，CountiesSelected就是emit帶來的參數。
+
+參數補上敘述，in容器
+
+說明emit 這個function 要帶什麼事件與參數到容器裡
+
+
 
 
 
 ### 2.props
+
+補上props用法與使用時機
 
 **districts.vue**
 
@@ -135,7 +145,7 @@ export default {
         }
     }
 }
-</script>>
+</script>
 ```
 
 當countiesSelected改變時，從`city.js`傳到`city.blade.php`的`districts_select`裡的counties_selected。
