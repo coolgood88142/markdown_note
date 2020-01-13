@@ -7,11 +7,23 @@ summary: "介紹vue幾個用法"
 
 
 
+
+
 ## emit
 
-vue的component想將資料傳給instance時，要使用emit，必須是事件或監聽觸發。
+vue的component想將資料傳給instance時，要使用emit，自定義事件來觸發
 
-以下範例為按鈕按下去時，message文字會新增World文字
+```javascript
+$emit('事件名稱',傳地參數)
+```
+
+參數可帶或不帶，當事件觸發時，會到會
+
+
+
+
+
+以下範例為按鈕按下去時，message可以一直新增world文字
 
 
 
@@ -19,7 +31,8 @@ vue的component想將資料傳給instance時，要使用emit，必須是事件�
 
 ```php+HTML
 <div id="app">
-    @{{ message }}
+    {{ message }}
+    <br/><br/>
     <addmessage v-on:add-text="addText"></addmessage>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
@@ -29,7 +42,12 @@ vue的component想將資料傳給instance時，要使用emit，必須是事件�
 
 ```javascript
 Vue.component('addmessage', {
-    template: '<button id="" v-on:click="$emit('add-text','World')"></button>'
+    data:function(){
+      return{
+        text:'world'
+      }
+    },
+    template: '<button id="test" v-on:click="$emit(\'add-text\',text)">新增world</button>'
 })
 
 
@@ -38,37 +56,35 @@ let app = new Vue({
     data:{
         message: 'Hello'
     },
-    components:{
-        'addmessage': addmessage
-    },
-    methods: {
-        addText(text) {
-            this.message += text;
-        }
+    methods:{
+      addText(text){
+        this.message += text;
+      }
     }
 })
 ```
 
-
+[emit連結](https://codepen.io/coolgood88142/pen/LYErYgQ)
 
 
 
 ## props
 
-instance要將資料傳到vue的component，要使用props，必須先設定傳進來的值是什麼資料型態，在template裡
+instance要將資料傳到vue的component，要使用props，必須先設定傳進來的值是什麼資料型態
 
+```html
+<component :addtext="message"></component>
+```
 
+instance將資料傳遞到vue的component時，接收到資料就會做更新
 
-頁面上有文字框，綁定屬性為name，在js裡預設值為空字串，這裡設定addname的componentes，內容是顯示一個參數裡放文字，
-
-
-
-
+以下範例為文字框輸入文字時，下方的文字會跟著更新
 
 ```php+HTML
 <div id="app">
-    <input type="text" v-model="name">
-    <addname :inputName="name"></addname>
+    <input v-model="message">
+    <br/><br/>
+    <addname :addtext="message"></addname>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
 ```
@@ -77,23 +93,31 @@ instance要將資料傳到vue的component，要使用props，必須先設定傳�
 
 ```javascript
 Vue.component('addname', {
-    template: '<span>{{inputName}}</span>',
     props: {
-      inputName: String
-    }
+      addtext: String
+    },
+    template: '<p>Props文字：{{ addtext }}</p>'
 })
-
 
 let app = new Vue({
     el: '#app',
     data:{
-        name: ''
-    },
-    components:{
-        'addname': addname
+        message: 'Hello Vue!'
     }
 })
 ```
+
+[props連結](https://codepen.io/coolgood88142/pen/qBEKYjy)
+
+
+
+## computed
+
+computed為計算屬性，分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance，可以在內部資料做計算，資料改變時computed就會執行計算，在做回傳計算後的資料
+
+這裡需要清楚什麼時候要使用get與set的時間點，
+
+
 
 
 
@@ -105,7 +129,9 @@ https://dotblogs.com.tw/wasichris/2017/03/04/021726、
 
 https://chenuin.blogspot.com/2019/01/vuejs-propsemit.html、
 
-https://blog.csdn.net/lander_xiong/article/details/79018737
+https://blog.csdn.net/lander_xiong/article/details/79018737、
+
+https://pjchender.blogspot.com/2017/05/vue-computed-getter-setter.html
 
 
 
