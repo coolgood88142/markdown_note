@@ -11,23 +11,15 @@ summary: "介紹vue幾個用法"
 
 ## emit
 
-vue的component想將資料傳給instance時，要使用emit，自定義事件來觸發
+vue的component想將資料傳給instance時，要使用emit，自定義事件來觸發，將emit是件整的包出去，在頁面上component的標籤裡，監聽了emit的事件，當觸發時監聽到emit的事件去對應要執行function
 
 ```javascript
-$emit('事件名稱',傳地參數)
+$emit('事件名稱',傳遞參數) //參數可帶或不帶
 ```
 
-參數可帶或不帶，當事件觸發時，會到會
 
 
-
-
-
-以下範例為按鈕按下去時，message可以一直新增world文字
-
-
-
-補上emit用法與使用時機，用簡單的範例時做要可以跑起來，要放個連結(codepen)
+以下範例，component名稱為addmessage，emit事件為add-text又帶text參數，頁面上的addmessage監聽add-text事件，要執行addText function。
 
 ```php+HTML
 <div id="app">
@@ -70,15 +62,15 @@ let app = new Vue({
 
 ## props
 
-instance要將資料傳到vue的component，要使用props，必須先設定傳進來的值是什麼資料型態
+instance要將資料傳到vue的component，要使用props，必須先設定傳進來的值是什麼資料型態，接收到props的資料就會做更新
 
 ```html
 <component :addtext="message"></component>
 ```
 
-instance將資料傳遞到vue的component時，接收到資料就會做更新
 
-以下範例為文字框輸入文字時，下方的文字會跟著更新
+
+以下範例，文字框中綁定了message屬性，資料帶`Hello Vue!`，component名稱為addname，建立props名稱為addtext資料型態為字串，賦予message屬性，這時文字框的文字更新時，addtext的資料就會跟著更新。
 
 ```php+HTML
 <div id="app">
@@ -113,7 +105,7 @@ let app = new Vue({
 
 ## computed
 
-computed為計算屬性，分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance，可以在內部資料做計算，資料改變時computed就會執行計算，在做回傳計算後的資料
+computed為計算屬性，分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance，可以在內部資料做計算，資料改變時computed就會執行計算，做完後回傳資料
 
 這裡需要清楚什麼時候要使用get與set的時間點，
 
