@@ -7,7 +7,7 @@ summary: "介紹vue生命週期"
 
 
 
-![vue](C:\xampp\htdocs\markdown_note\assets\images\vue.png)
+![vue](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/vue.png)
 
 
 
