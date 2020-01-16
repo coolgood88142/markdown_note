@@ -21,7 +21,14 @@ summary: "介紹vue生命週期"
 
 
 
+範例顯示的頁面
 
+```php+HTML
+<div id="app">
+	{{ message }}
+    <button id="test" v-on:click="addtext()">新增文字</button>
+</div>
+```
 
 
 
@@ -29,8 +36,17 @@ summary: "介紹vue生命週期"
 
 Vue Instance、 Component初始化，這時部份元素尚未被掛載，data還沒建立，所以data與el都會是undefined。
 
-```
-
+```javascript
+let app = new Vue({
+    el: '#app',
+    data:{
+        message: '132'
+    },
+    beforeCreate:{
+        //這時message會等於undefined
+    	console.log(message)
+    }
+})
 ```
 
 
@@ -39,32 +55,57 @@ Vue Instance、 Component初始化，這時部份元素尚未被掛載，data還
 
 Vue Instance、 Component建立完成，data可取得資料，屬性可以賦予值，但是el屬性還沒建立。
 
-你不知道每個階段的範例怎麼寫嗎?
-
-程式範例:在data設定message值為123，當執行created時，在console.log更新message的值，就能做驗證
-
-```
-
+```javascript
+let app = new Vue({
+    el: '#app',
+    data:{
+        message: '132'
+    },
+    created:{
+        //console log會顯示123456，頁面不會顯示
+        message += '456'
+      	console.log(message)
+      }
+    }
+})
 ```
 
 
 
 ## 3.beforeMount
 
-執行元素掛載之前，el還沒建立。
+el已建立，卻沒執行元素掛載。
 
-```
-
+```javascript
+let app = new Vue({
+    el: '#app',
+    data:{
+        message: '123'
+    },
+    beforeMount:{
+        //console log會顯示123，但是el未建立，所以頁面上還是保持{{ message }}
+      	console.log(message)
+    }
+})
 ```
 
 
 
 ## 4.mounted
 
-已執行元素掛載之後，el屬性已建立。
+已執行元素掛載，這時data的資料才會顯示在頁面上。
 
-```
-
+```javascript
+let app = new Vue({
+    el: '#app',
+    data:{
+        message: '123'
+    },
+    mount:{
+        //console log會顯示132，這時el已建立，頁面上的message就會為123
+      	console.log(message)
+    }
+})
 ```
 
 
@@ -73,8 +114,23 @@ Vue Instance、 Component建立完成，data可取得資料，屬性可以賦予
 
 當資料更新會被呼叫使用，這時不會顯示在頁面上
 
-```
-
+```javascript
+let app = new Vue({
+    el: '#app',
+    data:{
+        message: '123'
+    },
+    mothods:{
+        addtext:function(){
+            this.message += 456
+		}
+    },
+    //message改變時，頁面卻沒顯示改變後的值
+    brforeUpdate:{
+        //123
+      	console.log(message)
+    }
+})
 ```
 
 
@@ -83,8 +139,23 @@ Vue Instance、 Component建立完成，data可取得資料，屬性可以賦予
 
 資料更新完成後，顯示在頁面上
 
-```
-
+```javascript
+let app = new Vue({
+    el: '#app',
+    data:{
+        message: '123'
+    },
+    mothods:{
+        addtext:function(){
+            this.message += 456
+		}
+    },
+    //message改變時，message才更新
+    updated:{
+        //123456
+      	console.log(message)
+    }
+})
 ```
 
 
@@ -93,8 +164,23 @@ Vue Instance、 Component建立完成，data可取得資料，屬性可以賦予
 
 所有資料與屬性銷毀之前，都還可以使用
 
-```
-
+```javascript
+let app = new Vue({
+    el: '#app',
+    data:{
+        message: '123'
+    },
+    mothods:{
+        addtext:function(){
+            this.message += 456
+		}
+    },
+    //brforeDestroy執行時，所有data都還存在
+    brforeDestroy:{
+        //123456
+      	console.log(message)
+    }
+})
 ```
 
 
@@ -103,8 +189,23 @@ Vue Instance、 Component建立完成，data可取得資料，屬性可以賦予
 
 銷毀所有的資料與屬性，包含事件等等。
 
-```
-
+```javascript
+let app = new Vue({
+    el: '#app',
+    data:{
+        message: '123'
+    },
+    mothods:{
+        addtext:function(){
+            this.message += 456
+		}
+    },
+    //destroy執行時data已經銷毀，所以message才會為undefined
+    destroyed:{
+        //undefined
+      	console.log(message)
+    }
+})
 ```
 
 
