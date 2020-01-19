@@ -99,6 +99,8 @@ let app = new Vue({
 
 已執行元素掛載，這時data的資料才會顯示在頁面上。
 
+(這裡以下，因el屬性已建立就不要用console log來證明)
+
 ```javascript
 let app = new Vue({
     el: '#app',

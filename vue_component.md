@@ -90,12 +90,13 @@ Vue.component('addname', {
     props: {
       addtext: String
     },
-    computed: {
-      component_text(){
-        return  'component_' + this.addtext
-      }
+    methods: {
+        showText: function(){
+            let show_Text =  'component_' + this.addtext
+            alert(show_Text)
+        }
     },
-    template: '<p>Props文字：{{ component_text }}</p>'
+    template: '<button id="add_text" v-on:click="showText()">顯示props資料</button>'
 })
 
 let app = new Vue({
@@ -112,31 +113,20 @@ demo：https://codepen.io/coolgood88142/pen/qBEKYjy
 
 ## computed
 
-computed為計算屬性，分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance，可以在內部資料做計算，資料改變時computed就會執行計算，做完後回傳資料
+computed為計算屬性，當vue的頁面有需要被計算的屬性時，可使用computed，computed分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance，可以在內部資料做計算，但是我們也可以透過methods做計算，methods必須要觸發事件才可以做，如果為了計算屬性資料，會需要一直觸發事件，只會讓程式碼感覺複雜，使用computed的話，只要變數的屬性資料改變就會自動更新，可減少資料重新運算的次數。
 
-computed是計算需要被計算的屬性，當頁面有個要計算的屬性時，頁面的上有個v-bind綁訂了一些變數，但是有個變數是要被計算，可以直接寫total等於加減乘除，但這樣在程式會太複雜難維護，所以我們可以透過methods或computed，methods需要透過事件才會執行，但是computed不用，computed可做到即時更新，只要變數改變就會更新計算的值
-
-computed相依性很高，而methods沒差別，methods透過觸發事件才會去改變變數或著不改變，computed在一開始秀頁面時就會執行，是直接回傳變數是什麼值
+computed相依性很高，會隨著變數做更新，在一開始頁面時就會執行get，直接回傳資料，當變數更新時會執行set及時更新資料。
 
 
 
-要找setter什麼時候在computed執行?
-
-
-
-
-
-(什麼時候才會做computed? 跟data有什麼差?改變也不一定在computed可以在methods)
-
-範例無法驗證是從computed執行，跟v-model改變值有什麼差?
-
-以下範例，message預設值為`Hello computed`，computed有個computed_message會執行getter讀取message，所以一樣顯示`Hello computed`，當message做改變時，computed會執行setter，computed_message就會跟message一樣
+以下範例，firstName與lastName帶姓名的預設值， computed的computed_message會執行getter，就會顯示`王 曉明`，當computed_message改變時，computed會執行setter，firstName與lastName就會及時更新
 
 ```php+HTML
 <div id="app">
-    <input v-model="message">
+    請輸入姓名(請用空白區分):<input v-model="computed_message">
     <br/><br/>
-    <p>{{ computed_message }}</p>
+    <p>姓氏:{{ lastName }}</p>
+    <p>名字:{{ firstName }}</p>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
 ```
@@ -147,17 +137,19 @@ computed相依性很高，而methods沒差別，methods透過觸發事件才會�
 let app = new Vue({
     el: '#app',
     data:{
-        message: 'Hello computed'
+        firstName: '曉明',
+        lastName: '王',
     },
     computed:{
         computed_message:{
             get: function(){
-                return this.message
+                return this.lastName + ' ' +this.firstName
             },
             set: function(newValue){
-                this.message = newValue
+                this.lastName = newValue.split(' ')[0]
+                this.firstName = newValue.split(' ')[1]
             }
-		}
+        }
     }
 })
 ```
@@ -168,7 +160,7 @@ demo:https://codepen.io/coolgood88142/pen/gObdYzM
 
 ## watch
 
-watch是監聽某個值，當值做改變時，要去執行某些事件，可以在watch得到改變前與改變後的資料
+watch是監聽某個值，當值做改變時，要去執行某些事件，在watch可以得到改變前與改變後的資料，監聽到之後執行事件，雖然也可以跟computed一樣做計算，但是watch適合非同步更新變數資料時使用。相依性相較之下較低，可以做的事情較多。
 
 為什麼要改變前?要幹嘛?不要有什麼差?
 
