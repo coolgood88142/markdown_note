@@ -19,6 +19,8 @@ summary: "介紹vue生命週期"
 
 每個階段的用意是什麼?()
 
+生命週期每個階段為function在執行
+
 
 
 範例顯示的頁面
@@ -36,11 +38,13 @@ summary: "介紹vue生命週期"
 
 Vue Instance、 Component初始化，這時部份元素尚未被掛載，data還沒建立，所以data與el都會是undefined。
 
+每個都要補用法?使用時機?
+
 ```javascript
 let app = new Vue({
     el: '#app',
     data:{
-        message: '132'
+        message: '123'
     },
     beforeCreate:{
         //這時message會等於undefined
@@ -216,13 +220,7 @@ vue分為Instance、生命週期
 
 
 
-Instance做一個文件
 
-Instance:el、data、methods、computed、watch(不止這5個要找)
-
-上面5項要說明與範例
-
-Instance-methods、Instance-Properties，每一個子項目都用有說明(全部都要)
 
 
 

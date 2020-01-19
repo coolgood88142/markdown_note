@@ -7,6 +7,8 @@ summary: "介紹vue幾個用法"
 
 
 
+使用時機:在程式裡什麼時候用這些方法?為什麼?(很多個分法確只用這個)
+
 
 
 ## emit
@@ -112,6 +114,22 @@ demo：https://codepen.io/coolgood88142/pen/qBEKYjy
 
 computed為計算屬性，分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance，可以在內部資料做計算，資料改變時computed就會執行計算，做完後回傳資料
 
+computed是計算需要被計算的屬性，當頁面有個要計算的屬性時，頁面的上有個v-bind綁訂了一些變數，但是有個變數是要被計算，可以直接寫total等於加減乘除，但這樣在程式會太複雜難維護，所以我們可以透過methods或computed，methods需要透過事件才會執行，但是computed不用，computed可做到即時更新，只要變數改變就會更新計算的值
+
+computed相依性很高，而methods沒差別，methods透過觸發事件才會去改變變數或著不改變，computed在一開始秀頁面時就會執行，是直接回傳變數是什麼值
+
+
+
+要找setter什麼時候在computed執行?
+
+
+
+
+
+(什麼時候才會做computed? 跟data有什麼差?改變也不一定在computed可以在methods)
+
+範例無法驗證是從computed執行，跟v-model改變值有什麼差?
+
 以下範例，message預設值為`Hello computed`，computed有個computed_message會執行getter讀取message，所以一樣顯示`Hello computed`，當message做改變時，computed會執行setter，computed_message就會跟message一樣
 
 ```php+HTML
@@ -139,7 +157,6 @@ let app = new Vue({
             set: function(newValue){
                 this.message = newValue
             }
-            
 		}
     }
 })
@@ -153,7 +170,13 @@ demo:https://codepen.io/coolgood88142/pen/gObdYzM
 
 watch是監聽某個值，當值做改變時，要去執行某些事件，可以在watch得到改變前與改變後的資料
 
-以下範例，count預設值帶1，be_count與af_count帶空字串，當按下按鈕時，執行add function count會遞增，這時watch監聽到的count，得到改變前與改變後的資料，在分別顯示在be_count與af_count
+為什麼要改變前?要幹嘛?不要有什麼差?
+
+(computed很像，但是computed主要是計算，watch只是監聽後要做什麼事情，程式雖然兩個可以做到一樣的事情，但是有差別)
+
+
+
+以下範例，count預設值帶1，be_count與af_count帶空字串，當按下按鈕時執行add function，count就會遞增，這時watch監聽到的count，得到改變前與改變後的資料，在分別顯示在be_count與af_count
 
 ```php+HTML
 <div id="app">
