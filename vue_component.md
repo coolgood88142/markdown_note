@@ -15,6 +15,8 @@ summary: "介紹vue幾個用法"
 
 vue的component想將資料傳給instance時，要使用emit，自定義事件來觸發，將emit整個包出去，在component裡，監聽了emit的事件，當觸發時監聽到emit的事件去對應要執行function
 
+emit適合在component想要透過事件傳值給instance，這樣每個component都可以用emit傳給同一個事件或者不同事件。
+
 ```javascript
 $emit('事件名稱',傳遞參數) //參數可帶或不帶
 ```
@@ -64,7 +66,9 @@ demo：https://codepen.io/coolgood88142/pen/LYErYgQ
 
 ## props
 
-instance要將資料傳到vue的component，要使用props，必須先設定傳進來的值是什麼資料型態，接收到props的資料就會做更新
+instance要將資料傳到vue的component，要使用props，必須先設定傳進來的值是什麼資料型態，接收到props的資料就會做更新。
+
+props適合在instance有屬性想要與component某個資料做同步更新。
 
 ```html
 <component :addtext="message"></component>
@@ -160,11 +164,9 @@ demo:https://codepen.io/coolgood88142/pen/gObdYzM
 
 ## watch
 
-watch是監聽某個值，當值做改變時，要去執行某些事件，在watch可以得到改變前與改變後的資料，監聽到之後執行事件，雖然也可以跟computed一樣做計算，但是watch適合非同步更新變數資料時使用。相依性相較之下較低，可以做的事情較多。
+watch是監聽某個值，當值做改變時，要去執行某些事件，在watch可以得到改變前與改變後的資料，監聽到之後執行事件，雖然也可以跟computed一樣做計算。
 
-為什麼要改變前?要幹嘛?不要有什麼差?
-
-(computed很像，但是computed主要是計算，watch只是監聽後要做什麼事情，程式雖然兩個可以做到一樣的事情，但是有差別)
+watch適合非同步更新變數資料時使用，相依性相較之下較低，可以做的事情較多。
 
 
 

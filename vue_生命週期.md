@@ -107,9 +107,14 @@ let app = new Vue({
     data:{
         message: '123'
     },
-    mount:{
-        //console log會顯示132，這時el已建立，頁面上的message就會為123
-      	console.log(message)
+    methods:{
+        addMessage:function(){
+            let text = 'mounted add ' + this.message
+            alert(text)
+        }
+    },
+    mounted:{
+      	this.addMessage()
     }
 })
 ```
@@ -128,13 +133,14 @@ let app = new Vue({
     },
     mothods:{
         addtext:function(){
-            this.message += 456
+            let add = 'addtext function message is ' this.message += 456
+            alert(add)
 		}
     },
     //message改變時，頁面卻沒顯示改變後的值
     brforeUpdate:{
-        //123
-      	console.log(message)
+        let brfore = 'brforeUpdate message is ' + this.message
+      	alert(brfore)
     }
 })
 ```
@@ -158,8 +164,8 @@ let app = new Vue({
     },
     //message改變時，message才更新
     updated:{
-        //123456
-      	console.log(message)
+      	let updated = 'updated message is ' + this.message
+      	alert(updated)
     }
 })
 ```
