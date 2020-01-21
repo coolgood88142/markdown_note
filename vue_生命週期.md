@@ -28,6 +28,7 @@ summary: "介紹vue生命週期"
 ```php+HTML
 <div id="app">
 	{{ message }}
+    <br/><br/>
     <button id="test" v-on:click="addtext()">新增文字</button>
 </div>
 ```
@@ -46,12 +47,14 @@ let app = new Vue({
     data:{
         message: '123'
     },
-    beforeCreate:{
+    beforeCreate(){
         //這時message會等於undefined
-    	console.log(message)
+    	console.log(this.message)
     }
 })
 ```
+
+demo:https://codepen.io/coolgood88142/pen/ExaOeNa?editors=1111
 
 
 
@@ -63,16 +66,18 @@ Vue Instance、 Component建立完成，data可取得資料，屬性可以賦予
 let app = new Vue({
     el: '#app',
     data:{
-        message: '132'
+        message: '123'
     },
     created:{
-        //console log會顯示123456，頁面不會顯示
+        //console log會顯示123456，頁面卻只顯示123
         message += '456'
       	console.log(message)
       }
     }
 })
 ```
+
+demo:https://codepen.io/coolgood88142/pen/abzPWKL?editors=1111
 
 
 
@@ -93,13 +98,13 @@ let app = new Vue({
 })
 ```
 
+demo:https://codepen.io/coolgood88142/pen/yLyGbrg?editors=1111
+
 
 
 ## 4.mounted
 
 已執行元素掛載，這時data的資料才會顯示在頁面上。
-
-(這裡以下，因el屬性已建立就不要用console log來證明)
 
 ```javascript
 let app = new Vue({
@@ -109,19 +114,23 @@ let app = new Vue({
     },
     methods:{
         addMessage:function(){
-            let text = 'mounted add ' + this.message
-            alert(text)
+            this.message = 'mounted add ' + this.message
         }
     },
-    mounted:{
+    mounted(){
+        //當頁面上的元素掛載完之後，執行addMessage function，message就會變成mounted add 123
       	this.addMessage()
     }
 })
 ```
 
+demo:https://codepen.io/coolgood88142/pen/BayvRga
 
 
-## 5.brforeUpdate
+
+beforeUpdate與updated要執行時有兩種情形，1.Instance執行`vm.$forceUpdate()`更新資料 2.指定Instance裡的data變數改變資料(ex:app.message = 'Hello Update')
+
+## 5.beforeUpdate
 
 當資料更新會被呼叫使用，這時不會顯示在頁面上
 
@@ -138,12 +147,14 @@ let app = new Vue({
 		}
     },
     //message改變時，頁面卻沒顯示改變後的值
-    brforeUpdate:{
+    beforeUpdate(){
         let brfore = 'brforeUpdate message is ' + this.message
       	alert(brfore)
     }
 })
 ```
+
+demo:https://codepen.io/coolgood88142/pen/dyPwRYa?editors=1111
 
 
 
@@ -170,9 +181,17 @@ let app = new Vue({
 })
 ```
 
+demo:https://codepen.io/coolgood88142/pen/eYmbEzX
 
 
-## 7.brforeDestroy
+
+
+
+beforeDestroy與destroyed要執行vm.$destroy()，才會執行
+
+
+
+## 7.beforeDestroy
 
 所有資料與屬性銷毀之前，都還可以使用
 
@@ -222,6 +241,10 @@ let app = new Vue({
 
 
 
+
+
+
+
 建立vue是一個生命週期，要了解什麼時候會結束
 
 vue分為Instance、生命週期
@@ -254,7 +277,9 @@ https://ithelp.ithome.com.tw/articles/10188213、
 
 https://www.hellosanta.com.tw/blog/understanding_vuejs_lifecycle_hooks、
 
-[https://blog.niclin.tw/2017/10/08/%E6%90%9E%E6%87%82%E7%94%9F%E5%91%BD%E9%80%B1%E6%9C%9F-lifecycle/](https://blog.niclin.tw/2017/10/08/搞懂生命週期-lifecycle/)
+[https://blog.niclin.tw/2017/10/08/%E6%90%9E%E6%87%82%E7%94%9F%E5%91%BD%E9%80%B1%E6%9C%9F-lifecycle/](https://blog.niclin.tw/2017/10/08/搞懂生命週期-lifecycle/)、
+
+https://cythilya.github.io/2017/04/11/vue-instance/
 
 
 
