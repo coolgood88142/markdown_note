@@ -27,10 +27,12 @@ summary: "介紹vue生命週期"
 
 ```php+HTML
 <div id="app">
-	{{ message }}
-    <br/><br/>
-    <button id="test" v-on:click="addtext()">新增文字</button>
+  {{ message }}
+  <br/><br/>
+  <button id="test" v-on:click="addtext()">新增文字</button>
 </div>
+<br/>
+<button onclick="del()">銷毀</button>
 ```
 
 
@@ -91,9 +93,10 @@ let app = new Vue({
     data:{
         message: '123'
     },
-    beforeMount:{
-        //console log會顯示123，但是el未建立，所以頁面上還是保持{{ message }}
-      	console.log(message)
+    beforeMount(){
+        //這裡要用debug來看
+        //console log會顯示123時，但是el已建立，但是元素未掛載，所以頁面上還是保持{{ message }}
+      	console.log(this.message)
     }
 })
 ```
@@ -128,11 +131,9 @@ demo:https://codepen.io/coolgood88142/pen/BayvRga
 
 
 
-beforeUpdate與updated要執行時有兩種情形，1.Instance執行`vm.$forceUpdate()`更新資料 2.指定Instance裡的data變數改變資料(ex:app.message = 'Hello Update')
-
 ## 5.beforeUpdate
 
-當資料更新會被呼叫使用，這時不會顯示在頁面上
+當資料更新會被呼叫使用，DOM物件卻沒更新
 
 ```javascript
 let app = new Vue({
@@ -140,18 +141,14 @@ let app = new Vue({
     data:{
         message: '123'
     },
-    mothods:{
-        addtext:function(){
-            let add = 'addtext function message is ' this.message += 456
-            alert(add)
-		}
-    },
-    //message改變時，頁面卻沒顯示改變後的值
+    //message為abc時，brfore在console log看到message的值還是為123
     beforeUpdate(){
-        let brfore = 'brforeUpdate message is ' + this.message
-      	alert(brfore)
+        let brfore = document.getElementById('app').innerHTML
+      	console.log(brfore)
     }
 })
+
+app.message = 'abc'
 ```
 
 demo:https://codepen.io/coolgood88142/pen/dyPwRYa?editors=1111
@@ -160,7 +157,7 @@ demo:https://codepen.io/coolgood88142/pen/dyPwRYa?editors=1111
 
 ## 6.updated
 
-資料更新完成後，顯示在頁面上
+資料更新完成後，已經更新DOM物件，顯示在頁面上
 
 ```javascript
 let app = new Vue({
@@ -168,28 +165,23 @@ let app = new Vue({
     data:{
         message: '123'
     },
-    mothods:{
-        addtext:function(){
-            this.message += 456
-		}
-    },
-    //message改變時，message才更新
-    updated:{
-      	let updated = 'updated message is ' + this.message
-      	alert(updated)
+    //message為abc時，updated在console log看到message的值為abc已經改變了
+    updated(){
+        let updated = document.getElementById('app').innerHTML
+      	console.log(updated)
     }
 })
+
+app.message = 'abc'
 ```
 
 demo:https://codepen.io/coolgood88142/pen/eYmbEzX
 
-
+DOM為Document Object Model，在html裡每個節點皆為物件(Object)且擁有各自的屬性以及方法
 
 
 
 beforeDestroy與destroyed要執行vm.$destroy()，才會執行
-
-
 
 ## 7.beforeDestroy
 
@@ -201,18 +193,24 @@ let app = new Vue({
     data:{
         message: '123'
     },
-    mothods:{
+    methods:{
         addtext:function(){
-            this.message += 456
+            this.message = this.message + '456'
 		}
     },
-    //brforeDestroy執行時，所有data都還存在
-    brforeDestroy:{
-        //123456
-      	console.log(message)
+    beforeDestroy(){
+      	console.log('app銷毀之前')
     }
 })
+
+function del(){
+    //brforeDestroy執行時，console log看到app銷毀之前
+    app.$destroy();
+    console.log(app.message)
+}
 ```
+
+demo:https://codepen.io/coolgood88142/pen/jOEoKax?editors=1111
 
 
 
@@ -226,46 +224,35 @@ let app = new Vue({
     data:{
         message: '123'
     },
-    mothods:{
+    methods:{
         addtext:function(){
-            this.message += 456
+            this.message = this.message + '456'
 		}
     },
-    //destroy執行時data已經銷毀，所以message才會為undefined
-    destroyed:{
-        //undefined
-      	console.log(message)
+    destroyed(){
+      	console.log('app已經銷毀了')
     }
 })
+
+function del(){
+    //destroyed執行時，app已經銷毀了
+    app.$destroy();
+}
 ```
 
+demo:https://codepen.io/coolgood88142/pen/gObJKJX?editors=1111
 
 
 
+## 總結
+
+vue生命週期在於el與data的變化，beforeCreate、created在vue instance初始化才會執行，beforeMount、mounted在建立DOM物件才會執行，beforeUpdate、updated在data裡的資料變數的值改變時才會執行，beforeDestroy、destroyed在執行destroy function的時候才會執行
 
 
 
 建立vue是一個生命週期，要了解什麼時候會結束
 
 vue分為Instance、生命週期
-
-
-
-
-
-
-
-生命週期:brforeCreate、created、brforeMount、mounted...等等
-
-模板語法:v-model、v-if、v-on
-
-component:emit、props
-
-Instance每個操作，要了解在生命週期什麼時候做(ex:computed不管什麼時候，只要資料改變就執行，所以會在updated)
-
-
-
-總結說明生命週期
 
 
 
@@ -279,7 +266,13 @@ https://www.hellosanta.com.tw/blog/understanding_vuejs_lifecycle_hooks、
 
 [https://blog.niclin.tw/2017/10/08/%E6%90%9E%E6%87%82%E7%94%9F%E5%91%BD%E9%80%B1%E6%9C%9F-lifecycle/](https://blog.niclin.tw/2017/10/08/搞懂生命週期-lifecycle/)、
 
-https://cythilya.github.io/2017/04/11/vue-instance/
+https://cythilya.github.io/2017/04/11/vue-instance/、
+
+[https://medium.com/change-or-die/javascript%E5%88%9D%E5%AD%B8-dom%E5%B8%B8%E7%94%A8%E5%B1%AC%E6%80%A7%E8%88%87%E6%96%B9%E6%B3%95-ef851afdb65a](https://medium.com/change-or-die/javascript初學-dom常用屬性與方法-ef851afdb65a)、
+
+https://www.itread01.com/content/1550379391.html、
+
+[https://medium.com/@yvonne11yuting/vue-%E9%81%8B%E4%BD%9C%E6%B5%81%E7%A8%8B%E5%9C%96-be7e2a5cde36](https://medium.com/@yvonne11yuting/vue-運作流程圖-be7e2a5cde36)
 
 
 
