@@ -68,7 +68,7 @@ demo：https://codepen.io/coolgood88142/pen/LYErYgQ
 
 instance要將資料傳到vue的component，要使用props，必須先設定傳進來的值是什麼資料型態，接收到props的資料就會做更新。
 
-props適合在instance有屬性想要與component某個資料做同步更新。
+props適合在instance有資料與component某個資料做同步更新。
 
 ```html
 <component :addtext="message"></component>
@@ -117,9 +117,19 @@ demo：https://codepen.io/coolgood88142/pen/qBEKYjy
 
 ## computed
 
-computed為計算屬性，當vue的頁面有需要被計算的屬性時，可使用computed，computed分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance，可以在內部資料做計算，但是我們也可以透過methods做計算，methods必須要觸發事件才可以做，如果為了計算屬性資料，會需要一直觸發事件，只會讓程式碼感覺複雜，使用computed的話，只要變數的屬性資料改變就會自動更新，可減少資料重新運算的次數。
+computed為計算屬性，當vue的頁面有需要被計算的屬性時，可使用computed，computed分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance做計算時，我們也可以透過methods做計算，但是methods必須要觸發事件才可以做，如果為了計算屬性資料，會需要一直觸發事件，只會讓程式碼感覺複雜，使用computed的話，只要變數的屬性資料改變就會自動更新，可減少資料重新運算的次數。
 
 computed相依性很高，會隨著變數做更新，在一開始頁面時就會執行get，直接回傳資料，當變數更新時會執行set及時更新資料。
+
+
+
+計算的值為function
+
+計算的值html裡，可以簡寫不加括號
+
+範例的bug要做修正
+
+get與set使用時機、使用方式、為什麼要用?(computed可以只寫get、什麼時候用set)
 
 
 
@@ -167,6 +177,20 @@ demo:https://codepen.io/coolgood88142/pen/gObdYzM
 watch是監聽某個值，當值做改變時，要去執行某些事件，在watch可以得到改變前與改變後的資料，監聽到之後執行事件，雖然也可以跟computed一樣做計算。
 
 watch適合非同步更新變數資料時使用，相依性相較之下較低，可以做的事情較多。
+
+
+
+原本watch在vue初始化時，不會做監聽，但是加hender和immediate屬性可以在第一輪生命週期時去監聽
+
+immediate是vue初始化做完時立即執行
+
+immediate(使用時機，什麼時候適用)
+
+watch是監聽值，那監聽值是不是在初始化時就需要用到
+
+
+
+
 
 
 
