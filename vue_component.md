@@ -117,9 +117,9 @@ demo：https://codepen.io/coolgood88142/pen/qBEKYjy
 
 ## computed
 
-computed為計算屬性，當vue的頁面有需要被計算的屬性時，可使用computed，computed分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance做計算時，我們也可以透過methods做計算，但是methods必須要觸發事件才可以做，如果為了計算屬性資料，會需要一直觸發事件，只會讓程式碼感覺複雜，使用computed的話，只要變數的屬性資料改變就會自動更新，可減少資料重新運算的次數。
+computed為計算資料使用的，當vue的頁面有需要被計算的時，可使用computed，computed分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance做計算時，我們也可以透過methods做計算，但是methods必須要觸發事件才可以做，如果為了計算屬性資料，會需要一直觸發事件，只會讓程式碼感覺複雜，使用computed的話，只要變數的屬性資料改變就會自動更新，可減少資料重新運算的次數。
 
-computed相依性很高，會隨著變數做更新，在一開始頁面時就會執行get，直接回傳資料，當變數更新時會執行set及時更新資料。
+computed相依性很高，會隨著變數做更新，在頁面初始化時get會直接計算值，如果計算後值的被改變時，就會執行set，取得改變後的值做計算，做完之後會執行get做回傳。
 
 
 
@@ -130,6 +130,12 @@ computed相依性很高，會隨著變數做更新，在一開始頁面時就會
 範例的bug要做修正
 
 get與set使用時機、使用方式、為什麼要用?(computed可以只寫get、什麼時候用set)
+
+
+
+
+
+
 
 
 
@@ -160,15 +166,23 @@ let app = new Vue({
                 return this.lastName + ' ' +this.firstName
             },
             set: function(newValue){
-                this.lastName = newValue.split(' ')[0]
-                this.firstName = newValue.split(' ')[1]
+                let blank_length = newValue.split(' ').length
+                console.log(blank_length)
+                if(blank_length == 1){
+                    this.lastName = newValue.split(' ')[0]
+                    this.firstName = newValue.split(' ')[1]
+                }else{
+                    alert('請輸入正確姓名!');
+                    this.lastName = ''
+                    this.firstName = ''
+                }
             }
         }
     }
 })
 ```
 
-demo:https://codepen.io/coolgood88142/pen/gObdYzM
+demo:https://codepen.io/coolgood88142/pen/BaNBYBg
 
 
 
@@ -180,7 +194,11 @@ watch適合非同步更新變數資料時使用，相依性相較之下較低，
 
 
 
-原本watch在vue初始化時，不會做監聽，但是加hender和immediate屬性可以在第一輪生命週期時去監聽
+原本watch在vue初始化時，是不會做監聽，但是加hender和immediate屬性可以執行完初始化時去執行，適合在
+
+vue初始化時背後執行監聽，就可以先拿到預設值做計算。
+
+
 
 immediate是vue初始化做完時立即執行
 
@@ -219,13 +237,21 @@ let app = new Vue({
     methods:{
         add: function () {
             this.count++
-		}
+		    }
     },
     watch:{
-        count(newVal, oldVal){
+        // count(newVal, oldVal){
+        // this.be_count = oldVal
+        // this.af_count = newVal
+        // }
+        count:{
+          handler(newVal, oldVal){
             this.be_count = oldVal
             this.af_count = newVal
-		}
+          },
+          immediate: true
+        }
+        
     }
 })
 ```
