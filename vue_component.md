@@ -117,9 +117,19 @@ demo：https://codepen.io/coolgood88142/pen/qBEKYjy
 
 ## computed
 
-computed為計算資料使用的，當vue的頁面有需要被計算的時，可使用computed，computed分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance做計算時，我們也可以透過methods做計算，但是methods必須要觸發事件才可以做，如果為了計算屬性資料，會需要一直觸發事件，只會讓程式碼感覺複雜，使用computed的話，只要變數的屬性資料改變就會自動更新，可減少資料重新運算的次數。
+computed是計算data裡的變數，當vue的頁面有需要被計算的時，可使用computed，computed分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance做計算時，我們也可以透過methods做計算，但是methods必須要觸發事件才可以做，如果為了計算資料，會需要一直觸發事件，只會讓程式碼感覺複雜，使用computed的話，只要變數資料改變就會自動更新，可減少資料重新運算的次數。
 
-computed相依性很高，會隨著變數做更新，在頁面初始化時get會直接計算值，如果計算後值的被改變時，就會執行set，取得改變後的值做計算，做完之後會執行get做回傳。
+computed相依性很高，會隨著變數做更新，在頁面初始化時get會直接計算變數資料，如果computed計算後的變數資料被改變時，就會執行set，取得改變後的資料做計算，做完之後會執行get回傳到變數。
+
+要補上觸發流程順序(1.get 2.改變執行set且newValue的值怎麼來的)
+
+補流程圖(有幾種流程，目前只知道兩種 1.頁面初始化 2.變數資料改變時)
+
+
+
+敘述寫清楚一點，別人不知道計算後的值是指什麼?(computed?還是??)
+
+
 
 
 
@@ -133,7 +143,7 @@ get與set使用時機、使用方式、為什麼要用?(computed可以只寫get�
 
 
 
-
+set裡的newValue要解釋為什麼會有這個?
 
 
 
