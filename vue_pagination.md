@@ -13,7 +13,7 @@ summary: "介紹使用vue分頁"
 
 我們可以laravel利用axios執行reute，取得controller的response資料，在組好資料後顯示頁面上
 
-![1](C:\xampp\htdocs\markdown_note\assets\images\pagination.png)
+![pagination](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/pagination.png)
 
 #### UserController.php
 
