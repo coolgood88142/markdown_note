@@ -226,7 +226,9 @@ let user = new Vue({
 </html>
 ```
 
-說明整個程式流程，怎麼執行的
+從user.blade.php頁面上執行vue的mounted執行getUserData function，從controller抓前5筆資料後，在組資料用參數顯示在頁面上顯示。
+
+分頁機制是透過頁面上的導覽標籤，執行changePage function取得目前頁數，在計算資料區間後，在執行getUserData function抓資料區間後，在組資料用參數顯示在頁面上顯示。
 
 
 
