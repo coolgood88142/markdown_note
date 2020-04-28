@@ -117,9 +117,11 @@ demo：https://codepen.io/coolgood88142/pen/qBEKYjy
 
 ## computed
 
-computed是計算data裡的變數，當vue的頁面有需要被計算的時，可使用computed，computed分為get與set(讀取與設值)，如果沒寫預設是get，在component或是instance做計算時，我們也可以透過methods做計算，但是methods必須要觸發事件才可以做，如果為了計算資料，會需要一直觸發事件，只會讓程式碼感覺複雜，使用computed的話，只要變數資料改變就會自動更新，可減少資料重新運算的次數。
+computed的變數可以像data一樣，做get與set(讀取與設值)，當頁面有需要被計算的時，可使用computed，一般情況下是沒有set，只會做get。當computed的變數值做更新，要額外計算別的變數，才需要用到set。
 
-computed相依性很高，會隨著變數做更新，在頁面初始化時get會直接計算變數資料，如果computed計算後的變數資料被改變時，就會執行set，取得改變後的資料做計算，做完之後會執行get回傳到變數。
+在component或是instance做計算時，我們也可以透過methods做計算，但是methods必須要觸發事件才可以做，如果為了計算資料，會需要一直觸發事件，只會讓程式碼感覺複雜，使用computed的話，只要變數資料改變就會自動更新，可減少資料重新運算的次數。
+
+computed相依性很高，會隨著變數做更新，在頁面初始化時get會直接計算變數資料，如果computed變數資料被改變時，就會執行set做重新計算。
 
 
 
@@ -127,15 +129,15 @@ computed相依性很高，會隨著變數做更新，在頁面初始化時get會
 
 當網頁初始化時，會綁定computed變數名稱，去計算變數的值，所以任何function中有影響變數的運算，會自動重新計算，如果有加set就不會重新計算
 
-使用時機：computed 的變數因為有綁定，會重新計算新的值
+使用時機：computed 的變數因為有綁定，會自動重新計算新的值
 
 
 
 #### set流程
 
-當computed變數值改變時，會重新計算set裡的function中會包含newValue的參數，newValue是指變數的新的值
+當computed變數資料改變時，會重新計算，computed的set裡的會帶一個新的資料參數，代表新的變數資料，會做重新計算。
 
-使用時機：computed 的變數要額外計算，其他data的值 
+使用時機：當computed變數拿到新的值後，要做重新計算。
 
 
 
@@ -147,7 +149,7 @@ get是computed的預設值，所以有使用computed就會執行get，set是計�
 
 #### function可以簡寫不加括號
 
-最大的差別在於，加括號是指這個function可以帶自訂參數，不加的話，vue本身就在每個function都預設一個參數為`$event`，代表function中的DOM事件，可以執行。
+最大的差別在於，加括號是指這個function可以帶自訂參數，不加的話，vue本身就在每個function都預設一個參數為`$event`，代表function中的javascript DOM物件。
 
 
 
