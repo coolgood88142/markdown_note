@@ -17,11 +17,11 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 登入google帳號之後，先新增專案，在搜尋google sheet api並且點選啟用。
 
-![google_sheet1](https://coolgood88142.github.io/images/google_sheet1.png)
+![google_sheet1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet1.png>)
 
 
 
-![google_sheet2](https://coolgood88142.github.io/images/google_sheet2.png)
+![google_sheet2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet2.png>)
 
 
 
@@ -29,9 +29,9 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 點選設定OAuth 同意畫面，User Type請選擇外部後點選建立，輸入應用程式名稱再儲存。
 
-![google_sheet3](https://coolgood88142.github.io/images/google_sheet3.png)
+![google_sheet3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet3.png>)
 
-![google_sheet4](https://coolgood88142.github.io/images/google_sheet4.png)
+![google_sheet4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet4.png>)
 
 
 
@@ -39,13 +39,13 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 在建立憑證點選OAuth 用戶端ID，應用程式類型選擇網頁應用程式，並輸入名稱後建立，完成後會跳出用戶端ID與密碼，等等我們範例中會用到。
 
-![google_sheet5](https://coolgood88142.github.io/images/google_sheet5.png)
+![google_sheet5](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet5.png>)
 
 
 
-![google_sheet6](https://coolgood88142.github.io/images/google_sheet6.png)
+![google_sheet6](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet6.png>)
 
-![google_sheet7](https://coolgood88142.github.io/images/google_sheet7.png)
+![google_sheet7](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet7.png>)
 
 
 
@@ -53,13 +53,13 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 點選管理服務帳戶，在建立服務帳戶，服務帳戶權限選擇角色管理員，`將這個服務帳戶的存取權限授予使用者`，這項可以不輸入點選完成。
 
-![google_sheet8](https://coolgood88142.github.io/images/google_sheet8.png)
+![google_sheet8](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet8.png>)
 
-![google_sheet9](https://coolgood88142.github.io/images/google_sheet9.png)
+![google_sheet9](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet9.png>)
 
 
 
-![google_sheet10](https://coolgood88142.github.io/images/google_sheet10.png)
+![google_sheet10](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet10.png>)
 
 
 
@@ -67,11 +67,11 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 點選動作的建立金鑰，金鑰類型選擇JSON，系統會下載json檔案，在檔案名稱請自行更換，例如:credentials.json。
 
-![google_sheet11](https://coolgood88142.github.io/images/google_sheet11.png)
+![google_sheet11](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet11.png>)
 
-![google_sheet12](https://coolgood88142.github.io/images/google_sheet12.png)
+![google_sheet12](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet12.png>)
 
-![google_sheet13](https://coolgood88142.github.io/images/google_sheet13.png)
+![google_sheet13](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet13.png>)
 
 
 
@@ -79,7 +79,7 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 建立之前試算表要設定好權限共用，打開指令碼編輯器，在程式碼.gs新增doGet function，在執行部署為網路應用程式後，就會建立json url
 
-![google_sheet14](https://coolgood88142.github.io/images/google_sheet14.png)
+![google_sheet14](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet14.png>)
 
 程式碼.gs
 
@@ -104,11 +104,11 @@ function doGet(e) {
 }
 ```
 
-![google_sheet15](https://coolgood88142.github.io/images/google_sheet15.png)
+![google_sheet15](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet15.png>)
 
-![google_sheet16](https://coolgood88142.github.io/images/google_sheet16.png)
+![google_sheet16](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet16.png>)
 
-![google_sheet17](https://coolgood88142.github.io/images/google_sheet17.png)
+![google_sheet17](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet17.png>)
 
 
 
@@ -120,11 +120,37 @@ function doGet(e) {
 composer require revolution/laravel-google-sheets
 ```
 
+執行完後再產生config檔，這時會在config資料夾產生google.php
+
+```php
+php artisan vendor:publish --provider="PulkitJalan\Google\GoogleServiceProvider" --tag="config"
+```
+
+google.php
+
+```php
+'application_name' => env('GOOGLE_APPLICATION_NAME', ''),
+'client_id'        => env('GOOGLE_CLIENT_ID', ''),
+'client_secret'    => env('GOOGLE_CLIENT_SECRET', ''),
+'redirect_uri'     => env('GOOGLE_REDIRECT', ''),
+'scopes'           => '',
+'access_type'      => 'offline',
+'approval_prompt'  => 'auto',
+'developer_key' => env('GOOGLE_DEVELOPER_KEY', ''),
+'service' => [
+        'enable' => env('GOOGLE_SERVICE_ENABLED', false),
+        'file' => env('GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION',''),
+    ],
+
+```
+
 
 
 #### 7.laravel專案設定api
 
-建立laravel專案後，在.env檔案建立連線，GOOGLE_CLIENT_ID、GOOGLE_CLIENT_SECRET是OAuth 用戶端ID產生的ID與密碼，GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION是找storage目錄底下的服務帳戶金鑰的json檔。
+建立laravel專案後，在.env檔案建立連線，GOOGLE_CLIENT_ID、GOOGLE_CLIENT_SECRET是OAuth 用戶端ID產生的ID與密碼，GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION是找storage目錄底下的服務帳戶金鑰的json檔。config的google.php檔也要設定一樣
+
+.env檔
 
 ```php
 GOOGLE_APPLICATION_NAME=
@@ -136,11 +162,30 @@ GOOGLE_SERVICE_ENABLED=true
 GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION=../storage/credentials.json
 ```
 
+google.php
+
+```php
+'application_name' => env('GOOGLE_APPLICATION_NAME', ''),
+'client_id'        => env('GOOGLE_CLIENT_ID', '703199608133-48lihk64psruguqdqk1qqr508i87jt3v.apps.googleusercontent.com'),
+'client_secret'    => env('GOOGLE_CLIENT_SECRET', 'Hw1FYu-BQZ6UuZwTWV6PY4zg'),
+'redirect_uri'     => env('GOOGLE_REDIRECT', ''),
+'scopes'           => [\Google_Service_Sheets::DRIVE, \Google_Service_Sheets::SPREADSHEETS],,
+'access_type'      => 'offline',
+'approval_prompt'  => 'auto',
+'developer_key' => env('GOOGLE_DEVELOPER_KEY', ''),
+'service' => [
+        'enable' => env('GOOGLE_SERVICE_ENABLED', true),
+        'file' => env('GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION',storage_path('credetokenntials.json')),
+    ],
+```
+
 
 
 #### 8.在Controller新增程式碼
 
-在web設定route執行Controller的function
+在web設定route執行Controller的function，執行`php artisan serve`,
+
+web.php
 
 ```php
 Route::get('/sheet','FormController@getSheetData'));
@@ -151,7 +196,7 @@ Route::get('/sheet','FormController@getSheetData'));
 ```php
 public function getSheetData(Request $request)
 {
-    $json = json_decode(file_get_contents('https://script.googleusercontent.com/macros/echo?user_content_key=G0gFjpiurUPLaSHvFZ2YchbwiaPgJ60OcaKdsq-H3CskyjkCGrU4TLERE3W0u15PMQraweo4Qo9luQadxKUWskIk908STA2vm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnG5NHNdb1AwE-EYeNMc_zIN8h0XP-arDU-ftinAuwVa9i3l2C0b2upz5QyC6G6Hbeg&lib=Me3WC3MqZMXdn2WOzQ1Jhz481CpkraLGD'), true);
+    $json = json_decode(file_get_contents('https://script.google.com/macros/s/AKfycbxfZTikv_m9p2hvkkfIssKMaD0PhVbA_gvABTZxqmq6l_uaNJYn/exec'), true);
         $data = [];
         foreach($json as $key => $value){
             $array = [];
@@ -165,7 +210,15 @@ public function getSheetData(Request $request)
 }
 ```
 
+![google_sheet18](C:\xampp\htdocs\markdown_note\assets\images\google_sheet18.png)
 
+
+
+#### 總結
+
+laravel使用laravel-google-sheets套件，建立google sheet api的設定，先設定google 的OAuth 用戶端，才有權限使用google 服務，之後再設定服務帳戶，建立金鑰json檔。
+
+在專案上的env檔與google.php來建立api資訊，才可以取得試算表資料。
 
 
 
