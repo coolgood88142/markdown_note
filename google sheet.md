@@ -210,7 +210,7 @@ public function getSheetData(Request $request)
 }
 ```
 
-![google_sheet18](C:\xampp\htdocs\markdown_note\assets\images\google_sheet18.png)
+![google_sheet18](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet18.png>)
 
 
 
