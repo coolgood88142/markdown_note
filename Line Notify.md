@@ -25,13 +25,11 @@ Line Notify是Line 的推播通知服務，是一個單向傳輸文字、圖片�
 
 #### 2.新增Google App Script專案
 
-登入Google帳號後，在Google雲端硬碟的新增Google App Script專案，新增專案後補上程式碼，程式碼如下
+登入Google帳號後，在Google雲端硬碟的新增Google App Script專案，新增專案後補上程式碼後儲存。
 
-ID在Google日曆的設定裡，點選**我的日曆的設定**，選擇要提醒的日曆，在整合日曆的日曆ID
+程式碼中的ID在Google日曆的設定裡，點選**我的日曆的設定**，選擇要提醒的日曆，在整合日曆的日曆ID，通常是google帳號。
 
 ![app_script1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/app_script1.png>)
-
-
 
 程式碼.gs
 
@@ -82,10 +80,10 @@ function getCalendar() {
 }
 
 function sendMessage(message) {
-  //組好資料訊息的資料
+  //Line的發行權杖
   let token = "OAs8mSPN4PXwhR2gsSFJAaJu7pjkZNlzlC2jd0";
 
-  //使用Line發送訊息
+  //組好訊息的資料，使用Line發送訊息
   let options =
    {
      "method"  : "post",
@@ -106,13 +104,15 @@ function sendMessage(message) {
 
 #### 3.設定排程執行日曆行程提醒
 
-在專案裡點選現有專案的啟動程序，再新增觸發條件
+在專案裡點選現有專案的啟動程序，再新增觸發條件，設定每分鐘執行getCalendar，儲存時google會詢問是否要讓專案執行程序，需要gmail帳號使用者允許權限才可以執行。
 
 ![app_script2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/app_script2.png>)
 
 
 
 ![app_script3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/app_script3.png>)
+
+#### 4.設定日曆行程
 
 在日曆上設定好行程後，系統偵測行程前10分鐘執行通知訊息。
 
