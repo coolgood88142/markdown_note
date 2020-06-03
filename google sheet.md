@@ -11,6 +11,10 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 使用google sheet api需要啟用與建立憑證，以下介紹使用laravel 建立google sheet api，取得試算表資料。
 
+補上程式碼流程圖，說明從google api建立連線，再從試算表新增或編輯等
+
+
+
 
 
 #### 1.登入[Google API Console](https://console.developers.google.com/?hl=zh-tw)
@@ -72,43 +76,6 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 ![google_sheet12](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet12.png>)
 
 ![google_sheet13](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet13.png>)
-
-
-
-#### 6.試算表建立json url資料
-
-建立之前試算表要設定好權限共用，打開指令碼編輯器，在程式碼.gs新增doGet function，在執行部署為網路應用程式後，就會建立json url
-
-![google_sheet14](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet14.png>)
-
-程式碼.gs
-
-```javascript
-function doGet(e) {
-  //建立試算表的url與工作表名稱
-  let SpreadSheet = SpreadsheetApp.openById('1YiYQkvgspoaE9E-RBwwNYOnTz_2Tgtuo4RpApDbvrVQ')
-  
-  //設定試算表的工作表名稱
-  let SheetName = SpreadSheet.getSheetByName('user');
-  
-  //取得工作表的最後一欄與列
-  let lastColumn = SheetName.getLastColumn();
-  let lastRow = SheetName.getLastRow();
-  
-  //取得資料範圍，從第2欄第1列開始
-  let values = SpreadSheet.getSheetValues(2, 1, lastRow-1, lastColumn);  
-    
-  return ContentService
-  .createTextOutput(JSON.stringify(values))
-  .setMimeType(ContentService.MimeType.JSON); 
-}
-```
-
-![google_sheet15](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet15.png>)
-
-![google_sheet16](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet16.png>)
-
-![google_sheet17](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet17.png>)
 
 
 
@@ -196,17 +163,9 @@ Route::get('/sheet','FormController@getSheetData'));
 ```php
 public function getSheetData(Request $request)
 {
-    $json = json_decode(file_get_contents('https://script.google.com/macros/s/AKfycbxfZTikv_m9p2hvkkfIssKMaD0PhVbA_gvABTZxqmq6l_uaNJYn/exec'), true);
-        $data = [];
-        foreach($json as $key => $value){
-            $array = [];
-            foreach($value as $a => $b){
-                array_push($array, $b);
-            }
-            array_push($data, $array);
-        }
-
-        dd($data);
+   $sheets = Sheets::spreadsheet('1YiYQkvgspoaE9E-RBwwNYOnTz_2Tgtuo4RpApDbvrVQ')->sheet('user');
+   $sheetsValue = $sheets->all();
+   dd($sheetsValue);
 }
 ```
 

@@ -15,7 +15,11 @@ Line Notify是Line 的推播通知服務，是一個單向傳輸文字、圖片�
 
 #### 1.建立Line Notify服務
 
-先登入[Line Notif](https://notify-bot.line.me/zh_TW/)頁面，登入之後點選個人頁面，在點選發行權杖，輸入名稱後選擇**透過1對1聊天接收LINE Notify通知**，這時會產生一個金鑰，等等程式會用到，建立成功之後Line Notify官方帳號會加入好友。
+先登入[Line Notify](https://notify-bot.line.me/zh_TW/)頁面，登入之後點選個人頁面，請先將Line Nofify官方帳號加入好友，之後在點選發行權杖，輸入名稱後選擇**透過1對1聊天接收LINE Notify通知**，這時會產生一個金鑰，等等程式會用到。
+
+**一定要加入好友才可以收到推播訊息**
+
+![line3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line3.png>)
 
 ![line1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line1.png>)
 
