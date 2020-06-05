@@ -11,7 +11,9 @@ summary: "介紹使用vue分頁"
 
 ### 架構
 
-我們可以laravel利用axios執行reute，取得controller的response資料，在組好資料後顯示頁面上
+流程圖取得response資料，
+
+我們可以laravel利用axios執行route，取得response資料，在組好資料後顯示頁面上
 
 ![pagination](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/pagination.png)
 
@@ -41,7 +43,6 @@ class UserController extends Controller
         $response = [
             'pagination' => [
                 'total' => $users->total(),
-                'per_page' => $users->perPage(),
                 'current_page' => $users->currentPage(),
                 'last_page' => $users->lastPage(),
                 'from' => $users->firstItem(),
@@ -49,36 +50,8 @@ class UserController extends Controller
             ],
             'users' => $users
         ];
-        //確認user資料是否為重複，要補上文件
 
         return response()->json($response);
-    }
-
-    public function getCityData()
-    {
-        $city = Config::get('city');
-        $counties = array();
-        $districts = array();
-        $i=0;$j=0;
-
-        foreach($city as $key => $value){
-            $counties[$i]['text'] = $city[$key]['counties'];
-            $counties[$i]['value'] = ($i+1);
-            $k=0;
-            $city_districts = array();
-            foreach($city[$key]['districts'] as $district){
-                $value = $city[$key]['value'];
-                $city_districts[$j]['text'] = $district;
-                $city_districts[$j]['value'] = $value[$k];
-                $k++;
-                $j++;
-            }
-            $districts[$i] = $city_districts;
-            $i++;
-        }
-
-
-        return view('form', ['counties' => $counties, 'districts' => $districts]);
     }
 ```
 
@@ -104,7 +77,6 @@ let user = new Vue({
         users: [],
         pagination: {
             total: 0,
-            per_page: 2,
             from: 1,
             to: 0,
             current_page: 1

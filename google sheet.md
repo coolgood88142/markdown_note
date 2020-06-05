@@ -37,6 +37,8 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 ![google_sheet4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet4.png>)
 
+User Type的內部，是用G Suite 方案的google帳號才可以使用 ，G Suite是google專為企業設計的雲端辦公套組，提供多種google工具，提高工作效率。
+
 
 
 #### 3.建立 OAuth 用戶端ID
@@ -76,6 +78,10 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 ![google_sheet12](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet12.png>)
 
 ![google_sheet13](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet13.png>)
+
+OAuth 用戶端ID主要是建立憑證資訊來使用啟用API的權限，服務帳戶則是建立金鑰來進行OAuth 憑證的驗證。
+
+P12為PKCS 12，是一個有時效性的私密金鑰檔案(.p12)，由建立憑證取得API資訊。
 
 
 
@@ -187,7 +193,9 @@ https://github.com/kawax/laravel-google-sheets、
 
 https://drivemarketing.ca/en/blog/connecting-laravel-to-a-google-sheet/、
 
-https://www.oxxostudio.tw/articles/201706/google-spreadsheet-1.html
+https://www.oxxostudio.tw/articles/201706/google-spreadsheet-1.html、
+
+https://gsuite.google.com.tw/intl/zh-TW/features/
 
 
 
