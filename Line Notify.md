@@ -15,11 +15,15 @@ Line Notify是Line 的推播通知服務，是一個單向傳輸文字、圖片�
 
 #### 1.建立Line Notify服務
 
-先登入[Line Notify](https://notify-bot.line.me/zh_TW/)頁面，登入之後點選個人頁面，請先將Line Nofify官方帳號加入好友，之後在點選發行權杖，輸入名稱後選擇**透過1對1聊天接收LINE Notify通知**，這時會產生一個金鑰，等等程式會用到。
+先登入[Line Notify](https://notify-bot.line.me/zh_TW/)頁面，登入之後點選個人頁面，請先將Line Nofify官方帳號加入好友，之後在點選發行權杖，
+
+輸入名稱後選擇**透過1對1聊天接收LINE Notify通知**，這時會產生一個金鑰，等等程式會用到。
 
 **一定要加入好友才可以收到推播訊息**
 
 ![line3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line3.png>)
+
+![line4](C:\xampp\htdocs\markdown_note\assets\images\line4.png)
 
 ![line1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line1.png>)
 
@@ -34,6 +38,8 @@ Line Notify是Line 的推播通知服務，是一個單向傳輸文字、圖片�
 程式碼中的ID在Google日曆的設定裡，點選**我的日曆的設定**，選擇要提醒的日曆，在整合日曆的日曆ID，通常是google帳號。
 
 ![app_script1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/app_script1.png>)
+
+以下程式碼是在進行日曆提醒功能：
 
 程式碼.gs
 
@@ -104,11 +110,13 @@ function sendMessage(message) {
 
 要在專案的啟動程序設定每分鐘執行getCalendar function，只有在日曆上有設定行程，系統會在前10分鐘發送訊息。
 
+UrlFetchApp.fetch是google app script的function，主要是用Get或Post請求url網址，以上範例是請求line notify的api，執行發送訊息。
+
 
 
 #### 3.設定排程執行日曆行程提醒
 
-在專案裡點選現有專案的啟動程序，再新增觸發條件，設定每分鐘執行getCalendar，儲存時google會詢問是否要讓專案執行程序，需要gmail帳號使用者允許權限才可以執行。
+在專案裡點選現有專案的啟動程序，再新增觸發條件，設定每分鐘執行getCalendar，儲存時google會詢問是否要讓專案執行程序，需要google帳號使用者允許權限才可以執行。
 
 ![app_script2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/app_script2.png>)
 
@@ -126,7 +134,9 @@ function sendMessage(message) {
 
 https://chibupapa.com/2019/11/12/line-notify/、
 
-https://notify-bot.line.me/zh_TW/
+https://notify-bot.line.me/zh_TW/、
+
+https://developers.google.com/apps-script/reference/url-fetch/url-fetch-app
 
 
 

@@ -13,7 +13,7 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 補上程式碼流程圖，說明從google api建立連線，再從試算表新增或編輯等
 
-
+![google_sheet0](C:\xampp\htdocs\markdown_note\assets\images\google_sheet0.png)
 
 
 
@@ -29,7 +29,15 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 
 
-#### 2.建立 OAuth 同意畫面
+#### 2.建立 google API 憑證
+
+建立憑證有兩個方法：1. 建立OAuth憑證 2.建立服務帳戶
+
+
+
+#### 建立OAuth憑證
+
+#### OAuth 同意畫面
 
 點選設定OAuth 同意畫面，User Type請選擇外部後點選建立，輸入應用程式名稱再儲存。
 
@@ -37,7 +45,9 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 ![google_sheet4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet4.png>)
 
-User Type的內部，是用G Suite 方案的google帳號才可以使用 ，G Suite是google專為企業設計的雲端辦公套組，提供多種google工具，提高工作效率。
+User Type的內部，必須是G Suite 方案的google帳號才可以使用 ，G Suite是google專為企業設計的雲端辦公套組，提供多種google工具，提高工作效率。
+
+G Suite 方案的google帳號需要付費，這裡建議選擇外部即可。
 
 
 
@@ -79,7 +89,9 @@ User Type的內部，是用G Suite 方案的google帳號才可以使用 ，G Sui
 
 ![google_sheet13](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet13.png>)
 
-OAuth 用戶端ID主要是建立憑證資訊來使用啟用API的權限，服務帳戶則是建立金鑰來進行OAuth 憑證的驗證。
+OAuth 用戶端ID主要是建立憑證可授權使用google API，服務帳戶則是建立金鑰json檔存取憑證資料，這兩個都可以取API權限使用google sheet。
+
+這兩個用在哪??有沒有關聯?【為什麼要這個兩個步驟?這兩個是幹嘛?】
 
 P12為PKCS 12，是一個有時效性的私密金鑰檔案(.p12)，由建立憑證取得API資訊。
 
@@ -195,7 +207,11 @@ https://drivemarketing.ca/en/blog/connecting-laravel-to-a-google-sheet/、
 
 https://www.oxxostudio.tw/articles/201706/google-spreadsheet-1.html、
 
-https://gsuite.google.com.tw/intl/zh-TW/features/
+https://gsuite.google.com.tw/intl/zh-TW/features/、
+
+http://vito-note.blogspot.com/2015/04/aspnet-google-oauth2.html、
+
+[https://xenby.com/b/245-%E6%95%99%E5%AD%B8-google-oauth-2-0-%E7%94%B3%E8%AB%8B%E8%88%87%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97](https://xenby.com/b/245-教學-google-oauth-2-0-申請與使用指南)
 
 
 
