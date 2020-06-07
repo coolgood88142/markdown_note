@@ -13,7 +13,7 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 補上程式碼流程圖，說明從google api建立連線，再從試算表新增或編輯等
 
-![google_sheet0](C:\xampp\htdocs\markdown_note\assets\images\google_sheet0.png)
+
 
 
 
