@@ -11,9 +11,7 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 使用google sheet api需要啟用與建立憑證，以下介紹使用laravel 建立google sheet api，取得試算表資料。
 
-補上程式碼流程圖，說明從google api建立連線，再從試算表新增或編輯等
-
-
+![google_sheet0](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet0.png>)
 
 
 
@@ -29,15 +27,7 @@ google sheet api是一個與google試算表溝通，能快速取得試算表資�
 
 
 
-#### 2.建立 google API 憑證
-
-建立憑證有兩個方法：1. 建立OAuth憑證 2.建立服務帳戶
-
-
-
-#### 建立OAuth憑證
-
-#### OAuth 同意畫面
+#### 2.建立OAuth 同意畫面
 
 點選設定OAuth 同意畫面，User Type請選擇外部後點選建立，輸入應用程式名稱再儲存。
 
@@ -89,7 +79,7 @@ G Suite 方案的google帳號需要付費，這裡建議選擇外部即可。
 
 ![google_sheet13](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet13.png>)
 
-OAuth 用戶端ID主要是建立憑證可授權使用google API，服務帳戶則是建立金鑰json檔存取憑證資料，這兩個都可以取API權限使用google sheet。
+OAuth 用戶端ID主要是同意授權存取API資料，服務帳戶則是利用金鑰json檔取得API權限。
 
 這兩個用在哪??有沒有關聯?【為什麼要這個兩個步驟?這兩個是幹嘛?】
 
@@ -211,7 +201,9 @@ https://gsuite.google.com.tw/intl/zh-TW/features/、
 
 http://vito-note.blogspot.com/2015/04/aspnet-google-oauth2.html、
 
-[https://xenby.com/b/245-%E6%95%99%E5%AD%B8-google-oauth-2-0-%E7%94%B3%E8%AB%8B%E8%88%87%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97](https://xenby.com/b/245-教學-google-oauth-2-0-申請與使用指南)
+[https://xenby.com/b/245-%E6%95%99%E5%AD%B8-google-oauth-2-0-%E7%94%B3%E8%AB%8B%E8%88%87%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97](https://xenby.com/b/245-教學-google-oauth-2-0-申請與使用指南)、
 
+http://vito-note.blogspot.com/2015/04/google-oauth-20.html、
 
+https://support.google.com/admanager/answer/6078734?hl=zh-Hant
 
