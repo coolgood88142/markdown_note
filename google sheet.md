@@ -79,7 +79,11 @@ G Suite 方案的google帳號需要付費，這裡建議選擇外部即可。
 
 ![google_sheet13](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet13.png>)
 
-OAuth 用戶端ID主要是同意授權存取API資料，服務帳戶則是利用金鑰json檔取得API權限。
+OAuth 用戶端ID主要是同意授權使用API資料，服務帳戶則是利用金鑰json檔取得API權限。
+
+要優先OAuth 授權哪種應用程式使用API，以上範例為網頁應用程式。
+
+當專案使用OAuth 用戶端時，會用access token(權杖)授權使用API，在用服務帳戶才有權限使用google API拿到試算表資料。
 
 P12為PKCS 12，是一個有時效性的私密金鑰檔案(.p12)，由建立憑證取得API資訊。
 
@@ -121,7 +125,7 @@ google.php
 
 #### 7.laravel專案設定api
 
-建立laravel專案後，在.env檔案建立連線，GOOGLE_CLIENT_ID、GOOGLE_CLIENT_SECRET是OAuth 用戶端ID產生的ID與密碼，GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION是找storage目錄底下的服務帳戶金鑰的json檔。config的google.php檔也要設定一樣
+建立laravel專案後，在.env檔案建立連線，GOOGLE_CLIENT_ID、GOOGLE_CLIENT_SECRET是OAuth 用戶端ID產生的ID與密碼，GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION是找storage目錄底下的服務帳戶金鑰的json檔。config的google.php檔也要設定一樣，主要是設定access token
 
 .env檔
 
@@ -203,5 +207,7 @@ http://vito-note.blogspot.com/2015/04/aspnet-google-oauth2.html、
 
 http://vito-note.blogspot.com/2015/04/google-oauth-20.html、
 
-https://support.google.com/admanager/answer/6078734?hl=zh-Hant
+https://support.google.com/admanager/answer/6078734?hl=zh-Hant、
+
+https://developers.google.com/identity/protocols/oauth2/web-server
 
