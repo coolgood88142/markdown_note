@@ -175,11 +175,44 @@ public function getSheetData(Request $request)
 {
    $sheets = Sheets::spreadsheet('1YiYQkvgspoaE9E-RBwwNYOnTz_2Tgtuo4RpApDbvrVQ')->sheet('user');
    $sheetsValue = $sheets->all();
-   dd($sheetsValue);
+   //顯示試算表所有資料
+   //dd($sheetsValue);
+    
+    //更新資料
+    $sheets->range('A4')->update([['3', 'Hello', 'hello@yahoo.com.tw']]);
+	$values = Sheets::range('')->all();
+    // [
+    //   ['ID', '姓名', 'email'],
+    //   ['1', 'Terry', 'terry@gmail.com'],
+    //   ['2', 'Ming', 'i3@yahoo.com.tw'],
+    //   ['3', 'Hello', 'hello@yahoo.com.tw']
+    //]
+    
+    //新增資料
+    $sheets->append([['4', 'Eric', 'eric@gmail.com']]);
+    // [
+    //   ['ID', '姓名', 'email'],
+    //   ['1', 'Terry', 'terry@gmail.com'],
+    //   ['2', 'Ming', 'i3@yahoo.com.tw'],
+    //   ['3', 'Hello', 'hello@yahoo.com.tw']
+    //   ['4', 'Eric', 'eric@gmail.com']
+    //]
+    
+    //產生新的工作表
+    Sheets::spreadsheetByTitle('1YiYQkvgspoaE9E-RBwwNYOnTz_2Tgtuo4RpApDbvrVQ'))->addSheet('SheetTitle');
+    
+    //移除工作表
+    Sheets::spreadsheetByTitle('1YiYQkvgspoaE9E-RBwwNYOnTz_2Tgtuo4RpApDbvrVQ'))->deleteSheet('SheetTitle');
 }
 ```
 
 ![google_sheet18](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet18.png>)
+
+
+
+
+
+#### google app script與google sheet api比較差異
 
 
 
