@@ -214,6 +214,8 @@ public function getSheetData(Request $request)
 
 #### google app script與google sheet api比較差異
 
+google app script是google開發出來的腳本，是用於javascript操作，而laravel的google sheet api是在laravel專案啟用
+
 
 
 #### 總結
