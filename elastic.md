@@ -267,9 +267,11 @@ class TestController extends Controller
 
 ### 9.確認Log
 
-執行完之後，回到Kibana 介面
+執行完之後，回到Kibana 介面，點選Discover
 
+![elastic9](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic9.png>)
 
+![elastic10](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic10.png>)
 
 
 
