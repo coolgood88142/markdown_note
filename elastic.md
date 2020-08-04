@@ -27,7 +27,9 @@ tags: ["Elastic","Log"]
 
 
 
-以下介紹，在Windows安裝ELK
+## Windows安裝ELK
+
+以下介紹，windows安裝ELK
 
 ### 1.下載Elasticsearch
 
@@ -112,7 +114,7 @@ https://www.elastic.co/cn/downloads/kibana
 
 ### 6.啟動Kibana
 
-在bin的資料夾裡，執行kibana.bat，看到127.0.0.1:5601代表啟動成功，在瀏覽器輸入http://127.0.0.1:5601/，就會看到kibana web界面
+在bin的資料夾裡，執行kibana.bat，看到127.0.0.1:5601代表啟動成功，在瀏覽器輸入http://127.0.0.1:5601/，就會看到kibana web界面，代表已經安裝成功。
 
 ![elastic5](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic5.png>)
 
@@ -120,7 +122,11 @@ https://www.elastic.co/cn/downloads/kibana
 
 
 
-### 7.新增索引
+## 在ELK建立Log
+
+以下介紹，使用laravel安裝套件，並且建立Log
+
+### 1.新增索引
 
 點選左上角的menu，選擇Management的Stack Management，之後在點選index Patterns，輸入索引值後點選Create
 
@@ -132,7 +138,7 @@ https://www.elastic.co/cn/downloads/kibana
 
 
 
-### 8.建立Log
+### 2.建立Log
 
 以下範例使用laravel 建立Elastic Log
 
@@ -265,7 +271,7 @@ class TestController extends Controller
 
 ```
 
-### 9.確認Log
+### 3.確認Log
 
 執行完之後，回到Kibana 介面，點選Discover
 
