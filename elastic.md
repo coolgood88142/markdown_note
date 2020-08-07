@@ -17,13 +17,13 @@ tags: ["Elastic","Log"]
 
 是一個分散式搜尋引擎，可以做搜集、分析、存取數據，有效的從大量的資料中，快速找到相關資訊。
 
-#### Logsearch
+#### Logstash
 
 主要是收集日誌的主機上，server端負責將收到的各節點日誌進行過濾、修改等操作在一併發往elasticsearch上去。
 
 #### Kibana
 
-是做為Elasticsearch、Logsearch的Web界面，匯整數據資料。
+是做為Elasticsearch、Logstash的Web界面，匯整數據資料。
 
 
 
@@ -61,9 +61,9 @@ https://www.elastic.co/cn/downloads/logstash
 
 ### 4.新增配置檔案
 
-Logstash需要一個檔案，指定使用檔案中的事件做事情，新增logstach.conf檔案，並且放在bin資料夾裡
+Logstash需要一個檔案，指定使用檔案中的事件做事情，新增logstash.conf檔案，並且放在bin資料夾裡
 
-以下範例：logstach.conf
+以下範例：logstash.conf
 
 ```json
 input { 
@@ -88,7 +88,13 @@ output {
 }
 ```
 
-檔案中input主要是從file的path是取log檔案路徑，要在對應的路徑底下新增空白檔案，filter是在變數裡組message的文字，output是網頁的host寫入Log檔案，index則是快速找到Log檔案。
+##### 檔案有3個項目:
+
+1. input:主要是從file的path是取log檔案路徑，要在對應路徑底下新增空白檔案。
+2. filter:是將message組變數路徑，發出訊息。
+3. output:是網頁的host寫入Log檔案,，index則是快速找到Log檔案。
+
+
 
 新增空白檔案後，在bin的目錄底下執行指令，成功之後，在瀏覽器輸入http://127.0.0.1:9200/，就會看到Logsearch的資訊
 
@@ -221,9 +227,9 @@ class ElasticService
         ];
     
         $params['body'] = [
-        	'id' : $id,
-        	'name' : $name
-        ]
+        	'id' => $id,
+        	'name' => $name
+        ];
     
         $client = $this->connElastic();
         $this->createElastic($client, $params);

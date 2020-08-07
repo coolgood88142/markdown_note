@@ -115,6 +115,14 @@ demo：https://codepen.io/coolgood88142/pen/qBEKYjy
 
 
 
+備註:component使用props的資料，無法變更
+
+原因是全域變數，在instance是用同一個變數，不能隨意變更資料
+
+
+
+
+
 ## computed
 
 computed的變數可以像data一樣，做get與set(讀取與設值)，當頁面有需要被計算的時，可使用computed，一般情況下是沒有set，只會做get。當computed的變數值做更新，要額外計算別的變數，才需要用到set。
