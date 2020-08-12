@@ -256,6 +256,19 @@ vue分為Instance、生命週期
 
 
 
+### 問題：created是在data建立之後才有的，那為什麼要在這個階段執行初始化，直接在data裡建立不就好了?
+
+
+
+### created與data建立變數的差異
+
+created在這個階段時，el還沒建立，卻可以拿到data裡的變數value
+
+created執行初始化時，可以拿到data裡的變數，建立新變數的預設值
+created做完之後，data裡的變數，才可以做變更
+
+
+
 參考資料:
 
 https://vuejs.org/v2/guide/instance.html#Lifecycle-Diagram、
