@@ -370,6 +370,12 @@ class Mechanic extends Model
 
 
 
+```
+
+```
+
+
+
 參考資料:
 
 https://laravel.com/docs/7.x/eloquent-relationships#one-to-many

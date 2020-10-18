@@ -90,9 +90,11 @@ output {
 
 ##### 檔案有3個項目:
 
-1. input:主要是從file的path是取log檔案路徑，要在對應路徑底下新增空白檔案。
+1. input:主要是從file取得檔案路徑，要在對應路徑底下新增空白檔案。
 2. filter:是將message組變數路徑，發出訊息。
 3. output:是網頁的host寫入Log檔案,，index則是快速找到Log檔案。
+
+1、3要驗證正確性
 
 
 
