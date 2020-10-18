@@ -29,55 +29,55 @@ tags: ["fblog"]
 
    登入的route為http://127.0.0.1:8000/login，畫面上要輸入email與密碼，輸入完之後，`VALIDATE`是對帳密進行驗證，`RESET FORM`是對清除帳密的欄位
 
-   ![fblog1](https://coolgood88142.github.io/images/fblog1.png)
+   ![fblog1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog1.png>)
 
    登入成功後，顯示以下畫面，若登入失敗，在console.log顯示401錯誤代碼
 
-   ![fblog2](https://coolgood88142.github.io/images/fblog2.png)
+   ![fblog2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog2.png>)
 
 3. ### 新增文章
 
    按下NEW ARTICLE，會顯示編輯文章的視窗，視窗中輸入標題(title)、內容(content)、文章連結(URL)
 
-   ![fblog3](https://coolgood88142.github.io/images/fblog3.png)
+   ![fblog3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog3.png>)
 
    新增成功後，就會顯示多一筆
 
-   ![fblog4](https://coolgood88142.github.io/images/fblog4.png)
+   ![fblog4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog4.png>)
 
    這時可以輸入`我的第一篇文章`網址，http://127.0.0.1:8000/article/myfirst#/，就會顯示剛剛新增的文章內容
 
-   ![fblog5](https://coolgood88142.github.io/images/fblog5.png)
+   ![fblog5](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog5.png>)
 
 4. ### 編輯文章
 
    點選編輯圖示，跳出編輯視窗
 
-   ![fblog6](https://coolgood88142.github.io/images/fblog6.png)
+   ![fblog6](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog6.png>)
 
-   ![fblog7](https://coolgood88142.github.io/images/fblog7.png)
+   ![fblog7](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog7.png>)
 
    修改完文章後按save(儲存)，並且重新整理畫面
 
-   ![fblog8](https://coolgood88142.github.io/images/fblog8.png)
+   ![fblog8](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog9.png>)
 
 5. ### 刪除文章
 
    點選刪除圖示
 
-   ![fblog9](https://coolgood88142.github.io/images/blog9.png)
+   ![fblog9](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog9.png>)
 
    顯示是否要刪除文章?(Are you sure you want to delete this article?)，確定之後直接移除文章
 
-   ![fblog10](https://coolgood88142.github.io/images/fblog10.png)
+   ![fblog10](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog10.png>)
 
-   ![fblog11](https://coolgood88142.github.io/images/fblog11.png)
+   ![fblog11](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog11.png>)
 
 6. ### 切換背景色
 
    關閉The dark side，會顯示背景白色
 
-   ![fblog12](https://coolgood88142.github.io/images/fblog12.png)
+   ![fblog12](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog12.png>)
 
 
 
