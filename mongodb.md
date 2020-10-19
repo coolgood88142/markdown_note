@@ -26,6 +26,37 @@ db.getCollection('keyword').insert({
 
 ex：新增en欄位資料為epidemic，tc欄位資料為疫情，created_at、update_at取現在時間
 
+laravel的做法是用save儲存資料
+
+```php
+public function addKeywordData(Request $request)
+{
+    $en = $request->en;
+    $tc = $request->tc;
+    $datetime = Carbon::now()->toDateTimeString();
+    $status = 'success';
+    $message = '新增成功!';
+
+    try {
+        $keyword = new Keyword();
+        $keyword->en = $en;
+        $keyword->tc = $tc;
+        $keyword->created_at = $datetime;
+        $keyword->updated_at = $datetime;
+        $keyword->save();
+    } catch (Exception $e) {
+        echo $e;
+    }
+        
+    return [ 
+        'status' => $status,
+        'message' => $message 
+    ];
+}
+```
+
+
+
 
 
 #### update(更新資料)
@@ -54,6 +85,36 @@ db.getCollection('keyword').save("_id" : ObjectId('5f778ca4610c000032007726'),{'
 
 ex：_id的5f778ca4610c000032007726這筆資料，所有欄位取代成'en': now, 'tc': '現在'
 
+laravel的做法是用save更新資料
+
+```php
+public function updateKeywordData(Request $request)
+{
+    $id = $request->id;
+    $en = $request->en;
+    $tc = $request->tc;
+    $datetime = Carbon::now()->toDateTimeString();
+    $status = 'success';
+    $message = '更新成功!';    
+
+    try {
+        $keyword = Keyword::find($id);
+        $keyword->en = $en;
+        $keyword->tc = $tc;
+        $keyword->updated_at = $datetime;
+        $keyword->save();
+        
+    } catch (Exception $e) {
+         echo $e;
+    }
+        
+    return [
+        'status' => $status,
+        'message' => $message 
+    ];
+}
+```
+
 
 
 #### delete(刪除資料)
@@ -67,3 +128,29 @@ db.getCollection('keyword').remove({'en':'epidemic'}, true)
 ```
 
 ex：移除en欄位資料的epidemic，沒寫true會移除
+
+laravel的做法是用delete刪除資料
+
+```php
+public function deleteKeywordData(Request $request)
+{
+    $id = $request->id;
+    $status = 'success';
+    $message = '刪除成功!';
+
+    try {
+        $keyword = Keyword::find($id);
+        $keyword->delete();
+
+    } catch (Exception $e) {
+        echo $e;
+    }
+        
+    return [
+        'status' => $status,
+        'message' => $message
+    ];
+}
+
+```
+
