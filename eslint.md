@@ -28,49 +28,74 @@ How would you like to configure ESLint?
 請問要怎麼配置ESLint? 這裡選擇`Use a popular style guide`
 
 - Answer questions about your style
-
 - Use a popular style guide
-
 - Inspect your JavaScript file(s)
 
-  
-
-ESLint的優點
-
-- 找出語法錯誤
-
-  沒宣告變數就拿來用、少了括號等等常見的語法錯誤
-
-- Airbnb
-
-於 ES6 該怎麼學比較好!?很建議安裝 ESLint 來邊學邊修正觀念。ESLint 是一個團隊統一程式碼結構的工具，如果程式碼不符合規範，則會出現相對應的提示，而其中有三大主流規範是許多開發者愛用的：
+選擇Use a popular style guide，會顯示三個主流規範，這裡選擇`Airbnb`
 
 - Google
-- Airbnb
-- JavaScript Standard Style
+- Airbnb：如果選擇此選項，會多問一個是否使用 React
+- Standard
 
-Airbnb 是其中一個最流行的 JavaScript 代碼規範，它差不多包含所有 JavaScript 的角度。它也是我的個人項目所使用的代碼規範。如果你的項目是基於 React 的，那麼你可以選擇安裝 [eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb)，或者你可以選擇最基本的 [eslint-config-airbnb-base](https://www.npmjs.com/package/eslint-config-airbnb-base)。
+安裝完之後，專案上會多一個eslintrc.js檔案，eslint會依照檔案去檢查程式碼
 
-[eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb) 包含 ECMAScript 6 + 以及 React 的 ESLint 代碼規範。在安裝 `eslint-config-airbnb` 的時候，它會一同安裝 `eslint`, `eslint-plugin-import`, `eslint-plugin-react`, and `eslint-plugin-jsx-a11y`。如果你的項目不是 React 的話，那麼你可以選擇`eslint-config-airbnb-base`。
+檔案中的[rules](https://eslint.org/docs/rules/)可以設定檢查規則
+
+例如：indent: "tab"，是指程式碼要用不能有空格
+
+```javascript
+module.exports = {
+	env: {
+		browser: true,
+		es2021: true,
+	},
+	extends: [
+		"plugin:vue/essential",
+		"airbnb-base",
+	],
+	parserOptions: {
+		ecmaVersion: 12,
+		sourceType: "module",
+	},
+	plugins: [
+		"vue",
+	],
+	rules: {
+		indent: [
+			"error",
+			"tab",
+		],
+		"no-tabs": 0,
+		"linebreak-style": [
+			"error",
+			"windows",
+		],
+		quotes: [
+			"error",
+			"double",
+		],
+		semi: [
+			"error",
+			"never",
+		],
+	},
+};
 
 ```
-npm install eslint-config-airbnb
-```
 
-[eslint-config-airbnb-base](https://www.npmjs.com/package/eslint-config-airbnb-base) 包含ECMAScript 6 + 的 ESLint 代碼規範。安裝它的時候，它會需要 `eslint` 和 `eslint-plugin-import`。
+#### 程式碼出現的問題
 
-```
-npm install eslint-config-airbnb-base
-```
+- var改用let或const
+- let 的變數值不會更改，請改用const
+- 字串用雙引號，請改用單引號
+- 不使用全域變數、建議使用 `===`而不是 `==`
+- console.log 沒移除
+- space改用tab
 
-然後在你的 `.eslintrc` 加入 `"extends": "airbnb-base"` 就可以了。
-
-Airbnb 的完整代碼規範可以在 [airbnb/javascript](https://github.com/airbnb/javascript) 上閱讀。
-
+Airbnb 是其中一個 JavaScript 代碼規範，在安裝過程中選擇Airbnb，eslintrc.js會寫入`extends: "airbnb-base"`，Airbnb 的完整代碼規範可以[參考](https://github.com/airbnb/javascript)。
 
 
-- 不會再修改的請用 `const`
-- 能寫單行請別寫那麼多行好嗎？
-- 一個參數而已，幹麻用小括號包起來
-- 每行後面都要有分號
-- `console.log` 記得移除
+
+參考資料：https://www.jianshu.com/p/05a6d7980a33、
+
+https://ithelp.ithome.com.tw/articles/10195212
