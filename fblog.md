@@ -18,7 +18,8 @@ tags: ["fblog"]
    密碼這裡使用到bcrypt，這個是將密碼做加密，在collection顯示加密後的資料
 
    ```php
-               'username' => 'fadmin',
+           DB::collection('admins')->insert([     
+   			'username' => 'fadmin',
                'email' => 'admin@fblog.com',
                'email_verification_date' => '',
                'password' => bcrypt('password')
@@ -59,7 +60,7 @@ tags: ["fblog"]
 
    修改完文章後按save(儲存)，並且重新整理畫面
 
-   ![fblog8](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog9.png>)
+   ![fblog8](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog8.png>)
 
 5. ### 刪除文章
 
@@ -79,6 +80,83 @@ tags: ["fblog"]
 
    ![fblog12](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog12.png>)
 
+#### 程式流程
 
+![fblog](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog.png>)
+
+依照route.js分別執行顯示component
+
+```javascript
+import VueRouter from 'vue-router';
+
+// Components
+import ArticleList from '@/js/components/ArticleList';
+import Article from '@/js/components/Article';
+import Login from '@/js/components/Login';
+import ArticleAdminList from '@/js/components/admin/ArticleAdminList';
+
+const router = new VueRouter({
+    history: true,
+    mode: 'history',
+    routes: [{
+        path: '/',
+        name: 'articles',
+        component: ArticleList,
+        meta: {
+            auth: undefined
+        }
+    }, {
+        path: '/article/:slug',
+        name: 'article',
+        component: Article,
+        meta: {
+            auth: undefined
+        }
+    }, {
+        path: '/login',
+        name: 'adminLogin',
+        component: Login,
+        meta: {
+            auth: undefined
+        }
+    }, {
+        path: '/admin',
+        name: 'admin',
+        component: ArticleAdminList,
+        meta: {
+            auth: true,
+            redirect: {
+                name: 'adminLogin'
+            },
+            forbiddenRedirect: '/403'
+        }
+    }]
+});
+
+export default router;
+
+```
+
+##### 預設(http://127.0.0.1:8000)
+
+網頁預設顯示全部的文章，顯示`ArticleList.vue`，這時會執行`ArticleController`的`index()`，拿到所有文章資料，每筆文章有個`Continue reading...`按鈕，監聽`showArticle(slug)`，參數帶文章的`URL`，`showArticle`是顯示文章的標題、文章內容。
+
+##### 文章頁面(http://127.0.0.1:8000/article/:slug)
+
+執行`showArticle(slug)`，會執行`/article/:slug`這個`route`，會依照`slug`這個參數去找文章的`URL`，從`mongodb`找出文章資料，並且顯示在`ArticleList.vue`。
+
+##### 登入頁面(http://127.0.0.1:8000/login)
+
+顯示`Login.vue`，輸入帳號密碼後，會從`AuthController`的`Login()`做驗證，會回傳`status`或`error`，若是`success`會執行`router`的`admin`，`error`則是會在`console.log`顯示`401`錯誤訊息。
+
+##### 登入成功頁面(http://127.0.0.1:8000/admin)
+
+顯示`ArticleAdminList.vue`，畫面載入時到`created()`執行`initialize()`，依照`routes/app.php`的`resources`的`article`，執行`ArticleController`的`index()`，拿到所有文章資料。
+
+點選`NEW ARTICLE`按鈕，會先執行`computed`的`formTitle()`，顯示編輯視窗輸入完標題(title)、內容(content)、文章連結(URL)，按下save按鈕，會將資料存到`mongodb`。
+
+點選某個文章的編輯圖示，可以編輯文章資料，會先執行`computed`的`formTitle()`，再執行`editItem()`，將資料傳到編輯視窗，修改文章內容後，按下save按鈕，會將資料存到`mongodb`。
+
+點選某個文章的刪除圖示，可以將文章移除掉，執行`deleteItem()`，將資料傳到`mongodb`做移除，再更新增現有資料。
 
 參考資料：https://github.com/dchaur/f-blog#testing-the-api

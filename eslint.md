@@ -37,7 +37,7 @@ How would you like to configure ESLint?
 - Airbnb：如果選擇此選項，會多問一個是否使用 React
 - Standard
 
-安裝完之後，專案上會多一個eslintrc.js檔案，eslint會依照檔案去檢查程式碼
+安裝完之後，專案上會多一個eslint.js檔案，eslint會依照檔案去檢查程式碼
 
 檔案中的[rules](https://eslint.org/docs/rules/)可以設定檢查規則
 
@@ -92,7 +92,17 @@ module.exports = {
 - console.log 沒移除
 - space改用tab
 
-Airbnb 是其中一個 JavaScript 代碼規範，在安裝過程中選擇Airbnb，eslintrc.js會寫入`extends: "airbnb-base"`，Airbnb 的完整代碼規範可以[參考](https://github.com/airbnb/javascript)。
+Airbnb 是其中一個 JavaScript 代碼規範，在安裝過程中選擇Airbnb，eslint.js會寫入`extends: "airbnb-base"`，Airbnb 的完整代碼規範可以[參考](https://github.com/airbnb/javascript)。
+
+若程式碼有問題，系統會告知錯哪裡
+
+--------
+
+例如：Expected indentation of 6 tabs but found 5
+
+這段程式要6個tabs，但是只有5個
+
+![eslint1](C:\xampp\htdocs\markdown_note\assets\images\eslint1.png)
 
 
 
