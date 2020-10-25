@@ -159,4 +159,20 @@ export default router;
 
 點選某個文章的刪除圖示，可以將文章移除掉，執行`deleteItem()`，將資料傳到`mongodb`做移除，再更新增現有資料。
 
+#### f-blog的creation_date與keyword的created_at列出差異
+
+```
+"creation_date" : {
+        "date" : "2020-10-20 18:34:34.490048",
+        "timezone_type" : 3,
+        "timezone" : "UTC"
+},
+
+"created_at" : "2020-10-02 20:25:08"
+```
+
+creation_date的時間格式是直接儲存Date物件，而不是組的，ex:直接儲存`Carbon::now()`
+
+created_at是儲存`Carbon::now()->toDateTimeString()`，是將Date物件轉成String
+
 參考資料：https://github.com/dchaur/f-blog#testing-the-api
