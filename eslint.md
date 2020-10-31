@@ -35,6 +35,8 @@ eslint --init
 - Airbnb：如果選擇此選項，會多問一個Do you use React?(是否使用 React)
 - Standard
 
+**補充要安裝React的步驟**
+
 React是安裝eslint-plugin-react套件，是將react的規則放到rule
 
 安裝完之後，專案上會多一個eslint.js檔案，eslint會依照檔案去檢查程式碼

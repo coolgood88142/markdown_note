@@ -82,7 +82,15 @@ tags: ["fblog"]
 
 #### 程式流程
 
-![fblog](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog.png>)
+![fblog13](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog13.png>)
+
+![fblog14](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog14.png>)
+
+![fblog15](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog15.png>)
+
+![fblog16](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog16.png>)
+
+![fblog17](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog17.png>)
 
 依照route.js分別執行顯示component
 
@@ -139,7 +147,7 @@ export default router;
 
 ##### 預設(http://127.0.0.1:8000)
 
-網頁預設顯示全部的文章，顯示`ArticleList.vue`，這時會執行`ArticleController`的`index()`，拿到所有文章資料，每筆文章有個`Continue reading...`按鈕，監聽`showArticle(slug)`，參數帶文章的`URL`，`showArticle`是顯示文章的標題、文章內容。
+在`ArticleList.vue`顯示全部的文章，這時會執行`ArticleController`的`index()`，拿到所有文章資料，每筆文章有個`Continue reading...`按鈕，監聽`showArticle(slug)`，參數帶文章的`URL`，`showArticle`是顯示文章的標題、文章內容。
 
 ##### 文章頁面(http://127.0.0.1:8000/article/:slug)
 
@@ -147,13 +155,13 @@ export default router;
 
 ##### 登入頁面(http://127.0.0.1:8000/login)
 
-顯示`Login.vue`，輸入帳號密碼後，會從`AuthController`的`Login()`做驗證，會回傳`status`或`error`，若是`success`會執行`router`的`admin`，`error`則是會在`console.log`顯示`401`錯誤訊息。
+顯示`Login.vue`，輸入帳號密碼後，會從`AuthController`的`Login()`做驗證，若是回傳`success`會執行`router`的`admin`，`error`則是會在`console.log`顯示`401`錯誤訊息。
 
 ##### 登入成功頁面(http://127.0.0.1:8000/admin)
 
-顯示`ArticleAdminList.vue`，畫面載入時到`created()`執行`initialize()`，依照`routes/app.php`的`resources`的`article`，執行`ArticleController`的`index()`，拿到所有文章資料。
+顯示`ArticleAdminList.vue`，畫面載入時到`created()`執行`initialize()`，依照routes的`api/article`，執行`ArticleController`的`index()`，拿到所有文章資料。
 
-點選`NEW ARTICLE`按鈕，會先執行`computed`的`formTitle()`，顯示編輯視窗輸入完標題(title)、內容(content)、文章連結(URL)，按下save按鈕，會將資料存到`mongodb`。
+點選`NEW ARTICLE`按鈕，會先執行`computed`的`formTitle()`決定視窗的標題文字，顯示編輯視窗輸入完標題(title)、內容(content)、文章連結(URL)，按下save按鈕，會將資料存到`mongodb`。
 
 點選某個文章的編輯圖示，可以編輯文章資料，會先執行`computed`的`formTitle()`，再執行`editItem()`，將資料傳到編輯視窗，修改文章內容後，按下save按鈕，會將資料存到`mongodb`。
 
