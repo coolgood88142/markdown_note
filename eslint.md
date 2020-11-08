@@ -35,13 +35,13 @@ eslint --init
 - Airbnb：如果選擇此選項，會多問一個Do you use React?(是否使用 React)
 - Standard
 
-React是 facebook 開發的一個 JS 函式庫，負責產生與管理前端的 UI 。它並不是框架。
+React是一個 JS 函式庫，負責產生與管理前端的 UI 。
 
-這裡我們不需要選擇React，專案沒用到React 套件，所以不需要。
+這裡我們不需要，因為專案沒用到React 套件。
 
-選擇React是會安裝eslint-plugin-react套件，是將React的規則放到rule
+如果選擇使用的話，會安裝eslint-plugin-react套件，會將React的規則放到rule
 
-安裝完之後，專案上會多一個eslint.js檔案，eslint會依照檔案去檢查程式碼
+上面步驟安裝完之後，專案上會多一個eslint.js，eslint會依照檔案去檢查程式碼
 
 檔案中的[rules](https://eslint.org/docs/rules/)可以設定檢查規則
 

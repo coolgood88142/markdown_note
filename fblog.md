@@ -145,27 +145,29 @@ export default router;
 
 ```
 
-##### 預設(http://127.0.0.1:8000)
+##### 首頁(http://127.0.0.1:8000)
 
-在`ArticleList.vue`顯示全部的文章，這時會執行`ArticleController`的`index()`，拿到所有文章資料，每筆文章有個`Continue reading...`按鈕，監聽`showArticle(slug)`，參數帶文章的`URL`，`showArticle`是顯示文章的標題、文章內容。
+所有的Route全部指定app.blade.php，透過vue-router對應的route中，指向是先設定好的components，首頁的Route會先指向`ArticleList.vue`顯示全部的文章，這時跑後端會執行`ArticleController`的`index()`，拿到所有文章資料，每筆文章有個`Continue reading...`按鈕，監聽`showArticle(slug)`，參數帶文章的`URL`，`showArticle`是顯示文章的標題、文章內容。
 
 ##### 文章頁面(http://127.0.0.1:8000/article/:slug)
 
-執行`showArticle(slug)`，會執行`/article/:slug`這個`route`，會依照`slug`這個參數去找文章的`URL`，從`mongodb`找出文章資料，並且顯示在`ArticleList.vue`。
+在`ArticleList.vue`點選文章後，執行`showArticle(slug)`，在vue-router對應`article/:slug`指向`ArticleList.vue`，會依照`slug`這個參數去找文章，從`mongodb`找出文章資料，並且顯示在頁面上。
 
 ##### 登入頁面(http://127.0.0.1:8000/login)
 
-顯示`Login.vue`，輸入帳號密碼後，會從`AuthController`的`Login()`做驗證，若是回傳`success`會執行`router`的`admin`，`error`則是會在`console.log`顯示`401`錯誤訊息。
+在最外層的`App.vue`點選登出圖示，執行`logout()`，在vue-router對應`/login`指向`Login.vue`，輸入帳號密碼後，點選`Validate`按鈕，跑到後端`AuthController`的`Login()`做驗證，若是回傳`success`會執行`router`的`admin`，`error`則是會在`console.log`顯示`401`錯誤訊息，如果是點選`Reset Form`按鈕會清空，剛輸入的帳號密碼資料。
 
 ##### 登入成功頁面(http://127.0.0.1:8000/admin)
 
-顯示`ArticleAdminList.vue`，畫面載入時到`created()`執行`initialize()`，依照routes的`api/article`，執行`ArticleController`的`index()`，拿到所有文章資料。
+登入成功會在在vue-router對應`/admin`指向`ArticleAdminList.vue`，畫面載入時到`created()`執行`initialize()`，依照routes的`api/articles`，執行`ArticleController`的`index()`，拿到所有文章資料。
 
 點選`NEW ARTICLE`按鈕，會先執行`computed`的`formTitle()`決定視窗的標題文字，顯示編輯視窗輸入完標題(title)、內容(content)、文章連結(URL)，按下save按鈕，會將資料存到`mongodb`。
 
 點選某個文章的編輯圖示，可以編輯文章資料，會先執行`computed`的`formTitle()`，再執行`editItem()`，將資料傳到編輯視窗，修改文章內容後，按下save按鈕，會將資料存到`mongodb`。
 
 點選某個文章的刪除圖示，可以將文章移除掉，執行`deleteItem()`，將資料傳到`mongodb`做移除，再更新增現有資料。
+
+要補上`mongodb`怎麼做新增、修改、刪除，而不是用一句表示，要詳細寫出`mongodb`怎麼運作
 
 #### f-blog的creation_date與keyword的created_at列出差異
 
