@@ -151,7 +151,7 @@ export default router;
 
 ##### 文章頁面(http://127.0.0.1:8000/article/:slug)
 
-在`ArticleList.vue`點選文章後，執行`showArticle(slug)`，在vue-router對應`article/:slug`指向`ArticleList.vue`，會依照`slug`這個參數去找文章，從`mongodb`找出文章資料，並且顯示在頁面上。
+在`ArticleList.vue`點選文章後，執行`showArticle(slug)`，在vue-router對應`article/:slug`指向`ArticleList.vue`，會依照`slug`這個參數去找文章，執行`ArticleController`的`show()`，顯示某個文章資料，並且顯示在頁面上。
 
 ##### 登入頁面(http://127.0.0.1:8000/login)
 
@@ -159,15 +159,13 @@ export default router;
 
 ##### 登入成功頁面(http://127.0.0.1:8000/admin)
 
-登入成功會在在vue-router對應`/admin`指向`ArticleAdminList.vue`，畫面載入時到`created()`執行`initialize()`，依照routes的`api/articles`，執行`ArticleController`的`index()`，拿到所有文章資料。
+登入成功會在vue-router對應`/admin`指向`ArticleAdminList.vue`，畫面載入時到`created()`執行`initialize()`，vue-router對應`api/articles`指向，執行`ArticleController`的`index()`，拿到所有文章資料。
 
-點選`NEW ARTICLE`按鈕，會先執行`computed`的`formTitle()`決定視窗的標題文字，顯示編輯視窗輸入完標題(title)、內容(content)、文章連結(URL)，按下save按鈕，會將資料存到`mongodb`。
+點選`NEW ARTICLE`按鈕，會先執行`computed`的`formTitle()`決定視窗的標題文字，顯示編輯視窗輸入完標題(title)、內容(content)、文章連結(URL)，按下save按鈕，執行`ArticleController`的`store()`會將資料存到`mongodb`。
 
-點選某個文章的編輯圖示，可以編輯文章資料，會先執行`computed`的`formTitle()`，再執行`editItem()`，將資料傳到編輯視窗，修改文章內容後，按下save按鈕，會將資料存到`mongodb`。
+點選某個文章的編輯圖示，可以編輯文章資料，會先執行`computed`的`formTitle()`，再執行`editItem()`，將資料傳到編輯視窗，修改文章內容後，按下save按鈕，執行`ArticleController`的`update()`會將資料存到`mongodb`。
 
-點選某個文章的刪除圖示，可以將文章移除掉，執行`deleteItem()`，將資料傳到`mongodb`做移除，再更新增現有資料。
-
-要補上`mongodb`怎麼做新增、修改、刪除，而不是用一句表示，要詳細寫出`mongodb`怎麼運作
+點選某個文章的刪除圖示，可以將文章移除掉，執行`deleteItem()`，會顯示訊息`Are you sure you want to delete this article?`，執行`ArticleController`的`destroy()`，在`mongodb`做移除文章資料，再更新現有資料。
 
 #### f-blog的creation_date與keyword的created_at列出差異
 
