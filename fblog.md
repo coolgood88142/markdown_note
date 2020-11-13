@@ -92,6 +92,18 @@ tags: ["fblog"]
 
 ![fblog17](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog17.png>)
 
+### 循序圖
+
+![fblog18](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog18.png>)
+
+![fblog19](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog19.png>)
+
+![fblog20](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog20.png>)
+
+![fblog21](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog21.png>)
+
+![fblog22](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog22.png>)
+
 依照route.js分別執行顯示component
 
 ```javascript
