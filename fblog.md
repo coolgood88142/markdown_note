@@ -195,4 +195,14 @@ creation_date的時間格式是直接儲存Date物件，而不是組的，ex:直
 
 created_at是儲存`Carbon::now()->toDateTimeString()`，是將Date物件轉成String
 
-參考資料：https://github.com/dchaur/f-blog#testing-the-api
+#### axios put和patch差異
+
+put是將整筆資料取代，有點像replace，patch可以針對某個屬性做更新
+
+
+
+
+
+參考資料：https://github.com/dchaur/f-blog#testing-the-api、
+
+https://hackmd.io/@FortesHuang/HkEmMIgJ8#PUT%E8%88%87PATCH%E7%9A%84%E4%B8%8D%E5%90%8C
