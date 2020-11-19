@@ -118,9 +118,24 @@ git clone https://github.com/elastic/opbeans-java.git
 mvn package
 ```
 
+在C:\Users\coolg\Desktop\ELK\opbeans-java\opbeans，執行以下這些指令
+
+執行不要換行
+
+```
+java -javaagent:./elastic-apm-agent-1.19.0.jar \
+     -Delastic.apm.service_name=my-application \
+     -Delastic.apm.server_urls=http://localhost:8200 \
+     -Delastic.apm.secret_token= \
+     -Delastic.apm.application_packages=org.example \
+     -jar ./target/opbeans-0.0.1-SNAPSHOT.jar
+```
 
 
 
+#### 4.workplace search
+
+本機的kibana 並沒有workplace search，只能在Elastic Cloud手動建立
 
 
 
@@ -170,8 +185,14 @@ mvn package
 
   要先找出當初本機的帳號密碼
 
-  
+- 執行javaagent有問題
+
+  確認好Delastic.apm.secret_token的資料怎麼設定
 
   
 
+  
+
+  
+  
   
