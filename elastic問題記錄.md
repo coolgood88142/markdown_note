@@ -120,15 +120,18 @@ mvn package
 
 在C:\Users\coolg\Desktop\ELK\opbeans-java\opbeans，執行以下這些指令
 
-執行不要換行
+執行不要換行，這裡要注意範例中的反斜線不要用，會錯誤
 
 ```
-java -javaagent:./elastic-apm-agent-1.19.0.jar \
-     -Delastic.apm.service_name=my-application \
-     -Delastic.apm.server_urls=http://localhost:8200 \
-     -Delastic.apm.secret_token= \
-     -Delastic.apm.application_packages=org.example \
+java -javaagent:./elastic-apm-agent-1.19.0.jar 
+     -Delastic.apm.service_name=my-application 
+     -Delastic.apm.server_urls=http://localhost:8200
+     -Delastic.apm.secret_token= 
+     -Delastic.apm.application_packages=org.example 
      -jar ./target/opbeans-0.0.1-SNAPSHOT.jar
+     
+     java -javaagent:./elastic-apm-agent-1.19.0.jar -Delastic.apm.service_name=opbeans-java -Delastic.apm.server_urls=http://localhost:8200 -Delastic.apm.secret_token= -Delastic.apm.application_packages=co.elastic.apm.opbeans -jar ./target/opbeans-0.0.1-SNAPSHOT.jar
+
 ```
 
 
@@ -173,9 +176,7 @@ java -javaagent:./elastic-apm-agent-1.19.0.jar \
 
   要先找出當初本機的帳號密碼
 
-- 安裝時顯示錯誤訊息
-
-  Exiting: Failed to create Beat meta file: open C:\Program Files\Metricbeat\data\meta.json.new: Access is denied.
+  
 
 ##### 3.安裝APM
 
@@ -189,10 +190,28 @@ java -javaagent:./elastic-apm-agent-1.19.0.jar \
 
   確認好Delastic.apm.secret_token的資料怎麼設定
 
+- 安裝時顯示錯誤訊息
+
+  1. ERROR co.elastic.apm.agent.report.IntakeV2ReportingEventHandler - Error trying to connect to APM Server. Some details about SSL configurations corresponding the current connection are logged at INFO level
+
+     java JVM與APM Server版本沒對應上，導致安裝錯誤，要更換`elastic-apm-agent.jar`版本
+
+  2. 安裝成功後ServiceMap沒在執行
+
+     要更新7.8.0以上才可以
+
+     參考資料：https://discuss.elastic.co/t/service-map-not-working/244000
+
+  
+
   
 
   
 
   
+
   
+
+  
+
   
