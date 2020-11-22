@@ -1,8 +1,8 @@
 ## Elastic 文章
 
-#### 1.安裝filebeat
+#### 1.安裝kibana Logs
 
-windows要自行下載`filebeat-7.8.0-windows-x86_64.zip`後解壓縮
+windows要自行下載`filebeat-7.10.0-windows-x86_64.zip`後解壓縮
 
 將`filebeat.yml`這幾段註解拿掉
 
@@ -16,32 +16,31 @@ output.elasticsearch:
   password: "changeme"
 ```
 
-開啟cmd，路徑到ELK的filebeat-7.8.0-windows-x86_64，執行下面的指令
+開啟cmd，路徑到ELK的filebeat-7.10.0-windows-x86_64，執行下面的指令
 
 讀取filebeat.yml
 
 ```
-filebeat -c filebeat.yml -e
-
+.\filebeat.exe -c filebeat.yml -e
 ```
 
-安裝system.logs
+啟動filebeat的system模組
 
 ```
-filebeat modules enable system
+.\filebeat.exe modules enable system
 ```
 
 啟動filebeat
 
 ```
-filebeat setup -e
+.\filebeat.exe setup -e
 ```
 
-
+https://stackoverflow.com/questions/41751605/running-filebeat-in-windows
 
 #### 2.安裝metricbeat
 
-windows要自行下載`metricbeat-7.8.0-windows-x86_64.zip`後解壓縮
+windows要自行下載`metricbeat-7.10.0-windows-x86_64.zip`後解壓縮
 
 將`metricbeat.yml`這幾段註解拿掉
 
@@ -55,32 +54,31 @@ output.elasticsearch:
   password: "changeme"
 ```
 
-開啟cmd，路徑到ELK的metricbeat-7.8.0-windows-x86_64，執行下面的指令
+開啟cmd，路徑到ELK的metricbeat-7.10.0-windows-x86_64，執行下面的指令
 
 讀取metricbeat.yml
 
 ```
-metricbeat -c metricbeat.yml -e
-
+.\metricbeat.exe -c metricbeat.yml -e
 ```
 
 安裝system.logs
 
 ```
-metricbeat modules enable system
+.\metricbeat.exe modules enable system
 ```
 
 啟動metricbeat
 
 ```
-metricbeat setup -e
+.\metricbeat.exe setup -e
 ```
 
 
 
 #### 3.安裝APM
 
-windows要自行下載`apm-server-7.8.0-windows-x86_64.zip`後解壓縮
+windows要自行下載`apm-server-7.10.0-windows-x86_64.zip`後解壓縮
 
 將`apm-server.yml`這幾段註解拿掉
 
@@ -91,19 +89,18 @@ output.elasticsearch:
   password: "changeme"
 ```
 
-開啟cmd，路徑到ELK的metricbeat-7.8.0-windows-x86_64，執行下面的指令
+開啟cmd，路徑到ELK的metricbeat-7.10.0-windows-x86_64，執行下面的指令
 
 讀取apm-server.yml
 
 ```
-apm-server -c apm-server.yml -e
-
+.\apm-server.exe -c apm-server.yml -e
 ```
 
 啟動apm-server
 
 ```
-apm-server setup -e
+.\apm-server.exe setup -e
 ```
 
 下載opbeans-java
@@ -130,15 +127,29 @@ java -javaagent:./elastic-apm-agent-1.19.0.jar
      -Delastic.apm.application_packages=org.example 
      -jar ./target/opbeans-0.0.1-SNAPSHOT.jar
      
-     java -javaagent:./elastic-apm-agent-1.19.0.jar -Delastic.apm.service_name=opbeans-java -Delastic.apm.server_urls=http://localhost:8200 -Delastic.apm.secret_token= -Delastic.apm.application_packages=co.elastic.apm.opbeans -jar ./target/opbeans-0.0.1-SNAPSHOT.jar
+     java -javaagent:./elastic-apm-agent-1.18.0.RC1.jar -Delastic.apm.service_name=opbeans-java -Delastic.apm.server_urls=http://localhost:8200 -Delastic.apm.application_packages=co.elastic.apm.opbeans -jar ./target/opbeans-0.0.1-SNAPSHOT.jar
+
 
 ```
 
-
+PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.ps1.
 
 #### 4.workplace search
 
-本機的kibana 並沒有workplace search，只能在Elastic Cloud手動建立
+- 本機的C:\Users\coolg\Desktop\ELK\kibana-7.9.0-windows-x86_64\config\kibana.yml，新增hosts之後在重新啟動kibana
+
+  ```
+  enterpriseSearch.host: 'http://localhost:3002'
+  ```
+
+
+
+
+
+#### 5.App search
+
+- 與workplace search都屬於
+- 
 
 
 
@@ -146,9 +157,11 @@ java -javaagent:./elastic-apm-agent-1.19.0.jar
 
 ##### 1. 安裝System logs
 
+- Elastic-7.10版本，System logs更換成Kibana Logs，安裝步驟沒變
+
 - windows無法安裝`filebeat`
 
-  要透過`filebeat`安裝`System logs`，自行下載`filebeat-7.8.0-windows-x86_64.zip`
+  要透過`filebeat`安裝`System logs`，自行下載`filebeat-7.10.0-windows-x86_64.zip`
 
 - filebeat的filebeat.yml，要設定ElasticSearch的帳號密碼
 
@@ -160,11 +173,13 @@ java -javaagent:./elastic-apm-agent-1.19.0.jar
 
   https://discuss.elastic.co/t/filebeat-on-kubernetes-access-denied/152678/6
 
-- 用本機安裝的話，安裝步驟要不一樣
+  將C:\Users\coolg\Desktop\ELK\filebeat-7.9.0-windows-x86_64\modules.d\system.yml檔名改成system.yml.disabled
 
-  1. 先執行`filebeat -c filebeat.yml -e`
-  2. 跑完在執行`filebeat modules enable system`
-  3. 裝完在執行filebeat -e
+- [Data Visualizer](http://localhost:5601/app/ml#/datavisualizer)無法update file
+
+  上傳後
+
+  
 
   
 
