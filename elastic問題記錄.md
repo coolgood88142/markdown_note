@@ -142,16 +142,81 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
   enterpriseSearch.host: 'http://localhost:3002'
   ```
 
+- 在C:\Users\coolg\Desktop\ELK\elasticsearch-7.9.0config\elasticsearch.yml，新增下面指令
 
+  ```
+  xpack.security.enabled: true
+  xpack.security.authc.api_key.enabled: true
+  xpack:
+    security:
+      authc:
+        realms:
+          native:
+            native1:
+              order: 0
+  ```
 
+- 下載完enterpriseSearch zip檔，在config/enterprise-search.yml，新增下面這些指令
 
+  ```
+  elasticsearch.username: elastic
+  elasticsearch.password: [ELASTIC_PW]
+  ent_search.auth.source: elasticsearch-native
+  ```
 
 #### 5.App search
 
-- 與workplace search都屬於
-- 
+- 本機的C:\Users\coolg\Desktop\ELK\kibana-7.9.0-windows-x86_64\config\kibana.yml，新增hosts之後在重新啟動kibana
 
+  ```
+  enterpriseSearch.host: 'http://localhost:3002'
+  ```
 
+- 在C:\Users\coolg\Desktop\ELK\elasticsearch-7.9.0config\elasticsearch.yml，新增下面指令
+
+  ```
+  xpack.security.enabled: true
+  xpack.security.authc.api_key.enabled: true
+  xpack:
+    security:
+      authc:
+        realms:
+          native:
+            native1:
+              order: 0
+  ```
+
+- 下載完enterpriseSearch zip檔，在config/enterprise-search.yml，新增下面這些指令
+
+  ```
+  elasticsearch.username: elastic
+  elasticsearch.password: [ELASTIC_PW]
+  ent_search.auth.source: elasticsearch-native
+  ```
+
+#### 6.Filebeat NGINX 
+
+- 文章介紹是怎麼在Elastic Cloud是使用Elastic Stack，但我們本機已經先安裝Filebeat直接跳到執行
+
+  ```
+  .\filebeat.exe modules enable system nginx mysql
+  ```
+
+- 在C:\Users\coolg\Desktop\ELK\filebeat-7.9.0-windows-x86_64\modules.d\nginx.yml，修改內容
+
+  ```
+  module: nginx
+    access:
+      var.paths: ["/var/log/nginx/access.log*"]
+  ```
+
+- 在重新啟動Filebeat 
+
+  ```
+  .\filebeat.exe setup -e
+  ```
+
+  
 
 #### 安裝過程遇到的問題?
 
@@ -174,12 +239,6 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
   https://discuss.elastic.co/t/filebeat-on-kubernetes-access-denied/152678/6
 
   將C:\Users\coolg\Desktop\ELK\filebeat-7.9.0-windows-x86_64\modules.d\system.yml檔名改成system.yml.disabled
-
-- [Data Visualizer](http://localhost:5601/app/ml#/datavisualizer)無法update file
-
-  上傳後
-
-  
 
   
 
@@ -217,16 +276,17 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
 
      參考資料：https://discuss.elastic.co/t/service-map-not-working/244000
 
-  
+##### 4.安裝workplace search和App search
 
-  
+- workplace search和App search都是來自於Enterprise Search，但是Enterprise Search並沒有提供window package 
 
-  
 
-  
 
-  
 
-  
 
-  
+
+
+
+
+
+
