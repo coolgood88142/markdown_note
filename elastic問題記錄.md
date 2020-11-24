@@ -216,7 +216,70 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
   .\filebeat.exe setup -e
   ```
 
+#### 7.Metricbeat  NGINX 
+
+- 在C:\Users\coolg\Desktop\ELK\metricbeat-7.9.0-windows-x86_64\modules.d\metricbeat.yml修改內容
+
+  ```
+  metricbeat.config.modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+  setup.template.settings:
+    index.number_of_shards: 1
+    index.codec: best_compression
+  setup.kibana:
+    host: "server1:5601"
+  output.elasticsearch:
+    hosts: ["server1:9200"]
+  processors:
+    - add_host_metadata: ~
+    - add_cloud_metadata: ~
+  ```
+
+- 在C:\Users\coolg\Desktop\ELK\metricbeat-7.9.0-windows-x86_64\modules.d\system.yml修改內容
+
+  ```
+  - module: system
+    period: 10s
+    metricsets:
+      - cpu
+      - load
+      - memory
+      - network
+      - process
+      - process_summary
+      - socket_summary
+    process.include_top_n:
+      by_cpu: 5      # include top 5 processes by CPU
+      by_memory: 5   # include top 5 processes by memory
+  - module: system
+    period: 1m
+    metricsets:
+      - filesystem
+      - fsstat
+    processors:
+    - drop_event.when.regexp:
+        system.filesystem.mount_point: '^/(sys|cgroup|proc|dev|etc|host|lib)($|/)'
+  - module: system
+    period: 15m
+    metricsets:
+      - uptime
+  ```
+
+- 在C:\Users\coolg\Desktop\ELK\metricbeat-7.9.0-windows-x86_64\modules.d\nginx.yml修改內容
+
+  ```
+  - module: nginx
+    period: 10s
+    hosts: ["http://172.18.0.1"]
+    server_status_path: "server-status"
+  ```
+
   
+
+
+
+
 
 #### 安裝過程遇到的問題?
 
