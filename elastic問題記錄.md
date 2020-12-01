@@ -275,6 +275,12 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
     server_status_path: "server-status"
   ```
 
+- 再重新啟動metricbeat
+
+  ```
+  .\metricbeat.exe setup -e
+  ```
+
   
 
 
@@ -342,6 +348,8 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
 ##### 4.安裝workplace search和App search
 
 - workplace search和App search都是來自於Enterprise Search，但是Enterprise Search並沒有提供window package 
+
+  
 
 
 

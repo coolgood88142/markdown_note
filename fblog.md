@@ -106,6 +106,10 @@ tags: ["fblog"]
 
 ![fblog22](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fblog22.png>)
 
+### 循序圖
+
+![mongodb](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/mongodb.png>)
+
 依照route.js分別執行顯示component
 
 ```javascript
