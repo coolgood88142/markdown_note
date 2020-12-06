@@ -194,7 +194,7 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
   ent_search.auth.source: elasticsearch-native
   ```
 
-#### 6.Filebeat NGINX 
+#### 6.Filebeat NGINX-1
 
 - 文章介紹是怎麼在Elastic Cloud是使用Elastic Stack，但我們本機已經先安裝Filebeat直接跳到執行
 
@@ -207,7 +207,9 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
   ```
   module: nginx
     access:
-      var.paths: ["/var/log/nginx/access.log*"]
+      var.paths: ["C:\Users\coolg\Desktop\ELK\log\nginx\access.log*"]
+    error:
+      var.paths: ["C:\Users\coolg\Desktop\ELK\log\nginx\error.log*"]
   ```
 
 - 在重新啟動Filebeat 
@@ -281,11 +283,33 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
   .\metricbeat.exe setup -e
   ```
 
-  
 
+#### 8.Filebeat NGINX-2
 
+- 修改C:\Users\coolg\Desktop\ELK\filebeat-7.9.0-windows-x86_64\modules.d\filebeat.yml
 
+  ```
+  filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - C:\Users\coolg\Desktop\ELK\log\nginx\nginx.log
+  ```
 
+- 測試設定
+
+  ```
+  ./filebeat test config
+  ./filebeat test output
+  ```
+
+-  在重新啟動Filebeat 
+
+  ```
+  .\filebeat.exe setup -e
+  ```
+
+  #### 
 
 #### 安裝過程遇到的問題?
 

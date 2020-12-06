@@ -108,7 +108,13 @@ tags: ["fblog"]
 
 ### 循序圖
 
-![mongodb](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/mongodb.png>)
+![mongodb-1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/mongodb-1.png>)
+
+![mongodb-2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/mongodb-2.png>)
+
+![mongodb-3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/mongodb-3.png>)
+
+![mongodb-4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/mongodb-4.png>)
 
 依照route.js分別執行顯示component
 
