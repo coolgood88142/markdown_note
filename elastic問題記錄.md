@@ -299,17 +299,65 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
 - 測試設定
 
   ```
-  ./filebeat test config
-  ./filebeat test output
+  .\filebeat test config
+  .\filebeat test output
   ```
 
--  在重新啟動Filebeat 
+-  檢查C:\Users\coolg\Desktop\ELK\filebeat-7.9.0-windows-x86_64\modules.d\nginx.yml.disabled
 
   ```
-  .\filebeat.exe setup -e
+  - module: nginx
+    access:
+    enabled: true
+      var.paths: ["C:\Users\coolg\Desktop\ELK\log\nginx\access.log*"]
+    error:
+      enabled: true
+      var.paths: ["C:\Users\coolg\Desktop\ELK\log\nginx\error.log*"]
+  ```
+  
+
+- 啟動 nginx
+
+  ```
+  .\filebeat.exe modules enable nginx
   ```
 
   
+
+
+
+#### 9.APM agents 
+
+- 修改 apm-server.yml
+
+  ```
+  apm-server:
+      # 定義 host 和 port 讓 APM server 偵聽
+      host: "0.0.0.0:8200"
+    
+  rum:
+      # 啟動 real user monitoring (RUM)
+      enabled: true
+  ```
+
+- 啟動apm-server
+
+  ```
+  .\apm-server.exe setup -e
+  ```
+
+- 執行下面這段
+
+  ```
+  java -javaagent:/home/elastic/petclinic/elastic-apm-agent-1.12.0.jar  \
+      -Delastic.apm.service_name=petclinic-spring  \
+      -Delastic.apm.server_urls=http://server1:8200  \
+      -jar /home/elastic/petclinic/spring-petclinic-1.5.16.jar
+  ```
+
+  
+
+
 
 #### 安裝過程遇到的問題?
 
