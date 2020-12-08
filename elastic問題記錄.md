@@ -18,7 +18,13 @@ output.elasticsearch:
 
 開啟cmd，路徑到ELK的filebeat-7.10.0-windows-x86_64，執行下面的指令
 
-讀取filebeat.yml
+用PowerShell.exe執行install-service-filebeat.ps1
+
+```
+PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-filebeat.ps1.
+```
+
+執行filebeat.yml
 
 ```
 .\filebeat.exe -c filebeat.yml -e
@@ -46,7 +52,7 @@ windows要自行下載`metricbeat-7.10.0-windows-x86_64.zip`後解壓縮
 
 ```
 setup.kibana:
-	host: "localhost:5601"
+  host: "localhost:5601"
 
 output.elasticsearch:
   hosts: ["localhost:9200"]
@@ -56,13 +62,19 @@ output.elasticsearch:
 
 開啟cmd，路徑到ELK的metricbeat-7.10.0-windows-x86_64，執行下面的指令
 
-讀取metricbeat.yml
+用PowerShell.exe執行install-service-metricbeat.ps1
+
+```
+PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.ps1.
+```
+
+執行metricbeat.yml
 
 ```
 .\metricbeat.exe -c metricbeat.yml -e
 ```
 
-安裝system.logs
+啟動metricbeat的system模組
 
 ```
 .\metricbeat.exe modules enable system
@@ -91,7 +103,13 @@ output.elasticsearch:
 
 開啟cmd，路徑到ELK的metricbeat-7.10.0-windows-x86_64，執行下面的指令
 
-讀取apm-server.yml
+用PowerShell.exe執行install-service-apm-server.ps1
+
+```
+PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-apm-server.ps1
+```
+
+執行apm-server.yml
 
 ```
 .\apm-server.exe -c apm-server.yml -e
@@ -131,8 +149,6 @@ java -javaagent:./elastic-apm-agent-1.19.0.jar
 
 
 ```
-
-PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.ps1.
 
 #### 4.workplace search
 
@@ -322,10 +338,6 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
   .\filebeat.exe modules enable nginx
   ```
 
-  
-
-
-
 #### 9.APM agents 
 
 - 修改 apm-server.yml
@@ -351,8 +363,15 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
   ```
   java -javaagent:/home/elastic/petclinic/elastic-apm-agent-1.12.0.jar  \
       -Delastic.apm.service_name=petclinic-spring  \
-      -Delastic.apm.server_urls=http://server1:8200  \
+      -Delastic.apm.server_urls=http://localhost:8200  \
       -jar /home/elastic/petclinic/spring-petclinic-1.5.16.jar
+      
+      java -javaagent:./elastic-apm-agent-1.19.0.jar 
+       -Delastic.apm.service_name=my-application 
+       -Delastic.apm.server_urls=http://localhost:8200
+       -Delastic.apm.secret_token= 
+       -Delastic.apm.application_packages=org.example 
+       -jar ./target/opbeans-0.0.1-SNAPSHOT.jar
   ```
 
   
