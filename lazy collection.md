@@ -76,6 +76,27 @@ public function test2(){
 
 兩種寫法一樣都是印出Keyword的所有資料。
 
+```php
+public function test3(){
+        $articles = LazyCollection ::make(function() {
+            $url = 'https://my-json-server.typicode.com/coolgood88142/json_server/articles';
+            $handle = fopen($url, 'r');
+
+            while ($line = fgets($handle)) {
+                yield $line;
+            }
+        });
+
+        foreach ($articles as $line) {
+            echo $line . '<br/>';
+        }
+    }
+```
+
+以上範例，使用call api response用LazyCollection，執行yield，並且顯示資料。
+
+用fopen讀取api的資料，在用fgets去拿api每個物件，判斷有foreach的$line有一樣的物件，就使用yield
+
 
 
 參考資料：https://ithelp.ithome.com.tw/articles/10194457、
