@@ -11,17 +11,17 @@ lazy collection是laravel用原生PHP的yield、Generator，組成的library。
 
 #### 什麼是yield、Generator?
 
-一般使用return會用變數取代資料，例如程式跑foreach，每跑一次就 return，會導致一個變數，佔用很大的記憶體。如果用yield代替return ，在同一個記憶體空間做疊代。
+一般使用return會用變數取代資料，例如程式跑foreach，每跑一次就 return，會導致一個變數，佔用很大的記憶體。如果用yield代替return ，在回傳物件並不會占用記憶體。
 
-yield是回傳一個Generator的物件，以lterator接口
+Generator是實作lterator介面，用來包裝foreach來疊代的物件，而yield是回傳Generator的物件，每次執行到yield就會暫停，直到下一次執行才會繼續。
 
-yield的好處就是節省記憶體，當generator()執行到yield，會直接使用的當前已佔用的記憶體。
+#### yield與return的差異
 
-Generator是一個生成器物件，在裡面用yield，每次執行時只回傳一個yield的資料，持續到下次執行才會傳下一個yield的資料
+return在回傳賦予變數時，會占用記憶體，但是yield是回傳Generator的物件，並不會占用記憶體，只有在用變數的情形下才會。
 
-在function 中Generator，用foreach每跑一次，就會停止並且回傳當前的value，每一次的疊代會執行yield那行為止。
 
-//要怎麼利用yield和Generator達到節省記憶體，因為在foreach的Generator，如果用變數賦予就沒意義了
+
+//foreach的Generator，如果用變數賦予就沒意義了
 
 //foreach做return是回傳資料，這時又佔用記憶體，如果是yield就不會占用記憶體而是一個Generator物件
 到這個時候
@@ -84,6 +84,8 @@ public function test2(){
 如果改用cursor()，會將table全部資料組成一個lazy collection的物件，這時`test2()`一樣拿到Keyword table所有的資料，但是記憶體小很多。
 
 兩種寫法一樣都是印出articles的所有資料。
+
+//LazyCollection要怎麼對應yield和Generator 
 
 ```php
 public function test3(){
