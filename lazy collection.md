@@ -11,22 +11,13 @@ lazy collection是laravel用原生PHP的yield、Generator，組成的library。
 
 #### 什麼是yield、Generator?
 
-一般使用return會用變數取代資料，例如程式跑foreach，每跑一次就 return，會導致一個變數，佔用很大的記憶體。如果用yield代替return ，在回傳物件並不會占用記憶體。
+一般使用return會用變數取代資料，例如程式跑foreach，每跑一次就 return，會導致變數佔用很大的記憶體。如果用yield代替return ，只回傳物件並不會占用記憶體。
 
 Generator是實作lterator介面，用來包裝foreach來疊代的物件，而yield是回傳Generator的物件，每次執行到yield就會暫停，直到下一次執行才會繼續。
 
-#### yield與return的差異
+只要在foreach裡有yield的，就算是一個Generator，當Generator跑迴圈時，每次到yield就回傳，這時不會占用記憶體，因此使用yield可以節省記憶體。
 
-return在回傳賦予變數時，會占用記憶體，但是yield是回傳Generator的物件，並不會占用記憶體，只有在用變數的情形下才會。
-
-
-
-//foreach的Generator，如果用變數賦予就沒意義了
-
-//foreach做return是回傳資料，這時又佔用記憶體，如果是yield就不會占用記憶體而是一個Generator物件
-到這個時候
-
-Generator 如果沒設定key， Generator 會為 value 產生一個對應整數，並當成是它的 key
+Generator 如果沒設定key， Generator 會為 value 產生一個對應整數，並當成是它的 key。
 
 ```php
 <?php
@@ -57,10 +48,10 @@ foreach (generator() as $key => $val) {
 
 #### lazy collection的用法
 
-以下範例使用laravel 抓DB資料
+以下範例，使用laravel 抓DB資料，執行`all()`和`cursor()`的差異
 
 ```php
-public function test1(){
+public function getArticlesAllData(){
     $datas = Articles::all();
 
     foreach ($datas as $data) {
@@ -69,10 +60,10 @@ public function test1(){
 }
 ```
 
-例如：`test1()`直接拿Keyword table所有的資料，如果資料有10000筆，變數佔用很大的記憶體，而導致程式`time out`，網頁顯示錯誤。`all()`是直接拿table全部資料組成一個collection物件。
+例如：`getArticlesAllData()`直接拿Articles table所有的資料，如果資料有10000筆，變數佔用很大的記憶體，而導致程式time out，網頁顯示錯誤。`all()`是直接拿table全部資料組成一個collection物件。
 
 ```php
-public function test2(){
+public function getArticlesCursorData(){
     $datas = Articles::cursor();
 
     foreach ($datas as $data) {
@@ -81,33 +72,84 @@ public function test2(){
 }
 ```
 
-如果改用cursor()，會將table全部資料組成一個lazy collection的物件，這時`test2()`一樣拿到Keyword table所有的資料，但是記憶體小很多。
+如果改用`cursor()`，會將table全部資料組成一個Lazy collection的物件，這時`getArticlesCursorData()`一樣拿到Articles table所有的資料，但是占用記憶體小很多。
 
-兩種寫法一樣都是印出articles的所有資料。
+#### yield與return的差異
 
-//LazyCollection要怎麼對應yield和Generator 
+return在回傳資料時，會占用記憶體，但是yield是回傳Generator的物件，不會占用記憶體，只有在用賦予變數的情形下才會。
+
+以下範例，兩者占用記憶體差異
 
 ```php
-public function test3(){
-    $articles = LazyCollection ::make(function() {
-        $client = new \GuzzleHttp\Client();
-        $response = $client->request('GET', 'https://my-json-server.typicode.com/coolgood88142/json_server/articles');
-        $datas = json_decode($response->getBody(), true);
-            
-     	foreach ($datas as $data) {
-            yield $data;
+public function getArticlesDataRam(){
+    $this->getReturnRamText()
+    echo '<bt/></br>';
+    $this->getYieldRamText();
+}
+
+public function getArticles($beginId, $endId){
+    $client = new \GuzzleHttp\Client();
+    $url = 'https://my-json-server.typicode.com/coolgood88142/json_server/articles?_start='. $beginId . '&_end=' . $endId;
+    $response = $client->request('GET', $url);
+    $datas = json_decode($response->getBody(), true);
+
+    return $datas;
+}
+
+public function getPrintText($data){
+    var_dump($data);
+    echo '<br/>';
+}
+
+public function getYieldRamText(){
+    $datas = LazyCollection::make(function() {   
+        $beginId = 1;
+        $endId = 4;
+        $articles = $this->getArticles($beginId-1, $endId);
+        
+        foreach ($articles as $article){ 
+            yield $article;
         }
     });
-
-    foreach ($articles as $data) {
-        var_dump($data);
+    
+    foreach ($datas as $data){
+        $this->getPrintText($data);
     }
+
+    echo memory_get_usage() . 'Bytes' . '<br/>';
+}
+
+public function getReturnRamText(){
+    $beginId = 1;
+    $endId = 4;
+    $datas = $this->getArticles($beginId-1, $endId);
+    
+    foreach ($datas as $data){
+        $this->getPrintText($data);
+    }
+    
+    echo memory_get_usage() . 'Bytes' . '<br/>';
 }
 ```
 
-以上範例，使用call api response用LazyCollection，執行yield，並且顯示資料。
 
-用Guzzle套件讀取api的資料，在用foreach去拿到每筆資料執行yield，在用var_dump印出來
+```
+array(4) { ["id"]=> int(1) ["title"]=> string(8) "Bhutanan" ["content"]=> string(90) "We do not believe in Gross National Product. Gross National Happiness is more important..." ["slug"]=> string(9) "buthananc" }
+array(4) { ["id"]=> int(2) ["title"]=> string(10) "Kazakhstan" ["content"]=> string(149) "The national drink is made from fermented horse milk (not urine as Borat would have you believe!); one of Kazakhstan’s most popular dishes, Kazy..." ["slug"]=> string(10) "kazakhstan" }
+array(4) { ["id"]=> int(3) ["title"]=> string(11) "North Korea" ["content"]=> string(128) "A proudly reclusive, quasi-communist state, no list of the world’s weirdest countries would be complete without North Korea..." ["slug"]=> string(11) "north-korea" }
+array(4) { ["id"]=> int(4) ["title"]=> string(8) "Belarusv" ["content"]=> string(163) "After the fall of the Soviet Union, a cluster of countries in Eastern Europe pushed to join the EU. Enticed by grand promises from the continent’s big players..." ["slug"]=> string(8) "belarusv" }
+占用了13386760Bytes
+
+array(4) { ["id"]=> int(1) ["title"]=> string(8) "Bhutanan" ["content"]=> string(90) "We do not believe in Gross National Product. Gross National Happiness is more important..." ["slug"]=> string(9) "buthananc" }
+array(4) { ["id"]=> int(2) ["title"]=> string(10) "Kazakhstan" ["content"]=> string(149) "The national drink is made from fermented horse milk (not urine as Borat would have you believe!); one of Kazakhstan’s most popular dishes, Kazy..." ["slug"]=> string(10) "kazakhstan" }
+array(4) { ["id"]=> int(3) ["title"]=> string(11) "North Korea" ["content"]=> string(128) "A proudly reclusive, quasi-communist state, no list of the world’s weirdest countries would be complete without North Korea..." ["slug"]=> string(11) "north-korea" }
+array(4) { ["id"]=> int(4) ["title"]=> string(8) "Belarusv" ["content"]=> string(163) "After the fall of the Soviet Union, a cluster of countries in Eastern Europe pushed to join the EU. Enticed by grand promises from the continent’s big players..." ["slug"]=> string(8) "belarusv" }
+占用了13502504Bytes
+```
+
+使用`getArticlesDataRam()`執行`getReturnRamText()`和`getYieldRamText()`，用Guzzle套件讀取api的資料，在用foreach去拿到每筆資料，在用var_dump印出來。
+
+`getReturnRamText()`是直接拿資料後印出來，`getYieldRamText()`是用Lazy Collection拿建立Generator，在跑foreach時，每次到yield就會停下，重複做回傳Generator物件，所以並不會一直將記憶體累加。
 
 
 
