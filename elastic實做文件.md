@@ -6,15 +6,15 @@
 
 在首頁的Observability選擇Add sample data
 
-![elastic_demo1](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo1.png)
+![elastic_demo1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo1.png>)
 
 在選擇Sample web logs的Add data，點選Logs
 
-![elastic_demo2](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo2.png)
+![elastic_demo2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo2.png>)
 
 建立成功後，進入Logs頁面，第一個是左上的**搜索條（Search bar）**可以篩選Logs上的關鍵字，第二個是中上的 **Highlights**，可以突顯、強調你想要看的文字內容。
 
-![elastic_demo3](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo3.png)
+![elastic_demo3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo3.png>)
 
 #### 安裝filebeat
 
@@ -58,9 +58,9 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-filebeat.ps
 
 以上步驟做完後，回到kibana，在儀表板(Dashboards)搜尋System，可以選擇各式各樣的圖表
 
-![elastic_demo4](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo4.png)
+![elastic_demo4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo4.png>)
 
-![elastic_demo5](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo5.png)
+![elastic_demo5](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo5.png>)
 
 
 
@@ -108,7 +108,7 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-metricbeat.
 
 以上步驟做完後，回到kibana，在儀表板(Dashboards)搜尋Metricbeat System
 
-![elastic_demo6](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo6.png)
+![elastic_demo6](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo7.png>)
 
 ### 3.APM
 
@@ -145,7 +145,7 @@ PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-apm-server.
 
 #### 下載opbeans-java
 
-![elastic_demo10](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo10.png)
+![elastic_demo10](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo10.png>)
 
 ```
 git clone https://github.com/elastic/opbeans-java.git
@@ -159,9 +159,9 @@ mvn package
 
 以上步驟做完後，回到kibana，選擇APM Agents 的頁面，選到 Java的部分，點選 Maven Central後，選擇 jar檔案下載，下載好後把檔案移至剛才 opbeans 的路徑下。
 
-![elastic_demo8](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo8.png)
+![elastic_demo8](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo8.png>)
 
-![elastic_demo9](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo9.png)
+![elastic_demo9](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo9.png>)
 
 在C:\Users\coolg\Desktop\ELK\opbeans-java\opbeans，執行以下這些指令
 
@@ -173,23 +173,23 @@ java -javaagent:./elastic-apm-agent-1.18.0.RC1.jar -Delastic.apm.service_name=op
 
 執行之後，在瀏覽器輸入http://localhost:8080/
 
-![elastic_demo9](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo11.png)
+![elastic_demo11](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo11.png>)
 
 我們進入錯誤的頁面，：http://localhost:8080/is-it-coffee-time，讓opbeans產生logs
 
-![elastic_demo12](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo12.png)
+![elastic_demo12](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo12.png>)
 
 回到 APM頁面在重新整理，就會顯示opbeans-java的資料
 
-![elastic_demo13](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo13.png)
+![elastic_demo13](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo13.png>)
 
 在點選Service Map，進入畫面在點選opbeans-java圖示，再點選Service Details
 
-![elastic_demo14](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo14.png)
+![elastic_demo14](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo14.png>)
 
 點選之後，就會顯示opbeans-java各種圖表
 
-![elastic_demo14](C:\xampp\htdocs\markdown_note\assets\images\elastic_demo15.png)
+![elastic_demo15](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo15.png>)
 
 
 
