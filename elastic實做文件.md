@@ -315,6 +315,53 @@ java -javaagent:/home/elastic/petclinic/elastic-apm-agent-1.12.0.jar  \
     -jar /home/elastic/petclinic/spring-petclinic-1.5.16.jar
 ```
 
+#### 7.Kibana Simple Logs
+
+在首頁的Observability選擇Add sample data，將三種範例點選Add data
+
+![elastic_demo17](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo17.png>)
+
+左邊的面板 Management 下面，選擇Stack Management，接著選擇 Index Patterns。
+
+![elastic_demo18](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo18.png>)
+
+在從Create index pattern，接著輸入 kibana_sample_data_logs\*，然後按下 Next step。
+
+![elastic_demo19](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo19.png>)
+
+![elastic_demo20](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo20.png>)
+
+在 Time field的欄位，選擇 timestamp，按下 Create index pattern，就會看到創建出來索引的所有 fields 啦！
+
+![elastic_demo21](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo21.png>)
+
+![elastic_demo22](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo22.png>)
+
+在 bytes 欄位右邊的鉛筆符號按下去後，可以把原本預設是 Number的格式改成 Bytes後按下 Save。
+
+![elastic_demo23](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo23.png>)
+
+![elastic_demo24](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo24.png>)
+
+回到 Discover 的面板，把 index pattern 改成我們剛才創建的 kibana_sample_data_logs\，查詢logs資料
+
+![elastic_demo25](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo25.png>)
+
+![elastic_demo26](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo26.png>)
+
+用 Add filter 的方式，在Logs過濾Windows資料
+
+- Field：machine.os.keyword
+- Operator：in one of
+- Values：win xp、win 8
+- Custom label：WinOS
+
+![elastic_demo27](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo27.png>)
+
+再新增fiter CN的資料
+
+![elastic_demo28](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elastic_demo28.png>)
+
 
 
 #### 安裝過程遇到的問題?
