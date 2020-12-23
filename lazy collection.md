@@ -11,11 +11,11 @@ lazy collection是laravel用原生PHP的yield、Generator，組成的library。
 
 #### 什麼是yield、Generator?
 
-一般使用return會用變數取代資料，例如程式跑foreach，每跑一次就 return，會導致變數佔用很大的記憶體。如果用yield代替return ，只回傳物件並不會占用記憶體。
+一般使用return會用變數取代資料，例如程式跑foreach，每跑一次就 return，會導致變數佔用很大的記憶體。我們可以用yield代替return ，只回傳物件並不會占用記憶體。
 
 Generator是實作lterator介面，用來包裝foreach來疊代的物件，而yield是回傳Generator的物件，每次執行到yield就會暫停，直到下一次執行才會繼續。
 
-只要在foreach裡有yield的，就算是一個Generator，當Generator跑迴圈時，每次到yield就回傳，這時不會占用記憶體，因此使用yield可以節省記憶體。
+只要在foreach裡有yield的，就算是一個Generator，當Generator跑迴圈時，每次到yield就回傳物件，這時不會占用記憶體，因此可以節省記憶體。
 
 Generator 如果沒設定key， Generator 會為 value 產生一個對應整數，並當成是它的 key。
 
