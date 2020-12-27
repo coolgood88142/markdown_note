@@ -11,11 +11,9 @@ lazy collection是laravel用原生PHP的yield、Generator，組成的library。
 
 #### 什麼是yield、Generator?
 
-一般使用return會用變數取代資料，例如程式跑foreach，每跑一次就 return，會導致變數佔用很大的記憶體。我們可以用yield代替return ，只回傳物件並不會占用記憶體。
+一般使用return會用變數取代資料，例如程式跑foreach，每跑一次就 return，會導致變數佔用很大的記憶體。我們可以用yield代替return ，來節省記憶體。
 
-Generator是實作lterator介面，用來包裝foreach來疊代的物件，而yield是回傳Generator的物件，每次執行到yield就會暫停，直到下一次執行才會繼續。
-
-只要在foreach裡有yield的，就算是一個Generator，當Generator跑迴圈時，每次到yield就回傳物件，這時不會占用記憶體，因此可以節省記憶體。
+Generator跟lterator很像，lterator是集合物件跑foreach時，做疊代的動作，Generator有多一個yield，每次執行到yield就會暫停，直到下一次執行才會繼續，重複做這個動作直到迴圈結束。
 
 Generator 如果沒設定key， Generator 會為 value 產生一個對應整數，並當成是它的 key。
 
@@ -76,7 +74,7 @@ public function getArticlesCursorData(){
 
 #### yield與return的差異
 
-return在回傳資料時，會占用記憶體，但是yield是回傳Generator的物件，不會占用記憶體，只有在用賦予變數的情形下才會。
+return在回傳資料時，會將資料存取到變數，但是yield是回傳Generator的物件，將資料做疊代，並且直到迴圈跑完才存取到變數，這兩者看起return每做一次就存取，會占用很大的記憶體，而yield是迴圈跑完後才存取，相對之占用記憶體較小。
 
 以下範例，兩者占用記憶體差異
 
@@ -96,11 +94,6 @@ public function getArticles($beginId, $endId){
     return $datas;
 }
 
-public function getPrintText($data){
-    var_dump($data);
-    echo '<br/>';
-}
-
 public function getYieldRamText(){
     $datas = LazyCollection::make(function() {   
         $beginId = 1;
@@ -112,11 +105,12 @@ public function getYieldRamText(){
         }
     });
     
+    $sum = array();
     foreach ($datas as $data){
-        $this->getPrintText($data);
+        array_push($sum, $data);
     }
 
-    echo memory_get_usage() . 'Bytes' . '<br/>';
+    echo 'yield占用了' . memory_get_usage() . 'Bytes' . '<br/>';
 }
 
 public function getReturnRamText(){
@@ -124,32 +118,25 @@ public function getReturnRamText(){
     $endId = 4;
     $datas = $this->getArticles($beginId-1, $endId);
     
+    $sum = array();
     foreach ($datas as $data){
-        $this->getPrintText($data);
+        array_push($sum, $data);
     }
     
-    echo memory_get_usage() . 'Bytes' . '<br/>';
+    echo 'return占用了' . memory_get_usage() . 'Bytes' . '<br/>';
 }
 ```
 
 
 ```
-array(4) { ["id"]=> int(1) ["title"]=> string(8) "Bhutanan" ["content"]=> string(90) "We do not believe in Gross National Product. Gross National Happiness is more important..." ["slug"]=> string(9) "buthananc" }
-array(4) { ["id"]=> int(2) ["title"]=> string(10) "Kazakhstan" ["content"]=> string(149) "The national drink is made from fermented horse milk (not urine as Borat would have you believe!); one of Kazakhstan’s most popular dishes, Kazy..." ["slug"]=> string(10) "kazakhstan" }
-array(4) { ["id"]=> int(3) ["title"]=> string(11) "North Korea" ["content"]=> string(128) "A proudly reclusive, quasi-communist state, no list of the world’s weirdest countries would be complete without North Korea..." ["slug"]=> string(11) "north-korea" }
-array(4) { ["id"]=> int(4) ["title"]=> string(8) "Belarusv" ["content"]=> string(163) "After the fall of the Soviet Union, a cluster of countries in Eastern Europe pushed to join the EU. Enticed by grand promises from the continent’s big players..." ["slug"]=> string(8) "belarusv" }
-占用了13386760Bytes
+return占用了13387416Bytes
 
-array(4) { ["id"]=> int(1) ["title"]=> string(8) "Bhutanan" ["content"]=> string(90) "We do not believe in Gross National Product. Gross National Happiness is more important..." ["slug"]=> string(9) "buthananc" }
-array(4) { ["id"]=> int(2) ["title"]=> string(10) "Kazakhstan" ["content"]=> string(149) "The national drink is made from fermented horse milk (not urine as Borat would have you believe!); one of Kazakhstan’s most popular dishes, Kazy..." ["slug"]=> string(10) "kazakhstan" }
-array(4) { ["id"]=> int(3) ["title"]=> string(11) "North Korea" ["content"]=> string(128) "A proudly reclusive, quasi-communist state, no list of the world’s weirdest countries would be complete without North Korea..." ["slug"]=> string(11) "north-korea" }
-array(4) { ["id"]=> int(4) ["title"]=> string(8) "Belarusv" ["content"]=> string(163) "After the fall of the Soviet Union, a cluster of countries in Eastern Europe pushed to join the EU. Enticed by grand promises from the continent’s big players..." ["slug"]=> string(8) "belarusv" }
-占用了13502504Bytes
+yield占用了13505392Bytes
 ```
 
-使用`getArticlesDataRam()`執行`getReturnRamText()`和`getYieldRamText()`，用Guzzle套件讀取api的資料，在用foreach去拿到每筆資料，在用var_dump印出來。
+使用`getArticlesDataRam()`執行`getReturnRamText()`和`getYieldRamText()`，用Guzzle套件讀取api的資料，在用`foreach`存取變數占用記憶體，在用`memory_get_usage()`印出當前的記憶體。
 
-`getReturnRamText()`是直接拿資料後印出來，`getYieldRamText()`是用Lazy Collection拿建立Generator，在跑foreach時，每次到yield就會停下，重複做回傳Generator物件，所以並不會一直將記憶體累加。
+`getReturnRamText()`是直接拿資料後印出來，每跑一次迴圈就存取到變數，占用記憶體會很大，`getYieldRamText()`是用`Lazy Collection`跑`foreach`時，每次到yield就會停下，重複做回傳Generator物件，直到迴圈結束後，只存取一次到變數，所以占用記憶體會比較小。
 
 
 
