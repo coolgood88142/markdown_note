@@ -15,7 +15,77 @@ lazy collection是laravel用原生PHP的yield、Generator，組成的library。
 
 Generator跟lterator很像，lterator是集合物件跑foreach時，做疊代的動作，Generator有多一個yield，每次執行到yield就會暫停，直到下一次執行才會繼續，重複做這個動作直到迴圈結束。
 
+以下範例為lterator，跑while迴圈進行驗證，在印出key和value
+
+```php
+<?php
+
+class TestData implements \Iterator
+{
+    private $var = array();
+
+    public function __construct($array)
+    {
+        if (is_array($array)) {
+            $this->var = $array;
+        }
+    }
+
+    public function rewind()
+    {
+        reset($this->var);
+    }
+  
+    public function current()
+    {
+        $var = current($this->var);
+        return $var;
+    }
+  
+    public function key() 
+    {
+        $var = key($this->var);
+        return $var;
+    }
+  
+    public function next() 
+    {
+        $var = next($this->var);
+        return $var;
+    }
+  
+    public function valid()
+    {
+        $key = key($this->var);
+        $var = ($key !== NULL && $key !== FALSE);
+        return $var;
+    }
+}
+
+$testArray = ['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3];
+$datas = new TestData($testArray);
+
+while ($datas->valid())
+{
+    $key = $datas->key();
+    $value = $datas->current();
+
+     echo 'key:' . $key . ' value: ' . $value . '<br/><br/>';
+
+     $datas->next();
+ }
+
+//key:a values:0
+//key:b values:1
+//key:c values:2
+//key:d values:3
+```
+
+程式中有個datas變數宣告TestData物件，存放testArray陣列，迴圈每執行一次進行驗證，將目前陣列物件的key和value印出來，在將物件換成下一個，繼續跑迴圈，執行陣列蒐集完物件為止。
+
 Generator 如果沒設定key， Generator 會為 value 產生一個對應整數，並當成是它的 key。
+
+以下範例為Generator，從1-10之間拿到數字後，做yield回傳物件，印出當前物件的key和value。
 
 ```php
 <?php
@@ -74,7 +144,7 @@ public function getArticlesCursorData(){
 
 #### yield與return的差異
 
-return在回傳資料時，會將資料存取到變數，但是yield是回傳Generator的物件，將資料做疊代，並且直到迴圈跑完才存取到變數，這兩者看起return每做一次就存取，會占用很大的記憶體，而yield是迴圈跑完後才存取，相對之占用記憶體較小。
+在跑foreach執行yeild就會暫停，下一次執行迴圈才會繼續，這時yeild會回傳物件不是值，每次執行都是占用相同的記憶體，如果是用return，會一直回傳值，每次執行都占用不同的記憶體，記憶體才會消耗很大。
 
 以下範例，兩者占用記憶體差異
 
