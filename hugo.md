@@ -205,5 +205,3 @@ tags: ["First"]
 https://gohugo.io/hosting-and-deployment/hosting-on-github/、
 
 http://coolgood88142.github.io、
-
-<http://m.tooopen.com/view/520372.html>
