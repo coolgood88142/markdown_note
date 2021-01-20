@@ -45,7 +45,7 @@ git clone https://github.com/hauke96/hugo-theme-hamburg.git themes/hamburg
 #### (2) 使用Git Submodule，新增連結hamburg專案在themes/hamburg資料夾底下，注意Submodule只有要使用而不是要開發，因為是使用別人做好的主題，我們不需要更改
 
 ```
- git submodule add https://github.com/hauke96/hugo-theme-hamburg.git themes/hamburg
+ git submodule add -f https://github.com/hauke96/hugo-theme-hamburg.git themes/hamburg
 ```
 
 

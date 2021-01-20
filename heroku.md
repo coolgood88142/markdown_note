@@ -135,6 +135,34 @@ app.listen(port, function() {
 
 官網部份有提供[資料](https://help.heroku.com/PNKE28Z0/why-are-my-css-js-changes-not-showing-up-in-my-node-app)
 
+#### laravel部署到hoerku注意事項
+
+#### 1.建立Procfile
+
+```
+web: vendor/bin/heroku-php-apache2 /public
+```
+
+#### 2.設定APP_KEY
+
+打開.env
+
+```
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=base64:GZUvk4l6ouLUoxsuRz2e33rUqmqFUmEZw5gxzmzrxpM=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+.....
+```
+
+再輸入這行指令
+
+```
+heroku config:set --app "heroku的app名稱" APP_KEY=".env的APP_KEY"
+```
+
 
 
 參考資料:
