@@ -665,7 +665,12 @@ php artisan schedule:run
 
 ### 問題
 
-如果程式中有個function整用括號包起來，發現用 npm run dev編譯會照寫，npm run prod會用變數命名變成陣列，才會壞掉
+1. 如果程式中有個function整用括號包起來，發現用 npm run dev編譯會照寫，npm run prod會用變數命名變成陣列，才會壞掉
+2. 在新增DB或是程式寫錯時，因為拋錯無法新增DB資料
+
+
+
+
 
 
 
