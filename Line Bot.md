@@ -70,167 +70,142 @@ Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊�
 
 #### 4.程式碼
 
-Route
-
-```
-Route::post('/webhook','LineBotController@getMessageWeather');
-```
-
-執行明天臺北市、新北市的溫度、降雨機率，這裡直接拿DB，已經事先用排程新增DB資料
+##### (一)使用者輸入【氣候】，顯示全台縣市資料
 
 ```php
-public function saveWeatherApiData(){
-    //先移除現有氣候資料
-    $this->deleteWeatherData();
-    $client = new \GuzzleHttp\Client();
-        
-    $weatherUrl = 'https://opendata.cwb.gov.tw/api';
-    $cityData = Config::get('city');
-    $weathers = Config::get('weather');
-    $automatic = Config::get('automatic');
+private $bot;
+private $channel_access_token;
+private $channel_secret;
 
-    $dataArray = [];
-    $startTime = 6;
-    $endTime = 18;
-    $today = Carbon::now()->timezone('Asia/Taipei');
-    $hour = (int)$today->format('H');
-    $type = 0;
-
-    if($hour > $endTime){
-        $type = 2;
-    }else if($hour <= $startTime){
-        $type = 1;
-    }
-
-    foreach($cityData as $city){
-        $weatherArray = [];
-        $acidRainPh = 0;
-        $locationName = urlencode($city);
-        $temperature = '';
-        $probabilityOfPrecipitation = '';
-
-        $weatherForecastData = $this->getCrawlerData($client, $weathers[0], $locationName);
-        if(isset($weatherForecastData->location[0])){
-            $mint = $weatherForecastData->location[0]->weatherElement[2]->time[$type]->parameter->parameterName;
-            $maxt = $weatherForecastData->location[0]->weatherElement[4]->time[$type]->parameter->parameterName;
-            $temperature = $mint . '°-' . $maxt . '°';
-            $probabilityOfPrecipitation = $weatherForecastData->location[0]->weatherElement[1]->time[$type]->parameter->parameterName;
-        }
-
-        $nextWeekWeather = '';
-        $townshipWeatherForecastData = $this->getCrawlerData($client, $weathers[1], $locationName);
-        if(isset($townshipWeatherForecastData->locations[0])){
-            $nextWeekWeather = $townshipWeatherForecastData->locations[0]->location[0]->weatherElement[10]->time[$type]->elementValue[0]->value;
-        }
-
-        $windDirection = '';
-        $anemometer = '';
-        $relativeHumidity = '';
-        $barometricPressure = '';
-        $automaticWeatherData = $this->getCrawlerData($client, $weathers[2], urlencode($automatic[$city][0]));
-        if(isset($automaticWeatherData->location[0])){
-            $windDirection = $automaticWeatherData->location[0]->weatherElement[1]->elementValue;
-            $anemometer = $automaticWeatherData->location[0]->weatherElement[2]->elementValue;
-            $relativeHumidity = $automaticWeatherData->location[0]->weatherElement[4]->elementValue;
-            $barometricPressure = $automaticWeatherData->location[0]->weatherElement[5]->elementValue;
-        }
-            
-
-        $acidRainPh = 0;
-        $acidRainData = $this->getCrawlerData($client, $weathers[5], $locationName);
-        $rainPh = $acidRainData->weatherElement[0]->location;
-        if(count($rainPh) > 0){
-            $acidRainPh = $rainPh.value;
-        }
-
-        $ultravioletRaysData = $this->getCrawlerData($client, $weathers[6], $locationName);
-        $ultravioletIndex = (String)$ultravioletRaysData->weatherElement->location[0]->value;
-
-        $ozoneYearAvgData = $this->getCrawlerData($client, $weathers[7], $locationName);
-        $ozoneYearAvg = $ozoneYearAvgData->location->weatherElement[0]->time[29]->elementValue;
-
-        $seismicityData = $this->getCrawlerData($client, $weathers[8], $locationName);
-        $seismicity = $seismicityData->earthquake[0]->reportContent;
-
-        $smallAreaSeismicityData = $this->getCrawlerData($client, $weathers[9], $locationName);
-        $smallAreaSeismicity = $smallAreaSeismicityData->earthquake[0]->reportContent;
-
-        $sunriseData = $this->getCrawlerData($client, $weathers[11], $locationName);
-        $sunrise = $sunriseData->note;
-
-        $moonriseData = $this->getCrawlerData($client, $weathers[12], $locationName);
-        $moonrise = $moonriseData->note;
-
-        $data = [
-            'city' => $city, 'temperature' => $temperature, 
-            'probability_of_precipitation' => $probabilityOfPrecipitation, 'wind_direction' =>$windDirection,
-            'anemometer' => $anemometer, 'barometric_pressure' => $barometricPressure,
-            'relative_humidity' => $relativeHumidity, 'ultraviolet_index' => $ultravioletIndex,
-            'seismicity' => $seismicity, 'small_area_seismicity' => $smallAreaSeismicity,
-            'acid_rain_ph' => $acidRainPh, 'sunrise' => $sunrise, 'moonrise' => $moonrise,
-            'ozone_year_avg' => $ozoneYearAvg, 'next_week_weather' => $nextWeekWeather,
-            'created_at' => Carbon::now()->timezone('Asia/Taipei')
-        ];
-        array_push($dataArray, $data);
-      }
-
-      try {
-         $db = DB::table('weather_info')->insert($dataArray);
-
-      } catch (Exception $e) {
-         $status = 'error';
-         $message = '新增失敗!';
-         dd($e);
-      }
-        
- }
-```
-
-使用輸入【氣候】，顯示全台縣市
-
-```php
+public function __construct()
+{
+    $this->lineBotService = app(LineBotService::class);
+    $this->channel_access_token = env('LINE_BOT_CHANNEL_ACCESS_TOKEN');
+    $this->channel_secret = env('LINE_BOT_CHANNEL_SECRET');
+    $httpClient = new CurlHTTPClient($this->channel_access_token);
+    $this->bot = new LINEBot($httpClient, ['channelSecret' => $this->channel_secret]);
+}
 public function getMessageWeather(Request $request)
-    {
-        $replyToken = $request->events[0]['replyToken'];
-        $messageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('請輸入【氣候】');
-        if(isset($request->events[0]['postback'])){
-            $messageBuilder =  new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($request->events[0]['postback']['data']);
-        }else{
-            $text = $request->events[0]['message']['text'];
-            $cityData = Config::get('city');
-            $len = mb_strlen($text, 'utf-8');
-            $text = str_replace('台','臺',$text);
-            $messageBuilder = '';
+{
+    $replyToken = $request->events[0]['replyToken'];
+    $messageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('請輸入【氣候】');
+    if(isset($request->events[0]['postback'])){
+        $messageBuilder =  new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($request->events[0]['postback']['data']);
+    }else{
+        $text = $request->events[0]['message']['text'];
+        $cityData = Config::get('city');
+        $len = mb_strlen($text, 'utf-8');
+        $text = str_replace('台','臺',$text);
+        $messageBuilder = '';
 
-            if($text == '氣候'){
-                $cityText = '請輸入要查詢的縣市：' . "\n";
-                foreach($cityData as $city){
-                    $cityText = $cityText . $city . "\n";
-                }
+        if($text == '氣候'){
+           $cityText = '請輸入要查詢的縣市：' . "\n";
+           foreach($cityData as $city){
+               $cityText = $cityText . $city . "\n";
+           }
     
-                $cityText = rtrim($cityText, "\n");
-                $messageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($cityText);
-            }else if(in_array($text, $cityData)){
-                // $fix1 = $this->sendMessageWeather(0, $text);
-                // $fix2 = $this->sendMessageWeather(1, $text);
+           $cityText = rtrim($cityText, "\n");
+           $messageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($cityText);
+         }
+     }
+    
+     $response = $this->bot->replyMessage($replyToken, $messageBuilder);
 
-                $messageBuilder =  new RawMessageBuilder(
-                    [
-                        'type' => 'flex',
-                        'altText' => '請問要選擇哪一天?',
-                        'contents' => [
-                            'type'=> 'bubble',
-                            'hero'=> [
-                                'type'=> 'image',
-                                'url'=> 'https://i.imgur.com/l8yNat5.jpg',
-                                'size'=> 'full',
-                                'aspectRatio'=> '20:13',
-                                'aspectMode'=> 'cover'
-                            ],
-                            'body'=> [
-                                'type'=> 'box',
-                                'layout'=> 'vertical',
-                                'contents'=> [
+	 if ($response->isSucceeded()) {
+         echo 'Succeeded!';
+         return;
+     }
+}
+
+public function getCrawlerData(Client $client, String $weather, String $locationName)
+{
+    $token = '中央氣候局API的token';
+    $weatherUrl = 'https://opendata.cwb.gov.tw/api';
+    $url = $weatherUrl . $weather . '?Authorization=' . $token . '&locationName=' . $locationName;
+    $response = $client->get($url);
+    $weatherData = json_decode($response->getBody())->records;
+
+    return $weatherData;
+}
+```
+
+當使用者輸出【氣候】，系統會先判斷文字是否為氣候，如果不是系統回傳 `請輸入【氣候】`，如果是就跑foreach迴圈組訊息文字，之後將文字使用TextMessageBuilder物件，在用LINEBot物件replyMessage設定replyToken和文字，發送訊息
+
+結果如下
+
+```
+//結果
+請輸入要查詢的縣市：
+基隆市
+臺北市
+新北市
+桃園市
+新竹市
+新竹縣
+苗栗縣
+臺中市
+彰化縣
+南投縣
+雲林縣
+嘉義市
+嘉義縣
+臺南市
+高雄市
+屏東縣
+臺東縣
+花蓮縣
+宜蘭縣
+澎湖縣
+金門縣
+連江縣
+```
+
+##### (二)使用者輸入縣市名稱後，顯示詢問今天還是明天?
+
+```php
+private $bot;
+private $channel_access_token;
+private $channel_secret;
+
+public function __construct()
+{
+    $this->lineBotService = app(LineBotService::class);
+    $this->channel_access_token = env('LINE_BOT_CHANNEL_ACCESS_TOKEN');
+    $this->channel_secret = env('LINE_BOT_CHANNEL_SECRET');
+    $httpClient = new CurlHTTPClient($this->channel_access_token);
+    $this->bot = new LINEBot($httpClient, ['channelSecret' => $this->channel_secret]);
+}
+public function getMessageWeather(Request $request)
+{
+    $replyToken = $request->events[0]['replyToken'];
+    $messageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('請輸入【氣候】');
+    if(isset($request->events[0]['postback'])){
+        $messageBuilder =  new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($request->events[0]['postback']['data']);
+    }else{
+        $text = $request->events[0]['message']['text'];
+        $cityData = Config::get('city');
+        $len = mb_strlen($text, 'utf-8');
+        $text = str_replace('台','臺',$text);
+        $messageBuilder = '';
+
+        if(in_array($text, $cityData)){
+            $messageBuilder =  new RawMessageBuilder(
+                [
+                    'type' => 'flex',
+                    'altText' => '請問要選擇哪一天?',
+                    'contents' => [
+                        'type'=> 'bubble',
+                        'hero'=> [
+                            'type'=> 'image',
+                            'url'=> 'https://i.imgur.com/l8yNat5.jpg',
+                            'size'=> 'full',
+                            'aspectRatio'=> '20:13',
+                            'aspectMode'=> 'cover'
+                         ],
+                        'body'=> [
+                            'type'=> 'box',
+                            'layout'=> 'vertical',
+                            'contents'=> [
                                     [
                                         'type'=>'text',
                                         'text'=>'請問要選擇哪一天?',
@@ -277,7 +252,6 @@ public function getMessageWeather(Request $request)
                         ]
                     ],
                 );
-                Log::info('組好了');
             }else if(strpos($text,'今天氣候') || strpos($text,'明天氣候')){
                 $cityWeather = mb_substr($text , 0 , 3, 'utf-8');
                 if(in_array($cityWeather, $cityData)){
@@ -291,101 +265,186 @@ public function getMessageWeather(Request $request)
 
                 $messageBuilder = new RawMessageBuilder($fix);
             }
+     }
+    
+     $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+
+	 if ($response->isSucceeded()) {
+         echo 'Succeeded!';
+         return;
+     }
+}
+
+public function sendMessageWeather(int $type, String $cityText)
+{
+    $cityArray = [];
+    $now = Carbon::now()->timezone('Asia/Taipei');
+    $yesterday = $now->yesterday()->format('m/d');
+    $today = $now->format('m/d');
+    $tomorrow = $now->tomorrow('Asia/Taipei')->format('m/d');
+    $carouselData = [];
+    $carouselContentsData = [];
+
+    if($type == 1){
+        if($cityText != null){
+            $cityArray = [$cityText];
         }
-       
-        Log::info('發送前');
-        // $richMenuBuilder = new \LINE\LINEBot\RichMenuBuilder();
-        // $response = $this->$bot->createRichMenu($richMenuBuilder);
-        // $response = $this->bot->getRichMenuList();
-        $response = $this->bot->replyMessage($replyToken, $messageBuilder);
-        
 
+        $datas = DB::table('weather_tomorrow')->whereIn('city', $cityArray)->get();
 
-        if ($response->isSucceeded()) {
-            echo 'Succeeded!';
-            return;
+        foreach($datas as $data){
+            $city = $data->city;
+            $temperature = $data->temperature;
+            $probability_of_precipitation = $data->probability_of_precipitation;
+            $temperature_text = $yesterday . ' 18:00 - '. $today .' 06:00';
+            $carousel = [];
+
+            $time_period = $data->time_period;
+            $date = $today;
+            $temperature_text = ' 06:00 - 18:00';
+            if($time_period == 1){
+                $temperature_text = ' 18:00 - 06:00';
+                $date = $today . '-' . $tomorrow;
+            }else if($time_period == 2){ 
+                $date = $tomorrow;
+            }
+
+            $url = $this->getProbabilityOfPrecipitationImage($probability_of_precipitation);
+            $carousel = $this->getCarouselArray($url, $date, $temperature_text, $temperature, $probability_of_precipitation);
+            array_push($carouselData, $carousel);
         }
-    }
-```
 
 
+         $carouselContentsData = [
+             'type' => 'flex',
+             'altText' => '氣候',
+             'contents' => [
+                 'type' => 'carousel',
+                 'contents' => $carouselData
+              ]
+         ];
+    }else{
+        $weatherController = app(WeatherController::class);
+        $client = new \GuzzleHttp\Client();
+        $weathers = Config::get('weather');
+        $locationName = urlencode($cityText);
+        $todayDate = $now->format('Y-m-d');
+        $hour = (int)$now->format('H');
+        $count = 0;
+        $probabilityNum = 0;
+        $messageArray = [
+            [
+                'type' => 'text',
+                'text' => $now->format('m/d'),
+                'weight' =>'bold',
+                'size'=>'xl'
+            ]
+          
 
-```
-請輸入要查詢的縣市：
-基隆市
-臺北市
-新北市
-桃園市
-新竹市
-新竹縣
-苗栗縣
-臺中市
-彰化縣
-南投縣
-雲林縣
-嘉義市
-嘉義縣
-臺南市
-高雄市
-屏東縣
-臺東縣
-花蓮縣
-宜蘭縣
-澎湖縣
-金門縣
-連江縣
-```
+            $weatherData = $weatherController->getCrawlerData($client, $weathers[13], $locationName);
+            if(isset($weatherData->locations[0])){
+                $weatherForecast = $weatherData->locations[0]->location[0]->weatherElement[6]->time;
+                foreach($weatherForecast as $forecast){
+                    $startTime = mb_substr($forecast->startTime, 0, 10, "utf-8");
+                    $time = mb_substr($forecast->startTime, 11, 5, "utf-8");
+                    $nowHour = (int)mb_substr($time, 0, 2, "utf-8");
+                    if($startTime == $todayDate){
+                        $data = mb_split('。', $forecast->elementValue[0]->value);
+                        $probabilityOfPrecipitation = mb_substr($data[1], 5, 2, "utf-8");
+                        $probabilityOfPrecipitation = str_replace('%','',$probabilityOfPrecipitation);
+                        $probabilityNum = $probabilityNum . (int)$probabilityOfPrecipitation;
+                        $temperature = mb_substr($data[2], 4, 2, "utf-8");
+                        $temperature = str_replace('度','',$temperature);
 
+                        $timeWeatherData = [
+                            'type' => 'text',
+                            'size'=>'xl',
+                            'weight' =>'bold',
+                            'text' => $time . ' 🌡️' . $temperature . '° 💧' . $probabilityOfPrecipitation . '%',
+                        ];
 
+                        array_push($messageArray, $timeWeatherData);
+                        $count++;
+                    }
+                }
+            }
 
-
-
-這裡抓DB資料，跑foreach迴圈組訊息文字，結果如下
-
-```
-臺北市:
-【昨天18:00-今天06:00 溫度為16-17， 降雨機率為20%】
-【今天06:00-18:00 溫度為16-19， 降雨機率為10%】
-【今天18:00-明天06:00 溫度為15-17， 降雨機率為10%】
-新北市:
-【昨天18:00-今天06:00 溫度為16-18， 降雨機率為20%】
-【今天06:00-18:00 溫度為16-20， 降雨機率為10%】
-【今天18:00-明天06:00 溫度為15-17， 降雨機率為10%】
-```
-
-使用者輸入縣市，詢問縣市的氣候，是要今天還是明天
-
-```php
-public function getMessageWeather(Request $request)
-    {
-        $text = $request->events[0]['message']['text'];
-        $replyToken = $request->events[0]['replyToken'];
-        $cityData = Config::get('city');
-        
-        // $imageUrl = UrlBuilder::buildUrl($this->req, ['image', 'weather.jpg']);
-        $messageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('請輸入正確的縣市名稱');
-        
-        if(in_array($text, $cityData)){
-            $messageBuilder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
-                '詢問'. $text .'的氣候',
-                new ConfirmTemplateBuilder('請問要選擇哪一天的氣候?', [
-                    new MessageTemplateActionBuilder('今天', $text . '今天氣候'),
-                    new MessageTemplateActionBuilder('明天', $text . '明天氣候'),
-                ]));
+            $rain = $probabilityNum != 0 && $count > 1 ? round($probabilityNum/$count) : $probabilityNum;
+            
+            $carouselContentsData = [
+                'type' => 'flex',
+                'altText' => '氣候',
+                'contents' => [
+                    "type"=> "bubble",
+                    "size"=> "giga",
+                    "hero"=> [
+                        "type"=> "image",
+                        "url"=> $this->getProbabilityOfPrecipitationImage((string) $rain),
+                        "size"=> "full",
+                        "aspectRatio"=> "20:13",
+                    ],
+                    "body"=> [
+                        "type"=> "box",
+                        "layout"=> "vertical",
+                        "contents"=> $messageArray
+                    ]
+                ]
+            ];
         }
-        
-        $response = $this->bot->replyMessage($replyToken, $messageBuilder);
 
-        if ($response->isSucceeded()) {
-            echo 'Succeeded!';
-            return;
+        if($cityText != null){
+            return $carouselContentsData;
         }
-    }
+    }}
 ```
 
+使用者輸入縣市，系統會先判斷文字是否為縣市名稱，如果不是系統回傳 `請輸入【氣候】`，如果是會組flex message的格式，在用RawMessageBuilder建立訊息視窗。
 
+使用者點選今天，就會回傳`縣市`今天氣候，點選明天，就會回傳`縣市`今天氣候。
 
+ex:使用者輸入臺北市，點選今天，回傳臺北市今天氣候，明天就傳臺北市明天氣候。
 
+當點選今天或明天氣候，系統根據這兩個，在回傳臺北市現在氣候資料或明天氣候資料，
+
+以下為實作截圖
+
+![line-bot18](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot18.png>)
+
+![line-bot19](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot19.png>)
+
+![line-bot20](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot20.png>)
+
+![line-bot21](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot21.png>)
+
+##### (三)使用rich menu建立選單
+
+進入LINE Official Account Manager，點選帳號後，在點選圖文選單
+
+![line-bot26](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot26.png>)
+
+輸入標題、使用期間
+
+![line-bot27](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot27.png>)
+
+在選擇版型，選好之後上傳想要的圖片
+
+![line-bot28](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot28.png>)
+
+![line-bot29](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot29.png>)
+
+在設定每個圖片要點選後要做什麼事情，例如：連結
+
+![line-bot30](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot30.png>)
+
+以下為實作截圖
+
+![line-bot22](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot22.png>)
+
+![line-bot23](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot23.png>)
+
+![line-bot24](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot24.png>)
+
+![line-bot25](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot25.png>)
 
 #### 5.部署到heroku
 
