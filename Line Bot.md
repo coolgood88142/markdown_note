@@ -446,6 +446,130 @@ ex:使用者輸入臺北市，點選今天，回傳臺北市今天氣候，明�
 
 ![line-bot25](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot25.png>)
 
+##### (四)使用氣象雷達圖
+
+```php
+private $bot;
+private $channel_access_token;
+private $channel_secret;
+
+public function __construct()
+{
+    $this->lineBotService = app(LineBotService::class);
+    $this->channel_access_token = env('LINE_BOT_CHANNEL_ACCESS_TOKEN');
+    $this->channel_secret = env('LINE_BOT_CHANNEL_SECRET');
+    $httpClient = new CurlHTTPClient($this->channel_access_token);
+    $this->bot = new LINEBot($httpClient, ['channelSecret' => $this->channel_secret]);
+}
+public function getMessageWeather(Request $request)
+{
+    $replyToken = $request->events[0]['replyToken'];
+    $messageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('請輸入【氣候】');
+    if(isset($request->events[0]['postback'])){
+        $messageBuilder =  new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($request->events[0]['postback']['data']);
+    }else{
+        $text = $request->events[0]['message']['text'];
+        $cityData = Config::get('city');
+        $len = mb_strlen($text, 'utf-8');
+        $text = str_replace('台','臺',$text);
+        $messageBuilder = '';
+
+        if($text == '雷達'){
+            $url = 'https://www.cwb.gov.tw';
+            $radarUrl = $url . '/V8/C/W/OBS_Radar.html';
+            $content = $this->crawlerService->getOriginalData($radarUrl);
+            $image =  $content->filter('div > img')->first()->attr('src');
+            $radarImage = $url . $image;
+
+            $messageBuilder =  new RawMessageBuilder(
+                [
+                    'type' => 'flex',
+                    'altText' => '氣象雷達圖',
+                    'contents' => [
+                        'type'=> 'bubble',
+                        'body'=> [
+                            'type'=> 'box',
+                            'layout'=> 'vertical',
+                                'contents'=> [
+                                    [
+                                        'type'=> 'image',
+                                        'url'=> $radarImage,
+                                        'size'=> 'full',
+                                        'aspectMode'=> 'cover',
+                                        'aspectRatio'=> '1:1',
+                                        'gravity'=> 'center'
+                                    ],
+                                    [
+                                        'type'=> 'box',
+                                        'layout'=> 'vertical',
+                                        'contents'=> [],
+                                        'position'=> 'absolute',
+                                        'background'=> [
+                                            'type'=> 'linearGradient',
+                                            'angle'=> '0deg',
+                                            'endColor'=> '#00000000',
+                                            'startColor'=> '#00000099'
+                                        ],
+                                        'width'=> '100%',
+                                        'height'=> '40%',
+                                        'offsetBottom'=> '0px',
+                                        'offsetStart'=> '0px',
+                                        'offsetEnd'=> '0px'
+                                    ],
+                                    [
+                                        'type'=> 'box',
+                                        'layout'=> 'horizontal',
+                                        'contents'=> [
+                                            [
+                                                'type'=> 'box',
+                                                'layout'=> 'vertical',
+                                                'contents'=> [
+                                                    [
+                                                        'type'=> 'box',
+                                                        'layout'=> 'horizontal',
+                                                        'contents'=> [
+                                                            [
+                                                                'type'=> 'text',
+                                                                'text'=> '氣象雷達圖',
+                                                                'size'=> 'xl',
+                                                                'color'=> '#ffffff'
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ],
+                                                'spacing'=> 'xs'
+                                            ]
+                                        ],
+                                        'position'=> 'absolute',
+                                        'offsetBottom'=> '0px',
+                                        'offsetStart'=>'0px',
+                                        'offsetEnd'=> '0px',
+                                        'paddingAll'=> '20px'
+                                    ],
+                                ],
+                                'paddingAll'=> '0px'
+                            ]
+                        ]
+                    ]
+                );
+            }
+     }
+    
+     $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+
+	 if ($response->isSucceeded()) {
+         echo 'Succeeded!';
+         return;
+     }
+}
+```
+
+當使用者輸入雷達，系統會執行爬蟲爬氣象雷達圖，拿到雷達圖之後，再組flex message訊息格式，在用RawMessageBuilder建立訊息視窗，回傳氣象雷達圖
+
+以下為實作截圖
+
+![line-bot31](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot31.png>)
+
 #### 5.部署到heroku
 
 註冊[HeroKu](<https://id.heroku.com/login>)帳號，在安裝[Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#windows)，用cmd執行HeroKu
