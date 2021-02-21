@@ -65,7 +65,7 @@ JWT的結構要由三個部分組成，分別是header、payload、signature
 2. jwt構成簡單，占用很少的字節，便於傳輸。
 3. json格式通用，不同語言之間都可以使用。
 
-![jwt](C:\xampp\htdocs\markdown_note\assets\images\jwt.png)
+![jwt](https://coolgood88142.github.io/images/jwt.png)
 
 以下介紹，程式碼說明
 
