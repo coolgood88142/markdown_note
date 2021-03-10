@@ -128,6 +128,14 @@ public function verification(Request $request){
    JWT雖然有用json格式記錄類型、加密算法、識別身分等等，資料比較小又方便，但是與session相比，保存在server端，相對較為安全，如果server端或client端的key，被竊取的話，token就會被解密
 
    
+   
+3. 你的更好方法是要怎替換我們這次用JWT實作的回上一頁功能
+
+   jwt and oauth2
+
+   
+
+   
 
 
 

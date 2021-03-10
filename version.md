@@ -1,39 +1,47 @@
 ---
-title: "Google Sheet"
-date: "2020-05-29"
-author: "Google Sheet"
-summary: "安裝Google Sheet"
+title: "圖片解析"
+date: "2021-01-23"
+author: "Google Cloud Vision API"
+summary: "使用Google Cloud Vision API"
 ---
 
-## Google Sheet
+## 圖片解析
 
-google sheet api是一個與google試算表溝通，能快速取得試算表資料，並且可進行編輯。
+### 介紹
 
-使用google sheet api需要啟用與建立憑證，以下介紹使用laravel 建立google sheet api，取得試算表資料。
-
-
+我們需要用到google cloud vision API、google cloud translate API、google cloud storage API
 
 
+
+[富果 API ](https://developer.fugle.tw/)是由 [時報資訊](https://info.infotimes.com.tw/) 與 Fugle 富果技術團隊共同開發，提供台股及時行情 API。
+
+還需要申辦玉山證券富果帳戶，才可以免費申請  API token 使用 Fugle 富果 API。
+
+在申辦玉山證券富果帳戶，必須要有玉山銀行帳戶，開戶還需要7天作業時間。
+
+
+
+### Google Cloud Vision API
+
+google cloud vision api是取得解析圖片的物件，可以拿解析後的資料作存取，例如標籤、文字。
+
+使用google cloud vision api需要啟用與建立憑證，以下介紹步驟
 
 #### 1.登入[Google API Console](https://console.developers.google.com/?hl=zh-tw)
 
 登入google帳號之後，先新增專案，在搜尋google sheet api並且點選啟用。
 
-![google_sheet1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet1.png>)
+![vision-1](C:\xampp\htdocs\markdown_note\assets\images\vision-1.png)
 
-
-
-![google_sheet2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet2.png>)
-
-
+![vision-2](C:\xampp\htdocs\markdown_note\assets\images\vision-2.png)
 
 #### 2.建立OAuth 同意畫面
 
 點選設定OAuth 同意畫面，User Type請選擇外部後點選建立，輸入應用程式名稱再儲存。
 
-![google_sheet3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet3.png>)
+![vision-3](C:\xampp\htdocs\markdown_note\assets\images\vision-3.png)
 
-![google_sheet4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet4.png>)
+![vision-4](C:\xampp\htdocs\markdown_note\assets\images\vision-4.png)
 
 User Type的內部，必須是G Suite 方案的google帳號才可以使用 ，G Suite是google專為企業設計的雲端辦公套組，提供多種google工具，提高工作效率。
 
@@ -45,13 +53,13 @@ G Suite 方案的google帳號需要付費，這裡建議選擇外部即可。
 
 在建立憑證點選OAuth 用戶端ID，應用程式類型選擇網頁應用程式，並輸入名稱後建立，完成後會跳出用戶端ID與密碼，等等我們範例中會用到。
 
-![google_sheet5](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet5.png>)
+![vision-5](C:\xampp\htdocs\markdown_note\assets\images\vision-5.png)
 
 
 
-![google_sheet6](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet6.png>)
+![vision-6](C:\xampp\htdocs\markdown_note\assets\images\vision-6.png)
 
-![google_sheet7](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/google_sheet7.png>)
+![google_sheet7](<C:\xampp\htdocs\markdown_note\assets\images\vision-7.png>)
 
 
 
@@ -94,69 +102,21 @@ P12為PKCS 12，是一個有時效性的私密金鑰檔案(.p12)，由建立憑�
 在laravel專案安裝套件
 
 ```php
-composer require revolution/laravel-google-sheets
-```
-
-執行完後再產生config檔，這時會在config資料夾產生google.php
-
-```php
-php artisan vendor:publish --provider="PulkitJalan\Google\GoogleServiceProvider" --tag="config"
-```
-
-google.php
-
-```php
-'application_name' => env('GOOGLE_APPLICATION_NAME', ''),
-'client_id'        => env('GOOGLE_CLIENT_ID', ''),
-'client_secret'    => env('GOOGLE_CLIENT_SECRET', ''),
-'redirect_uri'     => env('GOOGLE_REDIRECT', ''),
-'scopes'           => '',
-'access_type'      => 'offline',
-'approval_prompt'  => 'auto',
-'developer_key' => env('GOOGLE_DEVELOPER_KEY', ''),
-'service' => [
-        'enable' => env('GOOGLE_SERVICE_ENABLED', false),
-        'file' => env('GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION',''),
-    ],
-
+composer require google/cloud-vision
 ```
 
 
 
 #### 7.laravel專案設定api
 
-建立laravel專案後，在.env檔案建立連線，GOOGLE_CLIENT_ID、GOOGLE_CLIENT_SECRET是OAuth 用戶端ID產生的ID與密碼，GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION是找storage目錄底下的服務帳戶金鑰的json檔。config的google.php檔也要設定一樣，主要是設定access token
+建立laravel專案後，在.env檔案建立連線，GOOGLE_CLOUD_PROJECT是在google cloud建立的專案名稱、GOOGLE_APPLICATION_CREDENTIALS是找storage目錄底下的服務帳戶金鑰的json檔。
 
 .env檔
 
 ```php
-GOOGLE_APPLICATION_NAME=
-GOOGLE_CLIENT_ID=22356814133-7mtrn8f457ua7cthoanbkgq0u5ir72m1.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=Hw1FYu-BQZ6UuZwTWV6PY4zg
-GOOGLE_REDIRECT=
-GOOGLE_DEVELOPER_KEY=
-GOOGLE_SERVICE_ENABLED=true
-GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION=../storage/credentials.json
+GOOGLE_CLOUD_PROJECT=專案名稱
+GOOGLE_APPLICATION_CREDENTIALS=../storage/credentials.json
 ```
-
-google.php
-
-```php
-'application_name' => env('GOOGLE_APPLICATION_NAME', ''),
-'client_id'        => env('GOOGLE_CLIENT_ID', '703199608133-48lihk64psruguqdqk1qqr508i87jt3v.apps.googleusercontent.com'),
-'client_secret'    => env('GOOGLE_CLIENT_SECRET', 'Hw1FYu-BQZ6UuZwTWV6PY4zg'),
-'redirect_uri'     => env('GOOGLE_REDIRECT', ''),
-'scopes'           => [\Google_Service_Sheets::DRIVE, \Google_Service_Sheets::SPREADSHEETS],,
-'access_type'      => 'offline',
-'approval_prompt'  => 'auto',
-'developer_key' => env('GOOGLE_DEVELOPER_KEY', ''),
-'service' => [
-        'enable' => env('GOOGLE_SERVICE_ENABLED', true),
-        'file' => env('GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION',storage_path('credetokenntials.json')),
-    ],
-```
-
-
 
 #### 8.在Controller新增程式碼
 

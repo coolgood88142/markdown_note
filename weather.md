@@ -1,0 +1,405 @@
+---
+title: "fugle"
+date: "2021-02-04"
+author: "fugle"
+summary: "介紹使用中央氣象局API結合Line Bot作天氣預報"
+ 
+---
+
+## 中央氣象局 API
+
+## 大綱
+
+介紹
+
+Line Bot
+
+1. 建立Providers 
+2. 建立API
+3. 安裝ngrok
+
+流程圖
+
+功能介紹
+
+- v-bind
+
+- v-on
+
+- v-model
+
+  
+
+### 介紹
+
+是中央氣象局提供的開放式資料，我們可以利用API快速拿到氣象局的最新資訊。
+
+使用之前要先到[氣象資料開放平台](https://opendata.cwb.gov.tw/index)註冊帳號，登入之後點選取得授權碼
+
+![fugle](C:\xampp\htdocs\markdown_note\assets\images\weather.PNG)
+
+再到開放資料平台的API網站，測試用授權碼取得資料，成功之後，下方有可以把整個json資料下載下來看。
+
+這裡會看到每種API的氣象資料，例如：未來兩天的天氣預報、目前的降雨量、風速、酸雨PH值、地震等等。
+
+![weather-1](C:\xampp\htdocs\markdown_note\assets\images\weather-1.PNG)![weather-2](C:\xampp\htdocs\markdown_note\assets\images\weather-2.PNG)
+
+## Line Bot
+
+Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊息，而且還免費，不會被依訊息則數來收費。它是一個官方帳號，加入好友後，用他接收你的服務發送過來的推播訊息。
+
+#### 1.建立Providers 
+
+先登入[Line ](https://developers.line.biz/en/)頁面，在**Providers**點選**Create**，輸入完**Provider name**之後
+
+![line-bot1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot1.png>)
+
+點選**Create a Messageing API channel**
+
+![line-bot2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot2.png>)
+
+輸入**Channel name**(頻道名稱)，在輸入**Channel description**，來描述頻道功能
+
+![line-bot3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot3.png>)
+
+再從**Category**選擇類別，再到**Subcategory**，選擇子類別
+
+![line-bot4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot4.png>)
+
+勾選下面的**LINE Official Account Terms of Use**和**LINE Official Account API Terms of Use**，在點選**Create**建立起來。
+
+![line-bot5](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot5.png>)
+
+#### 2.建立API
+
+選擇剛建立好的**Providers**，在點選**Messaging API**，到下面的**channel access token(long-lived)**，點選**lssue**，產生**token**，等等講解需要用到。
+
+![line-bot7](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot7.png>)
+
+掃描**QRcode**之後，加入好友
+
+![line-bot8](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot8.png>)
+
+#### 3.安裝ngrok
+
+**Line bot**需要**Webhook URL**才能連到部署的網址，但是現在要連線到本機，需要靠**ngrok**建立臨時的部署網址
+
+![line-bot9](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot9.png>)
+
+先到[ngrok](https://dashboard.ngrok.com/login)註冊帳號，註冊完之後下載檔案，在做解壓縮
+
+![line-bot10](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot10.png>)
+
+![line-bot11](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot11.png>)
+
+打開資料夾的ngrok.exe
+
+![line-bot12](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot12.png>)
+
+輸入本機網址port，ngrok.exe http 8000 ，**ngrok**會產生網址出來，將https的網址貼到**Line bot**的**Webhook URL**
+
+![line-bot13](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot13.png>)
+
+![line-bot14](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot14.png>)
+
+#### 流程圖
+
+![stock-1](C:\xampp\htdocs\markdown_note\assets\images\weather-1.png)
+
+![stock-2](C:\xampp\htdocs\markdown_note\assets\images\weather-2.png)
+
+
+
+![stock-3](C:\xampp\htdocs\markdown_note\assets\images\weather-3.png)
+
+![stock-4](C:\xampp\htdocs\markdown_note\assets\images\weather-4.png)
+
+### 功能介紹
+
+#### 1.查詢
+
+在我們告訴Line Bot什麼時候要查天氣，我們要設定輸入【氣候】，要系統告訴我們有那些縣市可以選擇
+
+```php
+public function getMessageWeather(Request $request){
+	$replyToken = $request->events[0]['replyToken'];
+    $messageBuilder = null;
+    $text = $request->events[0]['message']['text'];
+    $cityData = Config::get('city');
+    $len = mb_strlen($text, 'utf-8');
+    $text = str_replace('台','臺',$text);
+    
+    if($text == '氣候'){
+        $cityText = '請輸入要查詢的縣市：' . "\n";
+        foreach($cityData as $city){
+            $cityText = $cityText . $city . "\n";
+        }
+    
+        $cityText = rtrim($cityText, "\n");
+        $messageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($cityText);
+    }else{
+        $messageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('請輸入【氣候】');
+    }
+    
+    //這裡是告訴Line bot要顯示訊息版面的物件
+    $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+
+    if ($response->isSucceeded()) {
+        echo 'Succeeded!';
+        return;
+    }
+}
+```
+
+這裡是先判斷使用者是否輸入【氣候】，如果是的話，顯示縣市資料的訊息，如果不是就顯示請輸入【氣候】。
+
+#### 2.縣市menu
+
+點擊menu上的線圖，是提供股票最新各項即時資訊
+
+```php
+public function getMessageWeather(Request $request){
+	$replyToken = $request->events[0]['replyToken'];
+    $messageBuilder = null;
+    $text = $request->events[0]['message']['text'];
+    $cityData = Config::get('city');
+    $len = mb_strlen($text, 'utf-8');
+    $text = str_replace('台','臺',$text);
+    
+    if(in_array($text, $cityData)){
+        $messageBuilder =  new RawMessageBuilder(
+            [
+                'type' => 'flex',
+                'altText' => '請問要選擇哪一天?',
+                'contents' => [
+                    'type'=> 'bubble',
+                    'hero'=> [
+                        'type'=> 'image',
+                        'url'=> 'https://i.imgur.com/l8yNat5.jpg',
+                        'size'=> 'full',
+                        'aspectRatio'=> '20:13',
+                        'aspectMode'=> 'cover'
+                    ],
+                    //...flax message格式
+                ]
+            ],
+        );
+    }
+    
+    //這裡是告訴Line bot要顯示訊息版面的物件
+    $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+
+    if ($response->isSucceeded()) {
+        echo 'Succeeded!';
+        return;
+    }
+}
+```
+
+檢查使用者是否傳縣市名稱，在套用Line bot的flex message格式，系統會跳出訊息，顯示使用者輸入縣市的今天或明天的menu。
+
+#### 3.今天氣候
+
+點擊menu上的的今天，會顯示今天的每隔3小時的溫度與降雨機率資料
+
+```php
+public function getMessageStock(Request $request){
+    $text = '';
+    $symbolId = '';
+    $type = $request->events[0]['type'];
+    $apiToken = '富果帳號的token';
+    $fugleUrl = 'https://api.fugle.tw/realtime/v0/intraday/';
+    $parameter = '?apiToken=' . $apiToken;
+    
+    if(strpos($text,'今天氣候')){
+    	$cityWeather = mb_substr($text , 0 , 3, 'utf-8');
+    	if(in_array($cityWeather, $cityData)){
+            $fix = $this->sendMessageWeather(0, $cityWeather);
+        }
+        $messageBuilder = new RawMessageBuilder($fix);
+    }else{
+        $messageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('請輸入【氣候】');
+    }
+    
+    //這裡是告訴Line bot要顯示訊息版面的物件
+    $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+
+    if ($response->isSucceeded()) {
+        echo 'Succeeded!';
+        return;
+    }
+}
+```
+
+透過menu傳過來的參數，先判斷是否傳今天氣候的訊息，在套用Line bot的flex message格式，系統會自動回覆【縣市名稱+今天氣候】在跳出訊息，顯示今天縣市的天氣資訊。
+
+#### 4.明天氣候
+
+點擊menu上的的當日資訊，是提供股票基本資訊
+
+```php
+public function getMessageStock(Request $request){
+    $text = '';
+    $symbolId = '';
+    $type = $request->events[0]['type'];
+    $apiToken = '富果帳號的token';
+    $fugleUrl = 'https://api.fugle.tw/realtime/v0/intraday/';
+    $parameter = '?apiToken=' . $apiToken;
+    
+    if($text == '明天氣候'){
+        $cityWeather = mb_substr($text , 0 , 3, 'utf-8');
+    	if(in_array($cityWeather, $cityData)){
+            $fix = $this->sendMessageWeather(1, $cityWeather);
+        }
+        $messageBuilder = new RawMessageBuilder($fix);
+     }else{
+        $messageBuilder = new TextMessageBuilder('目前股票尚未開盤');
+     }	
+    
+    //這裡是告訴Line bot要顯示訊息版面的物件
+    $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+
+    if ($response->isSucceeded()) {
+        echo 'Succeeded!';
+        return;
+    }
+}
+```
+
+透過menu傳過來的參數，先判斷是否傳今天氣候的訊息，在套用Line bot的flex message格式，系統會自動回覆【縣市名稱+明天氣候】在跳出訊息，顯示今天縣市的天氣資訊。
+
+#### 5.雷達
+
+點擊menu上的的當日成交資訊，是提供股票當天最新一筆成交資訊
+
+```php
+public function getMessageStock(Request $request){
+    $text = '';
+    $symbolId = '';
+    $type = $request->events[0]['type'];
+    $apiToken = '富果帳號的token';
+    $fugleUrl = 'https://api.fugle.tw/realtime/v0/intraday/';
+    $parameter = '?apiToken=' . $apiToken;
+    
+    if($text == '雷達'){
+        $url = 'https://www.cwb.gov.tw';
+        $radarUrl = $url . '/V8/C/W/OBS_Radar.html';
+        $content = $this->crawlerService->getOriginalData($radarUrl);
+        $image =  $content->filter('div > img')->first()->attr('src');
+        $radarImage = $url . $image;
+        
+        $messageBuilder =  new RawMessageBuilder(
+            [
+                'type' => 'flex',
+                'altText' => '氣象雷達圖',
+                'contents' => [
+                    'type'=> 'bubble',
+                    'body'=> [
+                        'type'=> 'box',
+                        'layout'=> 'vertical',
+                        'contents'=> [
+                            [
+                                'type'=> 'image',
+                                'url'=> $radarImage,
+                                'size'=> 'full',
+                                'aspectMode'=> 'cover',
+                                'aspectRatio'=> '1:1',
+                                'gravity'=> 'center'
+                            ],
+                            [
+                                'type'=> 'box',
+                                'layout'=> 'vertical',
+                                'contents'=> [],
+                                'position'=> 'absolute',
+                                'background'=> [
+                                    'type'=> 'linearGradient',
+                                    'angle'=> '0deg',
+                                    'endColor'=> '#00000000',
+                                    'startColor'=> '#00000099'
+                                ],
+                                'width'=> '100%',
+                                'height'=> '40%',
+                                'offsetBottom'=> '0px',
+                                'offsetStart'=> '0px',
+                                'offsetEnd'=> '0px'
+                            ],
+                            [
+                                'type'=> 'box',
+                                'layout'=> 'horizontal',
+                                'contents'=> [
+                                    [
+                                        'type'=> 'box',
+                                        'layout'=> 'vertical',
+                                        'contents'=> [
+                                            [
+                                                'type'=> 'box',
+                                                'layout'=> 'horizontal',
+                                                'contents'=> [
+                                                    [
+                                                        'type'=> 'text',
+                                                        'text'=> '氣象雷達圖',
+                                                        'size'=> 'xl',
+                                                        'color'=> '#ffffff'
+                                                    ]
+                                                ]
+                                            ]
+                                        ],
+                                        'spacing'=> 'xs'
+                                    ]
+                                ],
+                                'position'=> 'absolute',
+                                'offsetBottom'=> '0px',
+                                'offsetStart'=>'0px',
+                                'offsetEnd'=> '0px',
+                                'paddingAll'=> '20px'
+                            ],
+                        ],
+                        'paddingAll'=> '0px'
+                    ]
+                ]
+            ]
+        );
+    }else{
+        $messageBuilder = new TextMessageBuilder('目前股票尚未開盤');
+    }	
+    
+    //這裡是告訴Line bot要顯示訊息版面的物件
+    $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+
+    if ($response->isSucceeded()) {
+        echo 'Succeeded!';
+        return;
+    }
+}
+```
+
+透過menu傳過來的參數，先判斷目前是點哪個資訊，直接取得股票資料，在套用Line bot的flex message格式，系統會自動回覆【股票名稱-當日成交資訊】，在跳出訊息，顯示當天的股票最新交易時間、價格、張數、序號。
+
+#### 問題紀錄：
+
+1. 使用ngrok在本機測試，系統一直顯示419 unknown status，用log找錯誤訊息也沒有顯示?
+
+   要在app/http/Middleware/VerifyCsrfToken.php，這隻檔案的except新增`/webhook`，告訴laravel這個路徑不需要驗證。
+
+   ```php
+   protected $except = [
+   	'/webhook'
+   ];
+   ```
+
+2. Line Bot 組文字資料使用換行符號(/n)，怎麼沒反應
+
+   在PHP已經都習慣寫單引號，要換改用雙引號才有用。
+
+   
+
+參考資料:
+
+https://stackoverflow.com/questions/46266553/why-does-the-laravel-api-return-a-419-status-code-on-post-and-put-methods、
+
+https://eric0324.github.io/2019/09/16/let-line-chatbot-say-hello-world/、
+
+https://developers.line.biz/en/
+
+
+
