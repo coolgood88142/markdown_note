@@ -7,6 +7,43 @@ summary: "使用Google服務做圖片解析"
 
 ## 圖片解析
 
+### 大綱
+
+介紹
+
+建立憑證
+
+1. 登入Google API Console
+2. 建立OAuth 同意畫面
+3. 建立 OAuth 用戶端ID
+4. 建立服務帳戶
+5. 建立服務帳戶金鑰
+
+安裝套件
+
+laravel專案設定api
+
+新增js檔
+
+新增compoent
+
+- keyword.vue
+- upload.vue
+- edit.vue
+- imagel.vue
+- editButton.vue
+- deleteButton.vue
+
+新增頁面
+
+新增Controller
+
+Route
+
+編譯檔案
+
+啟動本機站台
+
 ### 介紹
 
 我們需要用到google cloud vision API、google cloud translate API、google cloud storage API，3種API
@@ -87,6 +124,7 @@ OAuth 用戶端ID主要是同意授權使用API資料，服務帳戶則是利用
 composer require google/cloud-vision
 composer require google/cloud-translate
 composer require google/cloud-storage
+npm install laravel-vue-datatable
 ```
 
 ### laravel專案設定api
@@ -233,9 +271,6 @@ export default {
             .catch(errors => {
             })
         },
-        reloadTable(tableProps) {
-            this.getData(this.url, tableProps);
-        },
         updateSelectedModal(data) {
             this.englishKeywords = data['englishKeyword'].split(","); 
             this.chineseKeywords = data['chineseKeyword'].split(","); 
@@ -277,7 +312,7 @@ export default {
 </script>
 ```
 
-這裡引用laravel-vue-datatable套件，以及圖片、按鈕、編輯功能的component物件，還有用axios抓DB資料和刪除資料
+這裡引用laravel-vue-datatable套件，以及圖片、按鈕、編輯功能的component物件，updateSelectedModal是設定中文關鍵字與ID資料，getData與deleteKeyWord，是用axios傳到後端做查詢或刪除資料。
 
 #### upload.vue
 
@@ -557,7 +592,9 @@ export default {
 
 顯示編輯畫面，並且可以將中英文關鍵字做編輯，可以做排序、滑鼠拖曳、新增、刪除、儲存，當中英文關鍵字改好之後做儲存，這時會跑到後端更新DB資料，網頁會在重新整理。
 
-#### imageCell.vue
+onUpdateEnglish與onUpdateChinese是中英文關鍵字做排序時會更換資料，deleteEnglishKeyWord與deleteChineseKeyWord是移除中英文關鍵字的資料，saveKeyword是儲存中英文關鍵字的資料，changeEnglishKeyWord與changeChineseKeyWord是用滑鼠拖曳會將中英文關鍵字做排序。
+
+#### image.vue
 
 ```vue
 <template>
@@ -879,6 +916,12 @@ public function getVisionDataTable(Request $request)
     }
 
 ```
+
+程式碼中主要是做CURD，在網頁剛開啟時，透過axios做查詢，將資料顯示到網頁上
+
+新增是在上傳圖片的時候做，會先將用storage API將圖片做調整大小，在上傳上去google cloud storage，再用vision API取得解析圖片的物件，這裡我們使用標籤與文字，標籤是依照API識別圖片中人事物，文字則是取得圖片文字，如果圖片沒有文字就沒資料，當標籤或文字，如果是英文的話，會用translate API做英翻中，並且將資料新增到中文關鍵字裡。
+
+更新是在編輯視窗裡，改好關鍵字資料在做儲存，刪除則是直接移除一筆圖片資料與檔案，移除圖片檔案有使用translate API，將google cloud storage圖片檔案做移除。
 
 ### Route
 

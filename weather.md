@@ -3,7 +3,6 @@ title: "fugle"
 date: "2021-02-04"
 author: "fugle"
 summary: "介紹使用中央氣象局API結合Line Bot作天氣預報"
- 
 ---
 
 ## 中央氣象局 API
@@ -72,7 +71,7 @@ Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊�
 
 #### 2.建立API
 
-選擇剛建立好的**Providers**，在點選**Messaging API**，到下面的**channel access token(long-lived)**，點選**lssue**，產生**token**，等等講解需要用到。
+選擇剛建立好的**Providers**，在點選**Messaging API**，到下面的**channel access token**，點選**lssue**，產生**token**，等等講解需要用到。
 
 ![line-bot7](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot7.png>)
 
@@ -82,9 +81,15 @@ Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊�
 
 #### 3.安裝ngrok
 
-**Line bot**需要**Webhook URL**才能連到部署的網址，但是現在要連線到本機，需要靠**ngrok**建立臨時的部署網址
+Line Bot需要用https協定可以測試，我們在本機開發，無法使用協定，因此我們需要安裝ngrok，幫我們產生https協定的網址。
+
+下載完ngrok之後打開exe檔，我們用laravel 做本機開發，port會是8000，要輸入ngrok.exe http 8000，再複製https網址
+
+**Line bot**需要**Webhook URL**才能連到部署的網址，需要靠**ngrok**建立臨時的部署網址
 
 ![line-bot9](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot9.png>)
+
+在回到Line Bot網頁上，裡面有個叫Webhook Settings，把https的網址貼上去後，點選Verify，在打開瀏覽器貼上https網址，這時ngrok.exe會多一行GET status200，代表成功了。
 
 先到[ngrok](https://dashboard.ngrok.com/login)註冊帳號，註冊完之後下載檔案，在做解壓縮
 
@@ -104,15 +109,15 @@ Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊�
 
 ### 流程圖
 
-![stock-1](C:\xampp\htdocs\markdown_note\assets\images\weather-1.png)
+![weather-1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-1.png>)
 
-![stock-2](C:\xampp\htdocs\markdown_note\assets\images\weather-2.png)
+![weather-2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-2.png>))
 
 
 
-![stock-3](C:\xampp\htdocs\markdown_note\assets\images\weather-3.png)
+![weather-3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-3.png>)
 
-![stock-4](C:\xampp\htdocs\markdown_note\assets\images\weather-4.png)
+![weather-4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-4.png>)
 
 ### 功能介紹
 
@@ -272,7 +277,7 @@ public function getMessageWeather(Request $request){
 }
 ```
 
-這裡是先判斷使用者是否輸入【氣候】，如果是的話，顯示縣市資料的訊息，如果不是就顯示請輸入【氣候】。
+這裡是先判斷使用者是否輸入【氣候】，如果是的話，顯示縣市資料的訊息，如果不是就顯示【請輸入氣候】。
 
 #### 2.縣市menu
 
