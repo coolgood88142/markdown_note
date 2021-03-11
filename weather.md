@@ -8,7 +8,7 @@ summary: "介紹使用中央氣象局API結合Line Bot作天氣預報"
 
 ## 中央氣象局 API
 
-## 大綱
+### 大綱
 
 介紹
 
@@ -22,13 +22,11 @@ Line Bot
 
 功能介紹
 
-- v-bind
-
-- v-on
-
-- v-model
-
-  
+1. 查詢
+2. 縣市menu
+3. 今天氣候
+4. 明天氣候
+5. 雷達
 
 ### 介紹
 
@@ -38,13 +36,15 @@ Line Bot
 
 ![fugle](C:\xampp\htdocs\markdown_note\assets\images\weather.PNG)
 
-再到開放資料平台的API網站，測試用授權碼取得資料，成功之後，下方有可以把整個json資料下載下來看。
+再到開放資料平台的API網站，用授權碼測試取得資料，成功之後，下方有可以把整個json資料下載下來看，以下示範API的寫法。
 
-這裡會看到每種API的氣象資料，例如：未來兩天的天氣預報、目前的降雨量、風速、酸雨PH值、地震等等。
+```
+https://opendata.cwb.gov.tw/api/各種天氣資訊的url?Authorization=氣象api的token&locationName=縣市名稱
+```
 
-![weather-1](C:\xampp\htdocs\markdown_note\assets\images\weather-1.PNG)![weather-2](C:\xampp\htdocs\markdown_note\assets\images\weather-2.PNG)
+這裡有各種氣象資料，例如：未來兩天的天氣預報、目前的降雨量、風速、酸雨PH值、地震等等。
 
-## Line Bot
+### Line Bot
 
 Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊息，而且還免費，不會被依訊息則數來收費。它是一個官方帳號，加入好友後，用他接收你的服務發送過來的推播訊息。
 
@@ -102,7 +102,7 @@ Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊�
 
 ![line-bot14](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot14.png>)
 
-#### 流程圖
+### 流程圖
 
 ![stock-1](C:\xampp\htdocs\markdown_note\assets\images\weather-1.png)
 
@@ -115,6 +115,127 @@ Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊�
 ![stock-4](C:\xampp\htdocs\markdown_note\assets\images\weather-4.png)
 
 ### 功能介紹
+
+#### 共用的function
+
+```php
+//使用API拿到中央氣象局的各種氣候資料
+public function getCrawlerData(Client $client, String $weather, String $locationName){
+    $token = '中央氣象局的token';
+    $weatherUrl = 'https://opendata.cwb.gov.tw/api';
+    $url = $weatherUrl . $weather . '?Authorization=' . $token;
+        
+    if($locationName!=null && $locationName!=''){
+        $url = $url . '&locationName=' . $locationName;
+    }
+        
+    $response = $client->get($url);
+    $weatherData = json_decode($response->getBody())->records;
+
+    return $weatherData;
+}
+
+//發送今天或明天氣候，要組flex message格式，並且跳出訊息
+public function sendMessageWeather(int $type, String $cityText){
+    $cityArray = [];
+    $now = Carbon::now()->timezone('Asia/Taipei');
+    $yesterday = $now->yesterday()->format('m/d');
+    $today = $now->format('m/d');
+    $tomorrow = $now->tomorrow('Asia/Taipei')->format('m/d');
+    $carouselData = [];
+    $carouselContentsData = [];
+
+    if($type == 1){
+        if($cityText != null){
+            $cityArray = [$cityText];
+        }
+
+        $datas = DB::table('weather_tomorrow')->whereIn('city', $cityArray)->get();
+
+        foreach($datas as $data){
+            //以下為flex message格式
+            array_push($carouselData, $value);
+        }
+
+
+        $carouselContentsData = [
+            'type' => 'flex',
+            'altText' => '氣候',
+            'contents' => [
+                'type' => 'carousel',
+                'contents' => $carouselData
+            ]
+        ];
+    }else{
+        $weatherController = app(WeatherController::class);
+        $client = new \GuzzleHttp\Client();
+        $weathers = Config::get('weather');
+        $locationName = urlencode($cityText);
+        $todayDate = $now->format('Y-m-d');
+        $hour = (int)$now->format('H');
+        $count = 0;
+        $probabilityNum = 0;
+        $messageArray = [
+            [
+                'type' => 'text',
+                'text' => $now->format('m/d'),
+                'weight' =>'bold',
+                'size'=>'xl'
+            ]
+        ];
+
+        $weatherData = $weatherController->getCrawlerData($client, $weathers[13], $locationName);
+        if(isset($weatherData->locations[0])){
+            $weatherForecast = $weatherData->locations[0]->location[0]->weatherElement[6]->time;
+            foreach($weatherForecast as $forecast){
+                //以下為flex message格式
+                array_push($messageArray, $value);
+                $count++;
+            }
+        }
+
+        $rain = $probabilityNum != 0 && $count > 1 ? round($probabilityNum/$count) : $probabilityNum;
+            
+        $carouselContentsData = [
+            'type' => 'flex',
+            'altText' => '氣候',
+            'contents' => [
+                'type' => 'bubble',
+                'size' => 'giga',
+                'hero' => [
+                    'type' => 'image',
+                    'url' => $this->getProbabilityOfPrecipitationImage((string) $rain),
+                    'size' => 'full',
+                    'aspectRatio' => '20:13',
+                ],
+                'body' => [
+                    'type' => 'box',
+                    'layout' => 'vertical',
+                    'contents' => $messageArray
+                ]
+            ]
+        ];
+    }
+
+    if($cityText != null){
+        return $carouselContentsData;
+    }
+}
+
+//判斷降雨機率未達20%顯示晴天圖片，20%-50%之間顯示多雲圖片，50%以上顯示下雨圖片
+public function getProbabilityOfPrecipitationImage(String $probability_of_precipitation){
+    $rain = (int)$probability_of_precipitation;
+    $image = 'https://i.imgur.com/C5CarmM.jpg';
+
+    if($rain >= 50){
+        $image = 'https://i.imgur.com/fzUnYi1.jpg';
+    }else if($rain > 20 && $rain < 50){
+        $image = 'https://i.imgur.com/WRsK9Dg.jpg';
+    }
+
+    return $image;
+}
+```
 
 #### 1.查詢
 
@@ -203,13 +324,13 @@ public function getMessageWeather(Request $request){
 點擊menu上的的今天，會顯示今天的每隔3小時的溫度與降雨機率資料
 
 ```php
-public function getMessageStock(Request $request){
-    $text = '';
-    $symbolId = '';
-    $type = $request->events[0]['type'];
-    $apiToken = '富果帳號的token';
-    $fugleUrl = 'https://api.fugle.tw/realtime/v0/intraday/';
-    $parameter = '?apiToken=' . $apiToken;
+public function getMessageWeather(Request $request){
+    $replyToken = $request->events[0]['replyToken'];
+    $messageBuilder = null;
+    $text = $request->events[0]['message']['text'];
+    $cityData = Config::get('city');
+    $len = mb_strlen($text, 'utf-8');
+    $text = str_replace('台','臺',$text);
     
     if(strpos($text,'今天氣候')){
     	$cityWeather = mb_substr($text , 0 , 3, 'utf-8');
@@ -238,13 +359,13 @@ public function getMessageStock(Request $request){
 點擊menu上的的當日資訊，是提供股票基本資訊
 
 ```php
-public function getMessageStock(Request $request){
-    $text = '';
-    $symbolId = '';
-    $type = $request->events[0]['type'];
-    $apiToken = '富果帳號的token';
-    $fugleUrl = 'https://api.fugle.tw/realtime/v0/intraday/';
-    $parameter = '?apiToken=' . $apiToken;
+public function getMessageWeather(Request $request){
+    $replyToken = $request->events[0]['replyToken'];
+    $messageBuilder = null;
+    $text = $request->events[0]['message']['text'];
+    $cityData = Config::get('city');
+    $len = mb_strlen($text, 'utf-8');
+    $text = str_replace('台','臺',$text);
     
     if($text == '明天氣候'){
         $cityWeather = mb_substr($text , 0 , 3, 'utf-8');
@@ -270,16 +391,16 @@ public function getMessageStock(Request $request){
 
 #### 5.雷達
 
-點擊menu上的的當日成交資訊，是提供股票當天最新一筆成交資訊
+顯示氣候雷達圖
 
 ```php
 public function getMessageStock(Request $request){
-    $text = '';
-    $symbolId = '';
-    $type = $request->events[0]['type'];
-    $apiToken = '富果帳號的token';
-    $fugleUrl = 'https://api.fugle.tw/realtime/v0/intraday/';
-    $parameter = '?apiToken=' . $apiToken;
+	$replyToken = $request->events[0]['replyToken'];
+    $messageBuilder = null;
+    $text = $request->events[0]['message']['text'];
+    $cityData = Config::get('city');
+    $len = mb_strlen($text, 'utf-8');
+    $text = str_replace('台','臺',$text);
     
     if($text == '雷達'){
         $url = 'https://www.cwb.gov.tw';
@@ -306,55 +427,7 @@ public function getMessageStock(Request $request){
                                 'aspectRatio'=> '1:1',
                                 'gravity'=> 'center'
                             ],
-                            [
-                                'type'=> 'box',
-                                'layout'=> 'vertical',
-                                'contents'=> [],
-                                'position'=> 'absolute',
-                                'background'=> [
-                                    'type'=> 'linearGradient',
-                                    'angle'=> '0deg',
-                                    'endColor'=> '#00000000',
-                                    'startColor'=> '#00000099'
-                                ],
-                                'width'=> '100%',
-                                'height'=> '40%',
-                                'offsetBottom'=> '0px',
-                                'offsetStart'=> '0px',
-                                'offsetEnd'=> '0px'
-                            ],
-                            [
-                                'type'=> 'box',
-                                'layout'=> 'horizontal',
-                                'contents'=> [
-                                    [
-                                        'type'=> 'box',
-                                        'layout'=> 'vertical',
-                                        'contents'=> [
-                                            [
-                                                'type'=> 'box',
-                                                'layout'=> 'horizontal',
-                                                'contents'=> [
-                                                    [
-                                                        'type'=> 'text',
-                                                        'text'=> '氣象雷達圖',
-                                                        'size'=> 'xl',
-                                                        'color'=> '#ffffff'
-                                                    ]
-                                                ]
-                                            ]
-                                        ],
-                                        'spacing'=> 'xs'
-                                    ]
-                                ],
-                                'position'=> 'absolute',
-                                'offsetBottom'=> '0px',
-                                'offsetStart'=>'0px',
-                                'offsetEnd'=> '0px',
-                                'paddingAll'=> '20px'
-                            ],
-                        ],
-                        'paddingAll'=> '0px'
+                       //以下為flex message格式
                     ]
                 ]
             ]
@@ -371,11 +444,21 @@ public function getMessageStock(Request $request){
         return;
     }
 }
+
+//crawlerService
+public function getOriginalData(string $path)
+{
+    $content = $this->client->get($path)->getBody()->getContents();
+    $crawler = new Crawler();
+    $crawler->addHtmlContent($content);
+
+    return $crawler;
+}
 ```
 
-透過menu傳過來的參數，先判斷目前是點哪個資訊，直接取得股票資料，在套用Line bot的flex message格式，系統會自動回覆【股票名稱-當日成交資訊】，在跳出訊息，顯示當天的股票最新交易時間、價格、張數、序號。
+使用者輸入雷達時，系統使用`GuzzleHttp`做爬蟲，爬中央氣象局的雷達圖，在套用在套用Line bot的flex message格式，在跳出訊息，顯示氣候雷達圖。
 
-#### 問題紀錄：
+### 問題紀錄
 
 1. 使用ngrok在本機測試，系統一直顯示419 unknown status，用log找錯誤訊息也沒有顯示?
 
@@ -399,7 +482,11 @@ https://stackoverflow.com/questions/46266553/why-does-the-laravel-api-return-a-4
 
 https://eric0324.github.io/2019/09/16/let-line-chatbot-say-hello-world/、
 
-https://developers.line.biz/en/
+https://developers.line.biz/en/、
+
+https://www.cwb.gov.tw/V8/C/、
+
+https://opendata.cwb.gov.tw/dist/opendata-swagger.html、
 
 
 

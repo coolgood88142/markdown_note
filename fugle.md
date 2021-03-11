@@ -33,13 +33,13 @@ Line Bot
 
 ### 介紹
 
-[富果 API ](https://developer.fugle.tw/)是由 [時報資訊](https://info.infotimes.com.tw/) 與 Fugle 富果技術團隊共同開發，提供台股及時行情 API。
+[富果 API ](https://developer.fugle.tw/)是由 [時報資訊](https://info.infotimes.com.tw/) 與 Fugle 富果技術團隊共同開發，提供台股及時行情 。
 
 還需要申辦玉山證券富果帳戶，才可以免費申請  API token 使用 Fugle 富果 API。
 
 在申辦玉山證券富果帳戶，必須要有玉山銀行帳戶，開戶還需要7天作業時間。
 
-![fugle](C:\xampp\htdocs\markdown_note\assets\images\fugle.PNG)
+![fugle](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fugle.PNG>)
 
 #### 富果API有哪些股票資訊?
 
@@ -49,7 +49,7 @@ API類型分為線圖(chart)、統計資訊(Quote)、當天資訊(Meta)、當天
 
 
 ```
-https://api.fugle.tw/realtime/v0/intraday/meta?symbolId=2330&apiToken=富果帳號的token
+https://api.fugle.tw/realtime/v0/intraday/類型?symbolId=股票代號&apiToken=富果帳號的token
 ```
 
 例如回傳的當天資訊資料，在data的meta裡，會記錄著股票的資料，顯示股票名稱、做什麼產業等等
@@ -168,17 +168,17 @@ Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊�
 
 ## 流程圖
 
-![stock-1](C:\xampp\htdocs\markdown_note\assets\images\stock-1.png)
+![stock-1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/stock-1.png>)
 
-![stock-2](C:\xampp\htdocs\markdown_note\assets\images\stock-2.png)
+![stock-2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/stock-2.png>)
 
 
 
-![stock-3](C:\xampp\htdocs\markdown_note\assets\images\stock-3.png)
+![stock-3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/stock-3.png>)
 
-![stock-4](C:\xampp\htdocs\markdown_note\assets\images\stock-4.png)
+![stock-4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/stock-4.png>)
 
-![stock-5](C:\xampp\htdocs\markdown_note\assets\images\stock-5.png)
+![stock-5](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/stock-5.png>)
 
 ## 功能介紹
 
@@ -260,7 +260,7 @@ public function getMessageStock(Request $request){
                                  ],
                                  'height'=>'sm'
                              ],
-                             ....其餘3個股票資訊格式
+                             //以下為flex message格式，其餘3個股票資訊格式...
                          ],
                          'flex'=> 0,
                      ],
@@ -440,54 +440,8 @@ public function getMessageStock(Request $request){
     
             foreach($quotes as $quote){
                 foreach($quote as $key => $value){
-                    $fugleValue = '';
-                    $message = [];
-                    if(end($quotes) != $quote){
-                        if(is_numeric($key)){
-                            $keys = array_keys($value);
-                            $firstKey = $keys[0];
-                            $message = [
-                                'type'=> 'box',
-                                'layout'=> 'horizontal',
-                                'contents'=> [
-                                    [
-                                        'type'=> 'text',
-                                        'text'=> (string)$value[$firstKey],
-                                        'size'=> 'sm',
-                                        'color'=> '#555555',
-                                        'flex'=> 0
-                                    ],
-                                    [
-                                        'type'=> 'box',
-                                        'layout'=> 'vertical',
-                                        'margin'=> 'xxl',
-                                        'spacing'=> 'sm',
-                                        'contents'=> [
-                                            [
-                                                'type'=> 'box',
-                                                'layout'=> 'horizontal',
-                                                'contents'=> [
-                                                    [
-                                                        'type'=> 'text',
-                                                        'text'=> 'info',
-                                                        'size'=> 'md',
-                                                        'color'=> '#555555',
-                                                    ]
-                                                ]
-                                            ],
-                                            [
-                                                'type'=> 'separator',
-                                                'margin'=> 'none',
-                                            ]
-                                        ]
-                                    ],
-                                ]
-                            ];
-            	    
-                        /*組flex message格式*/
-                       	array_push($messageArray2, $message);
-                        }
-                    }
+                    //以下為flex message格式
+                    array_push($messageArray2, $value);
                 }
             }
             
@@ -589,38 +543,8 @@ public function getMessageStock(Request $request){
         
             foreach($metas as $meta){
                 foreach($meta as $key => $value){
-                    $fugleValue = $datas[$key];
-                    if(is_bool($fugleValue)){
-                        if($fugleValue){
-                            $fugleValue = '是';
-                        }else{
-                            $fugleValue = '否';
-                        }
-                    }else if(is_numeric($fugleValue)){
-                        $fugleValue = '$' . $fugleValue;
-                    }
-    
-                    $message = [
-                        'type'=> 'box',
-                        'layout'=> 'horizontal',
-                        'contents'=> [
-                            [
-                                'type'=> 'text',
-                                'text'=> (string)$value,
-                                'size'=> 'sm',
-                                'color'=> '#555555',
-                                'flex'=> 0
-                            ],
-                            [
-                                'type'=> 'text',
-                                'text'=> (string)$fugleValue,
-                                'size'=> 'sm',
-                                'color'=> '#111111',
-                                'align'=> 'end'
-                            ]
-                        ]
-                    ];
-                    array_push($messageArray, $message);
+                    //以下為flex message格式
+                    array_push($messageArray, $value);
                 }
             }
         
@@ -707,34 +631,7 @@ public function getMessageStock(Request $request){
             $dealt = end($dealts);
                     
             foreach($dealt as $key => $value){
-                $fugleValue = $datas[0]->$key;
-                if($key == 'at'){
-                    $date = (new Carbon($fugleValue))->timezone('Asia/Taipei');
-                    $fugleValue = $date->format('Y-m-d h:m');
-                }else if($key == 'price'){
-                    $fugleValue = '$' . $fugleValue;
-                }
-                
-                $message = [
-                    'type'=> 'box',
-                    'layout'=> 'horizontal',
-                    'contents'=> [
-                        [
-                            'type'=> 'text',
-                            'text'=> (string)$value,
-                            'size'=> 'sm',
-                            'color'=> '#555555',
-                            'flex'=> 0
-                        ],
-                        [
-                            'type'=> 'text',
-                            'text'=> (string)$fugleValue,
-                            'size'=> 'sm',
-                            'color'=> '#111111',
-                            'align'=> 'end'
-                        ]
-                    ]
-                ];
+                //以下為flex message格式
                 array_push($messageArray, $message);
             }
         
@@ -796,7 +693,11 @@ https://stackoverflow.com/questions/46266553/why-does-the-laravel-api-return-a-4
 
 https://eric0324.github.io/2019/09/16/let-line-chatbot-say-hello-world/、
 
-https://developers.line.biz/en/
+https://developers.line.biz/en/、
+
+https://developer.fugle.tw/document/intraday/introduction
+
+
 
 
 
