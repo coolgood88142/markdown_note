@@ -1,11 +1,13 @@
 ---
-title: "fugle"
-date: "2021-02-04"
+title: "fugle API"
+date: "2021-03-12"
 author: "fugle"
-summary: "介紹使用富果API結合Line Bot作股票資訊"
+summary: "介紹使用富果台股API結合Line Bot做股票資訊"
+categories: ["API document"]
+tags: ["fugle","fugle API","富果","富果台股 API"]
 ---
 
-## 富果 API
+## 富果台股 API
 
 ### 大綱
 
@@ -45,6 +47,8 @@ Line Bot
 
 API類型分為線圖(chart)、統計資訊(Quote)、當天資訊(Meta)、當天成交資訊(Deatlls)。
 
+![fugle-1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fugle-1.PNG>)
+
 在拿資料前要做驗證，確認使用者輸入的股票代號，以下示範API的寫法
 
 
@@ -54,41 +58,7 @@ https://api.fugle.tw/realtime/v0/intraday/類型?symbolId=股票代號&apiToken=
 
 例如回傳的當天資訊資料，在data的meta裡，會記錄著股票的資料，顯示股票名稱、做什麼產業等等
 
-
-```
-{
-  "apiVersion": "0.1.0",
-  "data": {
-    "info": {
-      "countryCode": "TW",
-      "date": "2021-03-09",
-      "lastUpdatedAt": "2021-03-09T00:49:39.928Z",
-      "mode": "twse-sem",
-      "symbolId": "2330",
-      "timeZone": "Asia/Taipei"
-    },
-    "meta": {
-      "abnormal": "正常",
-      "canDayBuySell": true,
-      "canDaySellBuy": true,
-      "canShortLend": true,
-      "canShortMargin": true,
-      "currency": "TWD",
-      "industryZhTw": "半導體業",
-      "isIndex": false,
-      "isSuspended": false,
-      "isTerminated": false,
-      "isWarrant": false,
-      "nameZhTw": "台積電",
-      "priceHighLimit": 657,
-      "priceLowLimit": 539,
-      "priceReference": 598,
-      "typeZhTw": "一般股票",
-      "volumePerUnit": 1000
-    }
-  }
-}
-```
+![fugle-2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/fugle-2.PNG>)
 
 以下程式碼為範例，拿股票名稱，如果回傳的是null就是驗證失敗
 

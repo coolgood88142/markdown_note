@@ -1,8 +1,10 @@
 ---
-title: "fugle"
-date: "2021-02-04"
-author: "fugle"
-summary: "介紹使用中央氣象局API結合Line Bot作天氣預報"
+title: "中央氣象局API"
+date: "2021-03-12"
+author: "CWB"
+summary: "介紹使用中央氣象局API結合Line Bot做天氣預報"
+categories: ["API document"]
+tags: ["weather",CWB","CWB API","中央氣象局","中央氣象局 API"]
 ---
 
 ## 中央氣象局 API
@@ -33,9 +35,15 @@ Line Bot
 
 使用之前要先到[氣象資料開放平台](https://opendata.cwb.gov.tw/index)註冊帳號，登入之後點選取得授權碼
 
-![fugle](C:\xampp\htdocs\markdown_note\assets\images\weather.PNG)
+![weather](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather.PNG>)
 
-再到開放資料平台的API網站，用授權碼測試取得資料，成功之後，下方有可以把整個json資料下載下來看，以下示範API的寫法。
+再到開放資料平台的API網站，用授權碼測試取得資料，成功之後，下方有可以把整個json資料下載下來看。
+
+![weather-5](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-5.PNG>)
+
+![weather-6](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-6.PNG>)
+
+以下示範API的寫法
 
 ```
 https://opendata.cwb.gov.tw/api/各種天氣資訊的url?Authorization=氣象api的token&locationName=縣市名稱

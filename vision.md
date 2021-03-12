@@ -1,8 +1,10 @@
 ---
 title: "圖片解析"
-date: "2021-01-23"
+date: "2021-03-12"
 author: "Google Cloud Vision API"
 summary: "使用Google服務做圖片解析"
+categories: ["API document"]
+tags: ["圖片解析",Vision","Google Cloud Vision API","Translate","Google Cloud Translate API","Storage","Google Cloud Storage API"]
 ---
 
 ## 圖片解析
@@ -176,7 +178,6 @@ let user = new Vue({
             :english-keywords="englishKeywords" :chinese-keywords="chineseKeywords" :key-word-id="id">
         </edit>
     </div>
-    <!-- <edit></edit> -->
 </template>
 
 <script>
