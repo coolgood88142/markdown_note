@@ -91,9 +91,7 @@ Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊�
 
 Line Bot需要用https協定可以測試，我們在本機開發，無法使用協定，因此我們需要安裝ngrok，幫我們產生https協定的網址。
 
-下載完ngrok之後打開exe檔，我們用laravel 做本機開發，port會是8000，要輸入ngrok.exe http 8000，再複製https網址
-
-**Line bot**需要**Webhook URL**才能連到部署的網址，需要靠**ngrok**建立臨時的部署網址
+登入下載完ngrok之後打開exe檔，我們用laravel 做本機開發，port會是8000，要輸入ngrok.exe http 8000，再複製https網址
 
 ![line-bot9](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot9.png>)
 
@@ -119,13 +117,15 @@ Line Bot需要用https協定可以測試，我們在本機開發，無法使用�
 
 ![weather-1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-1.png>)
 
-![weather-2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-2.png>))
+![weather-2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-2.png>)
 
 
 
 ![weather-3](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-3.png>)
 
 ![weather-4](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-4.png>)
+
+![weather-5(1)](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/weather-5(1).png>)
 
 ### 功能介紹
 
@@ -169,7 +169,6 @@ public function sendMessageWeather(int $type, String $cityText){
             //以下為flex message格式
             array_push($carouselData, $value);
         }
-
 
         $carouselContentsData = [
             'type' => 'flex',
@@ -407,7 +406,7 @@ public function getMessageWeather(Request $request){
 顯示氣候雷達圖
 
 ```php
-public function getMessageStock(Request $request){
+public function getMessageWeather(Request $request){
 	$replyToken = $request->events[0]['replyToken'];
     $messageBuilder = null;
     $text = $request->events[0]['message']['text'];

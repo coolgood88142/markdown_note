@@ -118,9 +118,7 @@ Line Bot是Line 的聊天機器人，是一個單向傳輸文字、圖片等訊�
 
 Line Bot需要用https協定可以測試，我們在本機開發，無法使用協定，因此我們需要安裝ngrok，幫我們產生https協定的網址。
 
-下載完ngrok之後打開exe檔，我們用laravel 做本機開發，port會是8000，要輸入ngrok.exe http 8000，再複製https網址
-
-**Line bot**需要**Webhook URL**才能連到部署的網址，但是現在要連線到本機，需要靠**ngrok**建立臨時的部署網址
+登入下載完ngrok之後打開exe檔，我們用laravel 做本機開發，port會是8000，要輸入ngrok.exe http 8000，再複製https網址
 
 ![line-bot9](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/line-bot9.png>)
 
