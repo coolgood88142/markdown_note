@@ -43,7 +43,7 @@ tags: ["vscode","Keyboard Shortcut"]
   - Ctrl+Alt+Up 多個游標-選取上面多行(要先Alt+滑鼠右鍵)
   - Ctrl+Alt+Down多個游標-選取下面多行(要先Alt+滑鼠右鍵)
   - Ctrl + Shift + L 選取全部相同的標籤，做修改(適用html)
-  - Ctrl + D 承上，如果不想全部，就用這個
+  - Ctrl + D 選取全部相同的標籤
   - Shift+Alt(+滑鼠右鍵) 全選多行
   - Shift+Alt+Up 複製上一行
   - Shift+Alt+Down 複製下一行
@@ -54,9 +54,13 @@ tags: ["vscode","Keyboard Shortcut"]
   - Ctrl+Shift+O 顯示目前檔案所有的function
   - Ctrl+T 顯示專案所有的function
 
+- ### 5個好用的快捷鍵
 
-
-
+  - **移動代碼Alt +向上/向下** 選取整行程式碼上下移動
+  - **創建可折疊區域Ctrl + M + H / Ctrl + M + U** 選擇目前function範圍做摺疊
+  - **註釋代碼塊Ctrl + K + C / Ctrl + K + U** 註解整行程式碼
+  - **預覽定義Alt + F12** 檢查該行的程式碼
+  - **向前/向後導航Ctrl + – / Ctrl + Shift + –** 打開多個文件時
 
 
 
