@@ -27,7 +27,7 @@ $ composer require itsgoingd/clockwork
 
 安裝之後，server啟動之後，開chrome按F12，程式中有使用clockwork的function，會顯示執行時花了多少時間
 
-![clockwork1](C:\xampp\htdocs\markdown_note\assets\images\clockwork1.PNG)
+![clockwork1](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/clockwork1.PNG)
 
 ### 4.範例
 
