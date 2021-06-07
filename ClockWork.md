@@ -14,7 +14,7 @@ tags: ["ClockWork","debugger"]
 用composer 安裝
 
 ```javascript
-$ composer require itsgoingd/clockwork
+$ composer require itsgoingd/clockwork 
 ```
 
 ### 2.設定app.php
@@ -61,7 +61,7 @@ clock()->info("User {$username} logged in!")
 ```php
 clock()->event('Importing tweets')->color('purple')->begin();
 ...自己的程式碼
-clock()->event('Importing tweets')->end;
+clock()->event('Importing tweets')->end();
 ```
 
 - 承上，事件名稱可以自行定義，例如importing-tweets-1
@@ -118,6 +118,8 @@ clock->store($request)
 clock->store()
 ```
 
+執行完之後，在laravel專案底下storage/clockwork中產生json檔，會記錄時間、router、header等等
+
 
 
 #### 用npm安裝
@@ -137,11 +139,17 @@ clock->store()
 npm install clockwork-browser
 ```
 
-- 安裝之後，要在app.js要新增下面這段，
+- 安裝之後，要在app.js要新增下面這段
 
 ```
 import 'clockwork-browser/metrics'
 import 'clockwork-browser/toolbar'
+```
+
+- 在執行編譯
+
+```
+npm run watch
 ```
 
 參考資料:
