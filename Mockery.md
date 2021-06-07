@@ -5,9 +5,13 @@ author: "laravel MOCKERY"
 summary: "介紹使用MOCKERY"
 ---
 
-
+#### 介紹
 
 laravel在寫單位測試時，常常會用到第三方API來做測試，會需要用到Mock，用Mock並不是真的要去執行API，而是要模擬執行API。
+
+#### 流程圖
+
+![mock](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/mock.png)
 
 我們寫function測試，一般我們會在TestCase寫成繼承，讓每個測試檔案都可以直接用instance(class)，執行Mock。
 
@@ -39,32 +43,19 @@ class TestCase extends BaseTestCase
 
 class OrderServiceTest extends TestCase
 {
-    public function setUp()
+ 	public function testNewOrder()
     {
-        parent::setUp();
-        $this->invoice = $this->initMock(InvoiceService::class);
-    }
-
-	//....
-    public function testNewOrder()
-    {
-        //arrange
-        $invoiceReturn = [
-            'invoice_number' => 'xxx'
-            //...
-        ];
-        //...
-
         $data = [
-            'invoice_number' => '110',
-            'name' => 'ming',
+            "invoice1", "invoice2"
         ];
-            
-        $this->mock->shouldReceive('newInvoice')
-            		->once()
-            		->with($order)
-            		->andReturn($invoiceReturn);
-        $result = $this->invoice->newInvoice($order);
+
+        $mock = $this->initMock(InvoiceService::class);
+        $mock->shouldReceive('newInvoice')
+            ->once()
+            ->with($data)
+            ->andReturn('成功');
+
+        $test = $mock->newInvoice($data);
     }
 }
 ```
@@ -76,9 +67,9 @@ class OrderServiceTest extends TestCase
 - with：使用參數。
 - andReturn：新增回傳的參數。
 
-在使用Mock必須要在測試的物件，先做執行可以用，我們會先用建立class使用Mock物件，在執行測試
+我們會先用建立class使用Mock物件，在執行測試的function
 
-例如：InvoiceService要使用newInvoice、formatOrder等等function 做測試前，要先執行InvoiceServiceTest 的setup，將建立Invoice的Mock物件，
+例如：InvoiceService要使用newInvoice之前，要將建立Invoice的Mock物件，
 
 ```php
 class InvoiceService
@@ -90,13 +81,8 @@ class InvoiceService
     
     public function newInvoice(Order $order)
     {
-        $invoiceData = $this->formatOrder($order);
-        return $this->invoice->invoice($invoiceData);
-    }
-    
-    private function formatOrder(Order $order)
-    {
-        //...
+        $now = array_push($data, "invoiceTest");
+        return $now;
     }
 }
 ```
@@ -104,25 +90,34 @@ class InvoiceService
 ```php
 class InvoiceServiceTest extends TestCase
 {
-    public function setUp()
+    public function testRunNewInvoice()
     {
-        $this->mock = $this->initMock(Invoice::class);
-        $this->service = app(InvoiceService::class);
+        $mock = $this->initMock(Invoice::class);
+        $mock->shouldReceive('newInvoice')->once();
+        $test = $mock->newInvoice();
     }
 }
 ```
 
-結論：使用Mock做測試之前，都要先建立好已經有Mock的Class物件
-
-問題：
+#### 問題
 
 - Mock 原理是什麼：將測試的function寫成instance，並且class去實做function
+
 - Mock 的用途：可以替我們執行function，但不是真的在執行
+
 - Mock做了哪些事：將我們要測試的function，包裝成Mock之後，在執行測試
+
 - 為什麼Mock可以代替 ：例如我們想要在測試DB資料，可以用Mock幫我們做，但是不會把資料寫入DB
+
 - Mock產生出來的結果是什麼：會建立測試function的Mock物件，去模擬執行測試function
 
 
+#### 錯誤
+
+- 如果只建立Mock物件，沒指向function會顯示錯誤：
+   Method newInvoice(....) from Mockery_0_App_Services_InvoiceService should be called exactly 1 times but called 0 times.
+
+  代表建立一個Mock物件，執行0次，以上面的範例少寫$test = $mock->newInvoice()，會顯示錯誤。
 
 參考資料：https://dustinhsiao21.github.io/laravel/use-mock-in-laravel-phpunit/、https://learnku.com/docs/laravel/5.8/mocking/3941、https://laravel.com/docs/8.x/mocking
 
