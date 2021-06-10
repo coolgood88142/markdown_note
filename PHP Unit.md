@@ -9,6 +9,109 @@ summary: "介紹用laravel使用PHP Unit"
 
 PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗證自己寫的function有沒有問題，laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Feature`和`Unit`兩個目錄裡，在執行測試的時候，並不會啟動專案的Service，所以寫測試function，沒辦法帶入從傳過專案的資料。
 
+#### 指令
+
+1. 建立測試檔案，例如：BasicTest
+
+   ```bash
+   php artisan make:test BasicTest 在test/Feature資料夾裡新增檔案
+   php artisan make:test BasicTest --unit  要補上unit才會新增到test/FUnit資料夾裡
+   ```
+
+2. 測試全部class
+
+   ```bash
+   ./vendor/bin/phpunit 這個指令會顯示很詳細的資訊
+   php artisan test 顯示簡化的資訊
+   ```
+
+3. 測試Feature或Unit全部的class
+
+   ```bash
+   php artisan test --testsuite=Feature
+   php artisan test --testsuite=Unit
+   ```
+
+4. 測試某個class，例如：測試Unit/BasicTest
+
+   ```bash
+    php artisan test --filter 'Tests\\Unit\\BasicTest'
+    
+    //如果加function名稱，可以只測試某個class的某個function
+     php artisan test --filter 'Tests\\Unit\\BasicTest::test_example'
+   ```
+
+#### 範例：我們建立一個測試假資料寫入到db
+
+1. 先建立測試檔案
+
+   ```bash
+   php artisan make:test PostTest --unit
+   ```
+   
+   ```php
+   public static function archives()
+   {
+       return static::selectRaw('year(created_at) year, monthname(created_at) month, count(*) published')
+           ->groupBy('year', 'month')
+           ->orderByRaw('min(created_at) desc')
+           ->get()
+           ->toArray();
+   }
+   ```
+   
+   
+   
+2. 建立model
+
+   ```php
+   php artisan make:factory PostFactory --model=Post
+   ```
+
+   在利用laravel的Faker，自動產生資料庫的資料
+
+   ```php
+   $factory->define(App\Post::class, function (Faker $faker) {
+       return [
+           'user_id' => function () {
+   	        return factory(App\User::class)->create()->id;
+           },
+           'title' => $faker->sentence,
+           'body' => $faker->paragraph
+       ];
+   });
+   ```
+
+ 3. 建立測試function
+
+    ```php
+    public function testArchives()
+    {
+        // Given I have two records in the database that art posts,
+        // and each one is posted a month apart.
+    	$first = factory(Post::class)->create();
+    	$second = factory(Post::class)->create([
+    	   'created_at' => \Carbon\Carbon::now()->subMonth()
+    	]);
+    
+        // When I fetch the archives.
+        $posts = Post::archives();
+    
+        // Then the response should be in the proper format.
+        $this->assertCount(2, $posts);
+    }
+    ```
+
+4. 執行指令
+
+   ```bash
+   php artisan test --filter 'Tests\\Unit\\PostTest::testArchives'
+   ```
+
+以上範例，在Post model用laravel Faker，測試有沒有新增成功，最後再用assertCount確認，是否要成功新增2筆
+
+
+
 #### Http Test
 
 向http做請求，檢查響應的stats code
@@ -49,7 +152,7 @@ PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗
         $response = $this->withSession(['banned' => false])->get('/');
     }
     
-    //dump
+    //dump，顯示表頭、session、頁面標籤的資訊
     public function test_basic_test()
     {
         $response = $this->get('/');
@@ -107,7 +210,7 @@ PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗
    }
    ```
 4. Testing Views
-   測試上傳檔案
+   測試頁面
 
    ```php
    public function test_a_welcome_view_can_be_rendered()
@@ -159,56 +262,58 @@ laravel duck是一個能用瀏覽器測試API，只需要額外安裝ChromeDrive
 composer require --dev laravel/dusk
 ```
 
-
+安裝之後，要在執行指令，會在tests/Browser建立ChromeDriver
 
 ```bash
 php artisan dusk:install
 ```
 
+如果要使用其他瀏覽器，打開test/DuskTestCase.php，將`startChromeDriver()`註解起來
+
+```php
+public static function prepare()
+    {
+        if (! static::runningInSail()) {
+            //static::startChromeDriver();
+        }
+    }
+```
 
 
-laravel在寫單位測試時，常常會用到第三方API來做測試，會需要用到Mock，用Mock並不是真的要去執行API，而是要模擬執行API。
-
-#### 流程圖
 
 
 
-#### 指令
+測試Dusk
 
-1. 建立測試檔案，例如：BasicTest
-
-   ```bash
-   php artisan make:test BasicTest 在test/Feature資料夾裡新增檔案
-   php artisan make:test BasicTest --unit  要補上unit才會新增到test/FUnit資料夾裡
-   ```
-
-2. 測試全部class
-
-   ```bash
-   ./vendor/bin/phpunit 這個指令會顯示很詳細的資訊
-   php artisan test 顯示簡化的資訊
-   ```
-3. 測試Feature或Unit全部的class
-
-   ```bash
-   php artisan test --testsuite=Feature
-   php artisan test --testsuite=Unit
-   ```
-
-4. 測試某個class，例如：測試Unit/BasicTest
-
-   ```bash
-    php artisan test --testsuite=Unit --filter=BasicTest
-   ```
+```bash
+php artisan dusk
+```
 
 
-laravel在寫單位測試時，常常會用到第三方API來做測試，會需要用到Mock，用Mock並不是真的要去執行API，而是要模擬執行API。
+
+#### Mock
+
+是偽造的物件來替換要執行的function，我們每個程式都去呼叫各種其他程式，但我們在編寫時，又不希望隨意呼叫，這時我們會用到Mock，不管有沒有通過測試，並不會影響到要測試的目標。
+
+- ##### 原理
+
+  Mock是監聽測試function事件，建立Mock物件，是在測試檔案建立新的物件，去執行Mock物件的測試function，所以在自己的測試目錄執行，並不會影響其他檔案。
+
+  這裡注意的是Mock，是繼承的Service的物件，所以要在寫指向Service的function才會被執行
+
+​	
+
+
 
 #### 流程圖
 
 ![mock](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/mock.png>)
 
 我們寫function測試，一般我們會在TestCase寫成繼承，讓每個測試檔案都可以直接用instance(class)，執行Mock。
+
+
+
+
 
 ```php
 class TestCase extends BaseTestCase
@@ -231,7 +336,7 @@ class TestCase extends BaseTestCase
 }
 ```
 
-以下示範，用OrderServiceTest的InvoiceService newInvoice()，來建立Moke物件，之後在執行測試
+以下示範，我們用訂單來開發票，使用OrderServiceTest的InvoiceService newInvoice()，但是我們不想要真的開發票，要用建立Moke物件，幫我們模擬開發票
 
 ```php
 <?php
@@ -240,6 +345,10 @@ class OrderServiceTest extends TestCase
 {
  	public function testNewOrder()
     {
+        $invoiceReturn = [
+            'invoice_number' = '001'
+        ];
+        
         $data = [
             "invoice1", "invoice2"
         ];
@@ -248,63 +357,40 @@ class OrderServiceTest extends TestCase
         $mock->shouldReceive('newInvoice')
             ->once()
             ->with($data)
-            ->andReturn('成功');
-
-        $test = $mock->newInvoice($data);
+            ->andReturn($invoiceReturn);
+        
+		$test = $mock->newInvoice($data);
     }
 }
 ```
 
 以下介紹使用的Mock functuion
 
-- shouldReceive：呼叫類別的function做Mock，這裡呼叫InvoiceService的newInvoice()。
-- once：只執行一次。
+- shouldReceive：指定參數內的function，這裡指定InvoiceService的newInvoice()。
+- once：只呼叫一次，如果失敗會顯示InvalidCountException。
 - with：使用參數。
-- andReturn：新增回傳的參數。
+- andReturn：設定假的回傳值，這裡假設回傳發票號碼。
 
-我們會先用建立class使用Mock物件，在執行測試的function
+用到Mock做測試，通常是遇到某些原因不想要影響到資料，例如發mail、用API需要驗證、新增資料等等，只要會是執行後，會有風險的情況，都適合用Mock來幫你做。
 
-例如：InvoiceService要使用newInvoice之前，要將建立Invoice的Mock物件，
 
-```php
-class InvoiceService
-{
-	public function __construct(Invoice $invoice)
-    {
-        $this->invoice = $invoice
-    }
-    
-    public function newInvoice(Order $order)
-    {
-        $now = array_push($data, "invoiceTest");
-        return $now;
-    }
-}
-```
 
-```php
-class InvoiceServiceTest extends TestCase
-{
-    public function testRunNewInvoice()
-    {
-        $mock = $this->initMock(Invoice::class);
-        $mock->shouldReceive('newInvoice')->once();
-        $test = $mock->newInvoice();
-    }
-}
-```
+
+
+
+
+
+
+
 
 #### 問題
-
-- Mock 原理是什麼(要推論怎麼使用Mock?)：
 
 - Mock 的用途：可以替我們執行function，但不是真的在執行
 
 - Mock做了哪些事：將我們要測試的function，包裝成Mock之後，在執行測試
 
-- 為什麼Mock可以代替 ：例如我們想要在測試DB資料，可以用Mock幫我們做，但是不會把資料寫入DB
-  (為什麼Mock可以不真的去執行資料寫入DB)
-
+- 為什麼Mock可以代替 ：Mock是繼承service的物件，所以可以代替測試的fcunction，也並不會影響資料被改變
+  
 - Mock產生出來的結果是什麼：會建立測試function的Mock物件，去模擬執行測試function
 
 
@@ -315,7 +401,7 @@ class InvoiceServiceTest extends TestCase
 
   代表建立一個Mock物件，執行0次，以上面的範例少寫$test = $mock->newInvoice()，會顯示錯誤。
 
-參考資料：https://dustinhsiao21.github.io/laravel/use-mock-in-laravel-phpunit/、https://learnku.com/docs/laravel/5.8/mocking/3941、https://laravel.com/docs/8.x/mocking
+參考資料：https://dustinhsiao21.github.io/laravel/use-mock-in-laravel-phpunit/、https://learnku.com/docs/laravel/5.8/mocking/3941、https://laravel.com/docs/8.x/mocking、https://ithelp.ithome.com.tw/articles/10217378
 
 
 
