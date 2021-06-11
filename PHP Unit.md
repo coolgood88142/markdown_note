@@ -110,6 +110,144 @@ PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗
 
 以上範例，在Post model用laravel Faker，測試有沒有新增成功，最後再用assertCount確認，是否要成功新增2筆
 
+#### 範例：我們測試用POST請求來建立資料
+
+1. 建立測試檔案
+
+   ```bash
+   php artisan make:test InsertionTest
+   ```
+
+2. 更換下面的程式碼
+
+   ```php
+   public function test_that_a_task_can_be_added()
+   {
+       $this->withoutExceptionHandling();
+       $response = $this->post('/api/tasks/create', [
+           'name' => 'Write Article',
+           'description' => 'Write and publish an article'
+       ]);
+       $response->assertStatus(201);
+       $this->assertTrue(count(Task::all()) > 1);
+   }
+   ```
+
+   這段程式碼是在寫，先執行withoutExceptionHandling，這個是指在執行測試時，拋錯時不要停止，在去做post請求`api/tasks/create`，帶`name`、`description`兩個參數，在用assertStatus確認是否有建立成功，最後再用assertTrue，建立的資料是否有一筆以上。
+
+3. 建立route
+
+   ```php
+   Route::group(['prefix' => 'tasks'], function () {
+       Route::get('/{task}','TaskController@show');
+       Route::post('/create', 'TaskController@create_task');
+       Route::patch('{task}/complete', 'TaskController@mark_task_as_completed');
+       Route::delete('/{id}', 'TaskController@destroy');
+   });
+   
+   ```
+
+   在rotues/web.php，新增下面這段程式碼
+
+4. 建立Model、Controllers、Factory、Migration、Seeders
+
+   ```bash
+   php artisan make:model Task -a
+   ```
+
+   執行上面的指定會自動建立 `App\Models\Task.php`、`App\Http\Controllers\TaskController.php`、`Database\Factories\TaskFactory.php`、`Database\migrations\CreateTasksTable.php`、`Database\Seeders\TaskSeeder.php`
+
+5. 建立Table
+
+   ```php
+    public function up()
+    {
+    	Schema::create('tasks', function (Blueprint $table) {
+    		 $table->id();
+    		 $table->string('name');
+    		 $table->text('description');
+    		 $table->boolean('completed')->default(0);
+    		 $table->timestamps();
+       });
+   }
+   ```
+
+   將CreateTasksTable.php的up()，調整成上面這段程式，在執行下面這段指令
+
+   ```bash
+   php artisan migrate
+   ```
+
+6. 調整Model
+
+   ```php
+   class Task extends Model
+   {
+       protected $fillable = ['name', 'description', 'status'];
+       
+       public function mark_task_as_completed()
+       {
+           $this->completed = 1;
+           $this->save();
+       }
+       
+       public function is_completed()
+       {
+           return $this->completed;
+       }
+   }
+   ```
+
+7. 調整Factory
+
+   ```php
+   public function definition()
+   {
+       return [
+           'name' => $this->faker->sentence(4),
+           'description' => $this->faker->sentence(20),
+           'completed' => random_int(0, 1)
+       ];
+   }
+   ```
+
+   建立假資料，`name`指定4個字元、`description`指定20個字元、`completed`產生10位數以上的數字
+
+8. 調整Controller
+
+   ```php
+   public function destroy($task)
+   {
+       $task_to_be_deleted = Task::findOrFail($task);
+       $task_to_be_deleted->delete();
+       return response()->json(['
+       	' => 'task deleted successfully'
+       ], 410);
+   }
+   ```
+
+   刪除Task Table指定的資料
+
+9. 補上測試刪除function
+
+   ```bash
+   public function test_that_a_task_can_be_completed(){
+     $this->withoutExceptionHandling();
+     $task_id = Task::create([
+           'name' => 'Example Name',
+           'description' => 'Demo dscription'
+     ])->id; // create a task and store the id in the $task_id variable
+     $response = $this->patch("/api/tasks/$task_id/complete"); //sends a patch request in order to complete the created task
+     $this->assertTrue(Task::findOrFail($task_id)->is_completed() == 1); // assert that the task is now marked as completed in the database
+     $response->assertJson([
+               'message' => 'task successfully marked as updated'
+     ], true); // ensure that the JSON response recieved contains the message specified
+     $response->assertStatus(200); // furthe ensures that a 200 response code is recieved from the patch request
+   }
+   ```
+
+   
+
 
 
 #### Http Test
