@@ -41,6 +41,240 @@ PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗
      php artisan test --filter 'Tests\\Unit\\BasicTest::test_example'
    ```
 
+#### Http Test
+
+向http做請求，檢查響應的stats code
+
+1. Making Requests
+
+   ```php
+   //用get方式發出請求，在確認回傳的status code是否為200
+   public function test_a_basic_request()
+   {
+   	$response = $this->get('/');
+   
+   	$response->assertStatus(200);
+   }
+   
+   //自行定義表頭
+   public function test_interacting_with_headers()
+    {
+        $response = $this->withHeaders([
+            'X-Header' => 'Value',
+        ])->get('/user', ['name' => 'testName']);
+   
+        $response->assertStatus(201);
+    }
+    
+    //cookie
+    public function test_interacting_with_cookies()
+    {
+        $response = $this->withCookies([
+            'color' => 'blue',
+            'name' => 'Taylor',
+        ])->get('/');
+    }
+    
+    //session
+    public function test_interacting_with_the_session()
+    {
+        $response = $this->withSession(['banned' => false])->get('/');
+    }
+    
+    //dump，顯示表頭、session、頁面標籤的資訊
+    public function test_basic_test()
+    {
+        $response = $this->get('/');
+   
+        $response->dumpHeaders();
+   
+        $response->dumpSession();
+   
+        $response->dump();
+    }
+   ```
+
+2. Testing JSON APIs
+   測試執行API回傳json格式
+
+   ```php
+   public function test_making_an_api_request()
+    {
+        $response = $this->postJson('/api/user', ['name' => 'testName']);
+   
+        $response
+            ->assertStatus(201)
+            ->assertJson([
+                'created' => true,
+            ]);
+    }
+    
+    public function test_fluent_json()
+    {
+        $response = $this->json('GET', '/users/1');
+   
+        $response
+            ->assertJson(fn (AssertableJson $json) =>
+                $json->where('id', 1)
+                     ->where('name', 'Victoria Faith')
+                     ->missing('password')
+                     ->etc()
+            );
+    }
+   ```
+
+3. Testing File Uploads
+   測試上傳檔案
+
+   ```php
+   public function test_avatars_can_be_uploaded()
+   {
+        Storage::fake('uploaded');
+   
+        $file = UploadedFile::fake()->image('uploaded.jpg');
+   
+        $response = $this->post('/uploaded', [
+            'uploaded' => $file,
+        ]);
+   
+        Storage::disk('uploaded')->assertExists($file->hashName());
+   }
+   ```
+
+4. Testing Views
+   測試頁面
+
+   ```php
+   public function test_a_welcome_view_can_be_rendered()
+   {
+        $view = $this->view('welcome', ['name' => 'testName']);
+   
+        $view->assertSee('Taylor');
+   }
+   ```
+
+HTTP Test適合測試請求網頁做回傳，來確認有沒有問題，例如route的回傳的資料或狀態，以及API
+
+#### Console Test
+
+測試輸出訊息
+
+```php
+public function test_console_command()
+{
+    //顯示訊息
+    $this->artisan('question')
+         ->expectsQuestion('What is your name?', 'Taylor Otwell')
+         ->expectsQuestion('Which language do you prefer?', 'PHP')
+         ->expectsOutput('Your name is Taylor Otwell and you prefer PHP.')
+         ->doesntExpectOutput('Your name is Taylor Otwell and you prefer Ruby.')
+         ->assertExitCode(0);
+    
+    //顯示訊息問題，選擇是或否，回傳代碼
+    $this->artisan('module:import')
+        ->expectsConfirmation('Do you really wish to run this command?', 'no')
+        ->assertExitCode(1);
+    
+    $this->artisan('users:all')
+        ->expectsTable([
+            'ID',
+            'Email',
+        ], [
+            [1, 'taylor@example.com'],
+            [2, 'abigail@example.com'],
+        ]);
+}
+```
+
+Console Test適合
+
+#### Laravel Dusk
+
+laravel duck是一個能用瀏覽器測試API，只需要額外安裝ChromeDriver，就可以兼容瀏覽器
+
+安裝套件
+
+```bash
+composer require --dev laravel/dusk
+```
+
+安裝之後，要在執行指令，會在tests/Browser建立ChromeDriver
+
+```bash
+php artisan dusk:install
+```
+
+如果要使用其他瀏覽器，打開test/DuskTestCase.php，將`startChromeDriver()`註解起來
+
+```php
+public static function prepare()
+ {
+    if (! static::runningInSail()) {
+        //static::startChromeDriver();
+    }
+}
+```
+
+在修改`driver()`程式碼，回傳指定的route
+
+```php
+protected function driver()
+{
+    return RemoteWebDriver::create(
+        'http://localhost:4444/wd/hub', DesiredCapabilities::phantomjs()
+    );
+}
+```
+
+建立dusk檔案，例如：LoginTest
+
+```bash
+php artisan dusk:make LoginTest
+```
+
+執行測試Dusk
+
+```bash
+php artisan dusk
+```
+
+建立瀏覽器
+
+```php
+public function test_basic_example()
+{
+	$user = User::factory()->create([\
+		'email' => 'taylor@laravel.com',
+	]);
+
+	$this->browse(function ($browser) use ($user) {
+		$browser->visit('/login')
+			->type('email', $user->email)
+			->type('password', 'password')
+			->press('Login')
+			->assertPathIs('/home');
+	});
+}
+```
+
+以上範例，是在建立一個User的資料，之後在進到登入畫面，在夾帶email、password的資料做登入，如果成功就進入home這個route
+
+route的用法
+
+```php
+$browser->visit('/login');     //訪問route
+$browser->visitRoute('login'); //訪問命名的route
+$browser->back();			   //回上一頁
+$browserforward();		  //回下一頁
+$browser->refresh(); 		  //重新整理
+$browser->resize(1920, 1080); //設定瀏覽器大小
+
+```
+
+laravel Duck適合測試網頁版面，可以寫css來測試樣板，還有route的控制，可以用驗證、javascript、導頁等等。
+
+#### DataBase Test
+
 #### 範例：我們建立一個測試假資料寫入到db
 
 1. 先建立測試檔案
@@ -236,196 +470,18 @@ PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗
      $task_id = Task::create([
            'name' => 'Example Name',
            'description' => 'Demo dscription'
-     ])->id; // create a task and store the id in the $task_id variable
-     $response = $this->patch("/api/tasks/$task_id/complete"); //sends a patch request in order to complete the created task
-     $this->assertTrue(Task::findOrFail($task_id)->is_completed() == 1); // assert that the task is now marked as completed in the database
+     ])->id;
+     $response = $this->patch("/api/tasks/$task_id/complete"); 
+     $this->assertTrue(Task::findOrFail($task_id)->is_completed() == 1); 
      $response->assertJson([
                'message' => 'task successfully marked as updated'
-     ], true); // ensure that the JSON response recieved contains the message specified
-     $response->assertStatus(200); // furthe ensures that a 200 response code is recieved from the patch request
+     ], true); 
+     $response->assertStatus(200); 
    }
    ```
 
-   
 
 
-
-#### Http Test
-
-向http做請求，檢查響應的stats code
-
-1. Making Requests
-
-   ```php
-   //用get方式發出請求，在確認回傳的status code是否為200
-   public function test_a_basic_request()
-   {
-   	$response = $this->get('/');
-   
-   	$response->assertStatus(200);
-   }
-   
-   //自行定義表頭
-   public function test_interacting_with_headers()
-    {
-        $response = $this->withHeaders([
-            'X-Header' => 'Value',
-        ])->get('/user', ['name' => 'testName']);
-   
-        $response->assertStatus(201);
-    }
-    
-    //cookie
-    public function test_interacting_with_cookies()
-    {
-        $response = $this->withCookies([
-            'color' => 'blue',
-            'name' => 'Taylor',
-        ])->get('/');
-    }
-    
-    //session
-    public function test_interacting_with_the_session()
-    {
-        $response = $this->withSession(['banned' => false])->get('/');
-    }
-    
-    //dump，顯示表頭、session、頁面標籤的資訊
-    public function test_basic_test()
-    {
-        $response = $this->get('/');
-   
-        $response->dumpHeaders();
-   
-        $response->dumpSession();
-   
-        $response->dump();
-    }
-   ```
-2. Testing JSON APIs
-   測試執行API回傳json格式
-
-   ```php
-   public function test_making_an_api_request()
-    {
-        $response = $this->postJson('/api/user', ['name' => 'testName']);
-   
-        $response
-            ->assertStatus(201)
-            ->assertJson([
-                'created' => true,
-            ]);
-    }
-    
-    public function test_fluent_json()
-    {
-        $response = $this->json('GET', '/users/1');
-   
-        $response
-            ->assertJson(fn (AssertableJson $json) =>
-                $json->where('id', 1)
-                     ->where('name', 'Victoria Faith')
-                     ->missing('password')
-                     ->etc()
-            );
-    }
-   ```
-3. Testing File Uploads
-   測試上傳檔案
-
-   ```php
-   public function test_avatars_can_be_uploaded()
-   {
-        Storage::fake('uploaded');
-   
-        $file = UploadedFile::fake()->image('uploaded.jpg');
-   
-        $response = $this->post('/uploaded', [
-            'uploaded' => $file,
-        ]);
-   
-        Storage::disk('uploaded')->assertExists($file->hashName());
-   }
-   ```
-4. Testing Views
-   測試頁面
-
-   ```php
-   public function test_a_welcome_view_can_be_rendered()
-   {
-        $view = $this->view('welcome', ['name' => 'testName']);
-   
-        $view->assertSee('Taylor');
-   }
-   ```
-
-#### Console Test
-
-測試輸出訊息
-
-```php
-public function test_console_command()
-{
-    //顯示訊息
-    $this->artisan('question')
-         ->expectsQuestion('What is your name?', 'Taylor Otwell')
-         ->expectsQuestion('Which language do you prefer?', 'PHP')
-         ->expectsOutput('Your name is Taylor Otwell and you prefer PHP.')
-         ->doesntExpectOutput('Your name is Taylor Otwell and you prefer Ruby.')
-         ->assertExitCode(0);
-    
-    //顯示訊息問題，選擇是或否，回傳代碼
-    $this->artisan('module:import')
-        ->expectsConfirmation('Do you really wish to run this command?', 'no')
-        ->assertExitCode(1);
-    
-    $this->artisan('users:all')
-        ->expectsTable([
-            'ID',
-            'Email',
-        ], [
-            [1, 'taylor@example.com'],
-            [2, 'abigail@example.com'],
-        ]);
-}
-```
-
-#### Laravel Dusk
-
-laravel duck是一個能用瀏覽器測試API，只需要額外安裝ChromeDriver，就可以兼容瀏覽器
-
-安裝套件
-
-```bash
-composer require --dev laravel/dusk
-```
-
-安裝之後，要在執行指令，會在tests/Browser建立ChromeDriver
-
-```bash
-php artisan dusk:install
-```
-
-如果要使用其他瀏覽器，打開test/DuskTestCase.php，將`startChromeDriver()`註解起來
-
-```php
-public static function prepare()
-    {
-        if (! static::runningInSail()) {
-            //static::startChromeDriver();
-        }
-    }
-```
-
-
-
-
-
-測試Dusk
-
-```bash
-php artisan dusk
-```
 
 
 
