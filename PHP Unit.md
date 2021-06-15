@@ -7,7 +7,14 @@ summary: "介紹用laravel使用PHP Unit"
 
 #### 介紹
 
-PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗證自己寫的function有沒有問題，laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Feature`和`Unit`兩個目錄裡，在執行測試的時候，並不會啟動專案的Service，所以寫測試function，沒辦法帶入從傳過專案的資料。
+在介紹之前講單元測試、整合測試
+
+- 單元測試：是指測試程式中最小的單位，包含function、class、Object等等，所以我們要寫一支測試的程式中，會有很多個單元測試。
+- 整合測試：是測試的程式與外部的關係，例如：兩支程式的關係、資料庫、session、cookie等等，通常會測試兩支程式的關聯，是否沒問題。
+
+PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗證自己寫的function有沒有問題，在我們新增程式或修改程式時，能確保不會影響到原本的功能，一般都會先寫好測試，才會開始寫功能需求。
+
+laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Feature`和`Unit`兩個目錄裡，在執行測試的時候，並不會啟動專案的server，所以寫測試function時，要先寫好預設資料或要帶的參數來做測試。
 
 #### 指令
 
@@ -131,13 +138,11 @@ PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗
    {
         Storage::fake('uploaded');
    
-        $file = UploadedFile::fake()->image('uploaded.jpg');
+        $file = UploadedFile::fake()->image('test.jpg');
    
-        $response = $this->post('/uploaded', [
+        $response = $this->post('/testUploaded', [
             'uploaded' => $file,
         ]);
-   
-        Storage::disk('uploaded')->assertExists($file->hashName());
    }
    ```
 
@@ -186,7 +191,7 @@ public function test_console_command()
 }
 ```
 
-Console Test適合
+Console Test適合console的設定輸入訊息
 
 #### Laravel Dusk
 
@@ -268,7 +273,6 @@ $browser->back();			   //回上一頁
 $browserforward();		  //回下一頁
 $browser->refresh(); 		  //重新整理
 $browser->resize(1920, 1080); //設定瀏覽器大小
-
 ```
 
 laravel Duck適合測試網頁版面，可以寫css來測試樣板，還有route的控制，可以用驗證、javascript、導頁等等。
@@ -284,6 +288,7 @@ laravel Duck適合測試網頁版面，可以寫css來測試樣板，還有route
    ```
    
    ```php
+   app/Post.php
    public static function archives()
    {
        return static::selectRaw('year(created_at) year, monthname(created_at) month, count(*) published')
@@ -296,9 +301,9 @@ laravel Duck適合測試網頁版面，可以寫css來測試樣板，還有route
    
    
    
-2. 建立model
+2. 建立factory
 
-   ```php
+   ```bash
    php artisan make:factory PostFactory --model=Post
    ```
 
@@ -481,7 +486,7 @@ laravel Duck適合測試網頁版面，可以寫css來測試樣板，還有route
    ```
 
 
-
+DataBase Test適合用測試建立資料庫
 
 
 
@@ -567,6 +572,14 @@ class OrderServiceTest extends TestCase
 
 用到Mock做測試，通常是遇到某些原因不想要影響到資料，例如發mail、用API需要驗證、新增資料等等，只要會是執行後，會有風險的情況，都適合用Mock來幫你做。
 
+##### 用Mock建立OrderServiceTest class跟沒有用Mock建立的class有什麼差異?
+
+這裡用Mock建立OrderServiceTest class是模擬OrderServiceTest class測試newInvoice()，不是只OrderServiceTest 物件，如果沒有用Mock就是用OrderServiceTest執行newInvoice()
+
+##### 範例的initMock是模擬InvoiceService class，用shouldReceive('newInvoice')跟直接執行newInvoice()，這兩行是什麼意思?
+
+shouldReceive('newInvoice')是模擬InvoiceService class的Mock物件，要測試的function
+
 
 
 
@@ -595,7 +608,7 @@ class OrderServiceTest extends TestCase
 
   代表建立一個Mock物件，執行0次，以上面的範例少寫$test = $mock->newInvoice()，會顯示錯誤。
 
-參考資料：https://dustinhsiao21.github.io/laravel/use-mock-in-laravel-phpunit/、https://learnku.com/docs/laravel/5.8/mocking/3941、https://laravel.com/docs/8.x/mocking、https://ithelp.ithome.com.tw/articles/10217378
+參考資料：https://dustinhsiao21.github.io/laravel/use-mock-in-laravel-phpunit/、https://learnku.com/docs/laravel/5.8/mocking/3941、https://laravel.com/docs/8.x/mocking、https://ithelp.ithome.com.tw/articles/10217378、https://blog.miniasp.com/post/2019/02/18/Unit-testing-Integration-testing-e2e-testing
 
 
 
