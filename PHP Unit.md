@@ -99,6 +99,39 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
    
         $response->dump();
     }
+   
+   //用route驗證加法、減法、乘法、除法
+       public function test_plus(){
+           $a = 1;
+           $b = 2;
+           $response = $this->call('POST', '/plus', ['test1' => $a, 'test2' => $b]);
+   
+           $this->assertEquals(200, $response->status());
+       }
+   
+       public function test_toSubtract(){
+           $a = 5;
+           $b = 2;
+           $response = $this->call('POST', '/toSubtract', ['test1' => $a, 'test2' => $b]);
+   
+           $this->assertEquals(200, $response->status());
+       }
+   
+       public function test_multiply(){
+           $a = 4;
+           $b = 3;
+           $response = $this->call('POST', '/multiply', ['test1' => $a, 'test2' => $b]);
+   
+           $this->assertEquals(200, $response->status());
+       }
+   
+       public function test_divided(){
+           $a = 10;
+           $b = 2;
+           $response = $this->call('POST', '/divided', ['test1' => $a, 'test2' => $b]);
+   
+           $this->assertEquals(200, $response->status());
+       }
    ```
 
 2. Testing JSON APIs
@@ -156,6 +189,8 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
    
         $view->assertSee('Taylor');
    }
+   
+   
    ```
 
 HTTP Test適合測試請求網頁做回傳，來確認有沒有問題，例如route的回傳的資料或狀態，以及API
@@ -576,15 +611,21 @@ class OrderServiceTest extends TestCase
 
 這裡用Mock建立OrderServiceTest class是模擬OrderServiceTest class測試newInvoice()，不是只OrderServiceTest 物件，如果沒有用Mock就是用OrderServiceTest執行newInvoice()
 
+##### 用Mock建立OrderServiceTest class，確認這個物件的內容是什麼樣子，跟沒用Mock有什麼差異?
+
+
+
 ##### 範例的initMock是模擬InvoiceService class，用shouldReceive('newInvoice')跟直接執行newInvoice()，這兩行是什麼意思?
 
-shouldReceive('newInvoice')是模擬InvoiceService class的Mock物件，要測試的function
+shouldReceive('newInvoice')是模擬InvoiceService class，要測試newInvoice()的Mock物件，這個時候Mock沒有開始執行
 
 
 
+https://phpunit.readthedocs.io/en/9.5/test-doubles.html?highlight=Mock#mock-objects
 
+https://www.cnblogs.com/bourneli/archive/2012/06/29/2570440.html
 
-
+https://www.cnblogs.com/cjjjj/p/10623534.html
 
 
 
