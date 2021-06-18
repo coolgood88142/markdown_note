@@ -10,7 +10,49 @@ summary: "介紹用laravel使用PHP Unit"
 在介紹之前講單元測試、整合測試
 
 - 單元測試：是指測試程式中最小的單位，包含function、class、Object等等，所以我們要寫一支測試的程式中，會有很多個單元測試。
+
+  ```php
+  class ComputerTest extends TestCase
+  {
+      /**
+       * A basic feature test example.
+       *
+       * @return void
+       */
+      public function testComputer()
+      {
+          $response = $this->get('/computer');
+          $response->assertStatus(200);
+      }
+  }
+  ```
+
+  以上範例，測試ComputerTest的testComputer()，確認route的computer，回傳的Status code是否為200
+
+  
+
 - 整合測試：是測試的程式與外部的關係，例如：兩支程式的關係、資料庫、session、cookie等等，通常會測試兩支程式的關聯，是否沒問題。
+
+  ```php
+  class ComputerServiceTest extends TestCase
+  {
+      /**
+       * A basic unit test example.
+       *
+       * @return void
+       */
+      public function testComputer()
+      {
+          self::assertIsString(
+              (new ComputerService())->test_plus(2, 3)
+          );
+      }
+  }
+  ```
+
+  以上範例，ComputerServiceTest的testComputer()，執行ComputerService的test_plus()，將2 + 3做加法
+
+  
 
 PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗證自己寫的function有沒有問題，在我們新增程式或修改程式時，能確保不會影響到原本的功能，一般都會先寫好測試，才會開始寫功能需求。
 
@@ -603,7 +645,7 @@ class OrderServiceTest extends TestCase
 - shouldReceive：指定參數內的function，這裡指定InvoiceService的newInvoice()。
 - once：只呼叫一次，如果失敗會顯示InvalidCountException。
 - with：使用參數。
-- andReturn：設定假的回傳值，這裡假設回傳發票號碼。
+- andReturn：設定假的回傳值，使用andReturn的目的，是為了要確認shouldReceive指定function能不能值直行。
 
 用到Mock做測試，通常是遇到某些原因不想要影響到資料，例如發mail、用API需要驗證、新增資料等等，只要會是執行後，會有風險的情況，都適合用Mock來幫你做。
 
@@ -611,13 +653,17 @@ class OrderServiceTest extends TestCase
 
 這裡用Mock建立OrderServiceTest class是模擬OrderServiceTest class測試newInvoice()，不是只OrderServiceTest 物件，如果沒有用Mock就是用OrderServiceTest執行newInvoice()
 
-##### 用Mock建立OrderServiceTest class，確認這個物件的內容是什麼樣子，跟沒用Mock有什麼差異?
+##### 用Mock建立OrderServiceTest class，確認這個物件的內容是什麼樣子，跟沒使用Mock有什麼差異?
+
+Mock是代替OrderServiceTest class，物件中會有OrderServiceTest的function、service、interface等等，必須要用shouldReceive去呼叫function來模擬，沒使用Mock等於是直接用OrderServiceTest class，去實做function、service、interface等等
+
+Mock是來自[mockery](https://github.com/mockery/mockery)這個套件，可以參考laravel的Mockery\Adapter\Phpunit\MockeryTestCase
 
 
 
 ##### 範例的initMock是模擬InvoiceService class，用shouldReceive('newInvoice')跟直接執行newInvoice()，這兩行是什麼意思?
 
-shouldReceive('newInvoice')是模擬InvoiceService class，要測試newInvoice()的Mock物件，這個時候Mock沒有開始執行
+shouldReceive('newInvoice')是模擬InvoiceService class，呼叫newInvoice()，這個時候Mock沒有開始執行
 
 
 
