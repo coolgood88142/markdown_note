@@ -100,8 +100,10 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
    //用get方式發出請求，在確認回傳的status code是否為200
    public function test_a_basic_request()
    {
+       //測試route localhost
    	$response = $this->get('/');
    
+       //測試localhost的status code是否為200
    	$response->assertStatus(200);
    }
    
@@ -118,6 +120,7 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
     //cookie
     public function test_interacting_with_cookies()
     {
+        //測試localhost的cookies參數，color的值為blue和name的值為Taylor
         $response = $this->withCookies([
             'color' => 'blue',
             'name' => 'Taylor',
@@ -133,12 +136,16 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
     //dump，顯示表頭、session、頁面標籤的資訊
     public function test_basic_test()
     {
+        //測試route localhost
         $response = $this->get('/');
    
+        //顯示localhost的Header物件內容
         $response->dumpHeaders();
    
+        //顯示localhost的session物件內容
         $response->dumpSession();
    
+        //整個顯示localhost的response物件
         $response->dump();
     }
    
@@ -146,32 +153,44 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
        public function test_plus(){
            $a = 1;
            $b = 2;
+           
+           //呼叫route plus，使用POST，帶test1與test2參數
            $response = $this->call('POST', '/plus', ['test1' => $a, 'test2' => $b]);
    
+           //測試上一句的route plus，status code是否為200
            $this->assertEquals(200, $response->status());
        }
    
        public function test_toSubtract(){
            $a = 5;
            $b = 2;
+           
+           //呼叫route toSubtract，使用POST，帶test1與test2參數
            $response = $this->call('POST', '/toSubtract', ['test1' => $a, 'test2' => $b]);
    
+           //測試上一句的route plus，status code是否為200
            $this->assertEquals(200, $response->status());
        }
    
        public function test_multiply(){
            $a = 4;
            $b = 3;
+           
+           //呼叫route multiply，使用POST，帶test1與test2參數
            $response = $this->call('POST', '/multiply', ['test1' => $a, 'test2' => $b]);
    
+           //測試上一句的route plus，status code是否為200
            $this->assertEquals(200, $response->status());
        }
    
        public function test_divided(){
            $a = 10;
            $b = 2;
+           
+           //呼叫route divided，使用POST，帶test1與test2參數
            $response = $this->call('POST', '/divided', ['test1' => $a, 'test2' => $b]);
    
+           //測試上一句的route plus，status code是否為200
            $this->assertEquals(200, $response->status());
        }
    ```
@@ -244,27 +263,30 @@ HTTP Test適合測試請求網頁做回傳，來確認有沒有問題，例如ro
 ```php
 public function test_console_command()
 {
-    //顯示訊息
+    //測試訊息名稱為question
     $this->artisan('question')
-         ->expectsQuestion('What is your name?', 'Taylor Otwell')
-         ->expectsQuestion('Which language do you prefer?', 'PHP')
-         ->expectsOutput('Your name is Taylor Otwell and you prefer PHP.')
-         ->doesntExpectOutput('Your name is Taylor Otwell and you prefer Ruby.')
-         ->assertExitCode(0);
+        
+    //建立問題What is your name?(你叫什麼名字?)，答：Taylor Otwell
+    ->expectsQuestion('What is your name?', 'Taylor Otwell')
+            
+    //建立問題Which language do you prefer?(你喜歡哪種程式語言?)，答：PHP
+    ->expectsQuestion('Which language do you prefer?', 'PHP')
+     
+    //顯示你要的訊息Your name is Taylor Otwell and you prefer PHP
+    ->expectsOutput('Your name is Taylor Otwell and you prefer PHP.')
+           
+    //顯示測試訊息Your name is Taylor Otwell and you prefer Ruby.
+    ->doesntExpectOutput('Your name is Taylor Otwell and you prefer Ruby.')
+            
+    //結束
+    ->assertExitCode(0);
     
-    //顯示訊息問題，選擇是或否，回傳代碼
+    //測試訊息名稱為module:import
     $this->artisan('module:import')
+        //建立問題Do you really wish to run this command?答：no
         ->expectsConfirmation('Do you really wish to run this command?', 'no')
+        //結束
         ->assertExitCode(1);
-    
-    $this->artisan('users:all')
-        ->expectsTable([
-            'ID',
-            'Email',
-        ], [
-            [1, 'taylor@example.com'],
-            [2, 'abigail@example.com'],
-        ]);
 }
 ```
 
@@ -583,7 +605,9 @@ DataBase Test適合用測試建立資料庫
 
 #### 流程圖
 
-![mock](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/mock.png>)
+![Mock](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/Mock.png)
+
+![Mock-1](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/Mock-1.png)
 
 我們寫function測試，一般我們會在TestCase寫成繼承，讓每個測試檔案都可以直接用instance(class)，執行Mock。
 
