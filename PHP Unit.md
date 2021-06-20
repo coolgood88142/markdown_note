@@ -52,7 +52,32 @@ summary: "介紹用laravel使用PHP Unit"
 
   以上範例，ComputerServiceTest的testComputer()，執行ComputerService的test_plus()，將2 + 3做加法
 
-  
+
+#### TDD
+
+開發團隊在寫測試時，會先寫測試再開發，這種步驟稱為TDD(Test-Driven Development)，稱為測試驅動開發，有助於釐清撰寫程式的設計，測試程式的好處，是經過測試得知的結果，來驗證程式是否符合預期，以下介紹TDD分為5個步驟
+
+1. 選定功能，新增測試案例
+
+   設計情境並且選定什麼樣的功能做測試
+
+2. 執行測試，得到Failed(紅燈)
+
+   設計初步測試程式，沒有撰寫測試功能，只是確認測試function可以使用
+
+3. 實作「夠用」的產生程式
+
+   實做測試功能，不需要過多個程式碼，只要功能正常即可
+
+4. 再做執行測試，得到Passed(綠燈)
+
+   再次執行測試程式，已完成一個測試function
+
+5. 重構程式
+
+   優化測試功能，可更好維護測試功能
+
+   
 
 PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗證自己寫的function有沒有問題，在我們新增程式或修改程式時，能確保不會影響到原本的功能，一般都會先寫好測試，才會開始寫功能需求。
 
@@ -585,9 +610,7 @@ laravel Duck適合測試網頁版面，可以寫css來測試樣板，還有route
    ```
 
 
-DataBase Test適合用測試建立資料庫
-
-
+DataBase Test適合用測試建立資料庫S
 
 #### Mock
 
@@ -599,15 +622,38 @@ DataBase Test適合用測試建立資料庫
 
   這裡注意的是Mock，是繼承的Service的物件，所以要在寫指向Service的function才會被執行
 
-​	
+- Function Test
+
+  我們在測試環境使用request，必須要用 Mock 來做替身並且改寫，在Mockery的library的MockeryTestCaseSetUp，用Mock 物件時，會使用setUp()和tearDown()
+
+  ```php
+  namespace Mockery\Adapter\Phpunit;
+  
+  trait MockeryTestCaseSetUp
+  {
+      protected function setUp(): void
+      {
+          parent::setUp();
+          $this->mockeryTestSetUp();
+      }
+  
+      protected function tearDown(): void
+      {
+          $this->mockeryTestTearDown();
+          parent::tearDown();
+      }
+  }
+  ```
+
+  
 
 
 
 #### 流程圖
 
-![Mock](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/Mock.png)
+![Mock](C:\xampp\htdocs\markdown_note\assets\images\Mock.png)
 
-![Mock-1](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/Mock-1.png)
+![Mock-1](C:\xampp\htdocs\markdown_note\assets\images\Mock-1.png)
 
 我們寫function測試，一般我們會在TestCase寫成繼承，讓每個測試檔案都可以直接用instance(class)，執行Mock。
 
