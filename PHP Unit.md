@@ -55,29 +55,34 @@ summary: "介紹用laravel使用PHP Unit"
 
 #### TDD
 
-開發團隊在寫測試時，會先寫測試再開發，這種步驟稱為TDD(Test-Driven Development)，稱為測試驅動開發，有助於釐清撰寫程式的設計，測試程式的好處，是經過測試得知的結果，來驗證程式是否符合預期，以下介紹TDD分為5個步驟
+開發團隊在開發前，會先寫測試再開發，這種步驟稱為TDD(Test-Driven Development)，稱為測試驅動開發，有助於釐清撰寫程式的設計，測試程式的好處，是經過測試得知的結果，來驗證程式是否符合預期，以下介紹TDD分為5個步驟
 
 1. 選定功能，新增測試案例
 
-   設計情境並且選定什麼樣的功能做測試
+   - 設計怎麼使用測試程式
+   - 此階段尚未撰寫程式
 
 2. 執行測試，得到Failed(紅燈)
 
-   設計初步測試程式，沒有撰寫測試功能，只是確認測試function可以使用
+   - 設計初步測試程式，沒有撰寫測試功能
+   - 確認測試程式可以使用
 
 3. 實作「夠用」的產生程式
 
-   實做測試功能，不需要過多個程式碼，只要功能正常即可
+   - 實做測試功能，不需要過多個程式碼，只要測試功能正常即可
+   - 用最快的速度通過測試
 
 4. 再做執行測試，得到Passed(綠燈)
 
-   再次執行測試程式，已完成一個測試function
+   - 確保已完成執行測試程式
+   - 此階段可以開始撰寫開發程式，並寫測試程式與開發程式可正常運作
 
 5. 重構程式
 
-   優化測試功能，可更好維護測試功能
+   - 優化測試功能，可更好維護測試功能
 
-   
+
+
 
 PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗證自己寫的function有沒有問題，在我們新增程式或修改程式時，能確保不會影響到原本的功能，一般都會先寫好測試，才會開始寫功能需求。
 
@@ -109,10 +114,10 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
 4. 測試某個class，例如：測試Unit/BasicTest
 
    ```bash
-    php artisan test --filter 'Tests\\Unit\\BasicTest'
+   php artisan test --filter 'Tests\\Unit\\BasicTest'
     
-    //如果加function名稱，可以只測試某個class的某個function
-     php artisan test --filter 'Tests\\Unit\\BasicTest::test_example'
+   //如果加function名稱，可以只測試某個class的某個function
+   php artisan test --filter 'Tests\\Unit\\BasicTest::test_example'
    ```
 
 #### Http Test
@@ -403,6 +408,99 @@ laravel Duck適合測試網頁版面，可以寫css來測試樣板，還有route
 
 #### DataBase Test
 
+我們在每次測試資料時，都會重置資料庫，不會影響到現有的資料，在寫測試時要使用`Illuminate\Foundation\Testing\RefreshDatabase`做重置，會用laravel的Factory、Model、Seed來做測試
+
+我們可以在factory寫`configure()`在建立時，要做什麼事情
+
+```php
+class UserFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = User::class;
+
+    /**
+     * Configure the model factory.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        //執行make model要做的事情
+        return $this->afterMaking(function (User $user) {
+            //
+        //執行create model 後要做的事
+        })->afterCreating(function (User $user) {
+            //
+        });
+    }
+
+    // ...
+
+```
+
+用seeder建立資料庫來做測試
+
+```php
+class ExampleTest extends TestCase
+{
+    use RefreshDatabase;
+
+    /**
+     * Test creating a new order.
+     *
+     * @return void
+     */
+    public function test_orders_can_be_created()
+    {
+        // 執行建立所有的Seeder檔案
+        $this->seed();
+
+        // 執行建立OrderStatusSeeder
+        $this->seed(OrderStatusSeeder::class);
+
+        // ...
+    }
+}
+```
+
+測試資料庫中已經建立幾筆資料，例如：tables users有5筆資料
+
+```php
+$this->assertDatabaseCount('users', 5);
+```
+
+測試table確認有這筆資料，例如：tables users的email欄位，有沒有sally@example.com這筆資料
+
+```
+$this->assertDatabaseHas('users', [
+    'email' => 'sally@example.com',
+]);
+```
+
+如果要確認沒有這筆資料，要改用assertDatabaseMissing
+
+測試table刪除資料，例如：tables users第一筆資料是否被刪除
+
+```php
+use App\Models\User;
+
+$user = User::find(1);
+
+$user->delete();
+
+$this->assertDeleted($user);
+```
+
+測試table是否已經被刪除，例如：users這張table是否被刪除了
+
+```php
+$this->assertSoftDeleted($user);
+```
+
 #### 範例：我們建立一個測試假資料寫入到db
 
 1. 先建立測試檔案
@@ -610,7 +708,7 @@ laravel Duck適合測試網頁版面，可以寫css來測試樣板，還有route
    ```
 
 
-DataBase Test適合用測試建立資料庫S
+
 
 #### Mock
 
@@ -622,9 +720,9 @@ DataBase Test適合用測試建立資料庫S
 
   這裡注意的是Mock，是繼承的Service的物件，所以要在寫指向Service的function才會被執行
 
-- Function Test
+- Function Test(功能測試)
 
-  我們在測試環境使用request，必須要用 Mock 來做替身並且改寫，在Mockery的library的MockeryTestCaseSetUp，用Mock 物件時，會使用setUp()和tearDown()
+  大部分的測試，都算是功能測試，例如我們在測試程式要使用request，用 Mock 來做替身並且改寫，在Mockery的library的MockeryTestCaseSetUp，用Mock 物件時，會使用setUp()和tearDown()
 
   ```php
   namespace Mockery\Adapter\Phpunit;
@@ -644,8 +742,12 @@ DataBase Test適合用測試建立資料庫S
       }
   }
   ```
-
   
+- ##### spy
+
+  在寫mock的時候，會看到spy，它與mock有什麼差異?
+
+  mock是單元測試內的邏輯才會用到，spy是建立真實的class，並且測試會使用function，
 
 
 
@@ -765,7 +867,7 @@ https://www.cnblogs.com/cjjjj/p/10623534.html
 
   代表建立一個Mock物件，執行0次，以上面的範例少寫$test = $mock->newInvoice()，會顯示錯誤。
 
-參考資料：https://dustinhsiao21.github.io/laravel/use-mock-in-laravel-phpunit/、https://learnku.com/docs/laravel/5.8/mocking/3941、https://laravel.com/docs/8.x/mocking、https://ithelp.ithome.com.tw/articles/10217378、https://blog.miniasp.com/post/2019/02/18/Unit-testing-Integration-testing-e2e-testing
+參考資料：https://dustinhsiao21.github.io/laravel/use-mock-in-laravel-phpunit/、https://learnku.com/docs/laravel/5.8/mocking/3941、https://laravel.com/docs/8.x/mocking、https://ithelp.ithome.com.tw/articles/10217378、https://blog.miniasp.com/post/2019/02/18/Unit-testing-Integration-testing-e2e-testing、https://stackoverflow.com/questions/60837159/laravel-dusk-teardown-must-be-compatible-with-illuminate-foundation-testing-te
 
 
 
