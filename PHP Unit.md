@@ -423,7 +423,7 @@ class UserFactory extends Factory
     protected $model = User::class;
 
     /**
-     * Configure the model factory.
+     * Configure the model factory
      *
      * @return $this
      */
@@ -475,7 +475,7 @@ $this->assertDatabaseCount('users', 5);
 
 測試table確認有這筆資料，例如：tables users的email欄位，有沒有sally@example.com這筆資料
 
-```
+```php
 $this->assertDatabaseHas('users', [
     'email' => 'sally@example.com',
 ]);
@@ -521,8 +521,6 @@ $this->assertSoftDeleted($user);
    }
    ```
    
-   
-   
 2. 建立factory
 
    ```bash
@@ -567,6 +565,12 @@ $this->assertSoftDeleted($user);
 
    ```bash
    php artisan test --filter 'Tests\\Unit\\PostTest::testArchives'
+   ```
+   
+   這裡要注意 laravel 8版本需要，在執行前需要安裝legacy-factories
+   
+   ```
+   composer require laravel/legacy-factories
    ```
 
 以上範例，在Post model用laravel Faker，測試有沒有新增成功，最後再用assertCount確認，是否要成功新增2筆
@@ -707,7 +711,7 @@ $this->assertSoftDeleted($user);
    }
    ```
 
-
+DataBase Test適合
 
 
 #### Mock
