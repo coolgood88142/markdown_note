@@ -761,6 +761,8 @@ DataBase Test適合
   在寫mock的時候，會看到spy，它與mock有什麼差異?
 
   spy跟mock很像，在測試程式裡，mock需要建立一個相同物件，來驗證呼叫的funtion是否一樣，但是spy是不用呼叫function，直接執行function後，來驗證某個function有沒有被spy使用
+  
+  spy的目的是驗證呼叫的function，有沒有真的被執行，mock則是模擬的資料，是否跟預期的資料符合。
 
 #### 流程圖
 
@@ -918,9 +920,8 @@ https://www.cnblogs.com/cjjjj/p/10623534.html
 - https://stackoverflow.com/questions/60837159/laravel-dusk-teardown-must-be-compatible-with-illuminate-foundation-testing-te
 - https://blog.hinablue.me/phalconphp-functional-test-yu-phpunit-mock-ai-hen-qing-chou/
 - https://blog.givemin5.com/tdd-1-unit-test-3a-yuan-ze/
-
 - https://github.com/recca0120/fight-editor
-
+- https://www.jyt0532.com/2018/01/04/test-double-spy/
 
 
 
