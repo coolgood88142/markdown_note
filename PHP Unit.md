@@ -544,20 +544,25 @@ $this->assertSoftDeleted($user);
  3. 建立測試function
 
     ```php
-    public function testArchives()
+    class PostTest extends TestCase
     {
-        // Given I have two records in the database that art posts,
-        // and each one is posted a month apart.
-    	$first = factory(Post::class)->create();
-    	$second = factory(Post::class)->create([
-    	   'created_at' => \Carbon\Carbon::now()->subMonth()
-    	]);
+        use RefreshDatabase;
     
-        // When I fetch the archives.
-        $posts = Post::archives();
+        public function testArchives()
+        {
+            // Given I have two records in the database that art posts,
+            // and each one is posted a month apart.
+            $first = factory(Post::class)->create();
+            $second = factory(Post::class)->create([
+               'created_at' => \Carbon\Carbon::now()->subMonth()
+            ]);
     
-        // Then the response should be in the proper format.
-        $this->assertCount(2, $posts);
+            // When I fetch the archives.
+            $posts = Post::archives(spy);
+    
+            // Then the response should be in the proper format.
+            $this->assertCount(2, $posts);
+        }
     }
     ```
 
@@ -566,14 +571,16 @@ $this->assertSoftDeleted($user);
    ```bash
    php artisan test --filter 'Tests\\Unit\\PostTest::testArchives'
    ```
-   
+
    這裡要注意 laravel 8版本需要，在執行前需要安裝legacy-factories
-   
+
    ```
    composer require laravel/legacy-factories
    ```
 
-以上範例，在Post model用laravel Faker，測試有沒有新增成功，最後再用assertCount確認，是否要成功新增2筆
+以上範例，測試Post table新增兩筆資料，第二筆的時間改成下個月，在用`archives()`依照建立日期做查詢，用年月做排序，最後再用assertCount確認，是否要成功新增2筆。
+
+這裡要注意的事，PostTest有加上`RefreshDatabase`，每次執行測試時，Post table就會重置。
 
 #### 範例：我們測試用POST請求來建立資料
 
@@ -598,7 +605,7 @@ $this->assertSoftDeleted($user);
    }
    ```
 
-   這段程式碼是在寫，先執行withoutExceptionHandling，這個是指在執行測試時，拋錯時不要停止，在去做post請求`api/tasks/create`，帶`name`、`description`兩個參數，在用assertStatus確認是否有建立成功，最後再用assertTrue，建立的資料是否有一筆以上。
+   先執行withoutExceptionHandling，會列出所有PHPUnit會拋錯的訊息，以方便追蹤程式，在去做post請求`api/tasks/create`，帶`name`、`description`兩個參數，在用assertStatus確認是否有建立成功，最後再用assertTrue，建立的資料是否有一筆以上。
 
 3. 建立route
 
@@ -636,6 +643,8 @@ $this->assertSoftDeleted($user);
        });
    }
    ```
+
+   Tasks table建立id、name、text
 
    將CreateTasksTable.php的up()，調整成上面這段程式，在執行下面這段指令
 
@@ -751,9 +760,7 @@ DataBase Test適合
 
   在寫mock的時候，會看到spy，它與mock有什麼差異?
 
-  mock是單元測試內的邏輯才會用到，spy是建立真實的class，並且測試會使用function，
-
-
+  spy跟mock很像，在測試程式裡，mock需要建立一個相同物件，來驗證呼叫的funtion是否一樣，但是spy是不用呼叫function，直接執行function後，來驗證某個function有沒有被spy使用
 
 #### 流程圖
 
@@ -835,11 +842,41 @@ Mock是代替OrderServiceTest class，物件中會有OrderServiceTest的function
 
 Mock是來自[mockery](https://github.com/mockery/mockery)這個套件，可以參考laravel的Mockery\Adapter\Phpunit\MockeryTestCase
 
-
-
 ##### 範例的initMock是模擬InvoiceService class，用shouldReceive('newInvoice')跟直接執行newInvoice()，這兩行是什麼意思?
 
 shouldReceive('newInvoice')是模擬InvoiceService class，呼叫newInvoice()，這個時候Mock沒有開始執行
+
+##### Phalcon mock範例
+
+```php
+protected function setUp() {
+    $mock = $this->getMock('\\Phalcon\\Http\\Request', ['get']);
+    $mock->expects($this->any())
+        ->method('get')
+        ->will($this->returnValue('Succeeded!'));
+    $this->di->setShared('request', $mock);
+}
+```
+
+`setup()`將Request物件mock起來，使用`get()`，Succeeded用字串方式，當參數使用，只用一次
+
+將Phalcon DI類別的request，設定跟$mock物件相同
+
+```php
+public function test1TestCase() {
+    $response = $this->dispatch('/index');
+    $this->assertEquals('Succeeded!', $response);
+}
+
+public function test2TestCase() {
+    $response = $this->dispatch('/index');
+    $this->assertEquals('Succeeded!', $response);
+}
+```
+
+`test1TestCase()`執行route index，回傳response，確認是否為Succeeded!
+
+`test2TestCase()`執行route index，回傳response，確認是否為Succeeded!
 
 
 
@@ -871,7 +908,21 @@ https://www.cnblogs.com/cjjjj/p/10623534.html
 
   代表建立一個Mock物件，執行0次，以上面的範例少寫$test = $mock->newInvoice()，會顯示錯誤。
 
-參考資料：https://dustinhsiao21.github.io/laravel/use-mock-in-laravel-phpunit/、https://learnku.com/docs/laravel/5.8/mocking/3941、https://laravel.com/docs/8.x/mocking、https://ithelp.ithome.com.tw/articles/10217378、https://blog.miniasp.com/post/2019/02/18/Unit-testing-Integration-testing-e2e-testing、https://stackoverflow.com/questions/60837159/laravel-dusk-teardown-must-be-compatible-with-illuminate-foundation-testing-te
+參考資料：
+
+- https://dustinhsiao21.github.io/laravel/use-mock-in-laravel-phpunit/
+- https://learnku.com/docs/laravel/5.8/mocking/3941
+- https://laravel.com/docs/8.x/mocking
+- https://ithelp.ithome.com.tw/articles/10217378
+- https://blog.miniasp.com/post/2019/02/18/Unit-testing-Integration-testing-e2e-testing
+- https://stackoverflow.com/questions/60837159/laravel-dusk-teardown-must-be-compatible-with-illuminate-foundation-testing-te
+- https://blog.hinablue.me/phalconphp-functional-test-yu-phpunit-mock-ai-hen-qing-chou/
+- https://blog.givemin5.com/tdd-1-unit-test-3a-yuan-ze/
+
+- https://github.com/recca0120/fight-editor
+
+
+
 
 
 
