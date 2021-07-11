@@ -12,7 +12,25 @@
 
 1. #### 為什麼cursor程式碼 在加上$sum = $post->sum()，18M變成84M，正常要維持18M才對
 
-   lazy collection算是collection的一種，如果用sum的話，就是用collection做加總，而不是lazy collection，所以存取變數的記憶體，才會變大
+   lazy collection算是collection的一種，如果用sum的話，就是用collection做加總，而不是lazy collection，所以存取變數的記憶體，才會變大。
+
+   我們可以自行建立laztcollection，使用yieldt回傳物件，在跑迴圈做加總
+
+   去找cursor的LazyCollection，怎麼做到節省記憶體，yield的用法是怎麼做的
+
+   去找84M是怎麼寫的
+
+   ```php
+   $data = LazyCollection::make(function() {   
+               $posts = Post::all();
+               
+               foreach ($posts as $post){ 
+                   yield $post->id;
+               }
+           });
+   
+   $sum = $data->sum();
+   ```
 
 2. #### 為什麼加上groupBy(['id'])之後，不能使用?
 
@@ -35,6 +53,8 @@
 
    可以設定某個時間，將迴圈中當前的資料，新增到集合
 
+   去找3種lazycollection的fucntion什麼情況下使用
+
    ```php
    $post = Post::cursor()->takeUntilTimeout(now()->addMinute());
    $post->each(function ($number) {
@@ -47,24 +67,37 @@
 
 6. #### lazy collection-tapEach
 
-   跑迴圈時將每筆資料，從lazycollection集合中釋放掉
+   可以設定collection物件，要給予什麼資料
 
    ```php
    $post = Post::cursor()->tapEach(function ($value) {
-          dd($value);
+          dump($value->id);
    });
+   
+   $data = $post->take(3)->all();
    ```
 
-   例如：Post的lazy collection物件，每跑一次當前的資料就釋放掉，所以寫dd($value)，並不會顯示value資料
+   例如：Post的lazy collection物件，設定每筆資料回傳id，在使用`take()`顯示前3筆資料，來顯示前3筆的id
 
 7. #### lazy collection-remember
 
-   會把lazy collection集合中的所有值，記到cache裡
+   記住lazy collection集合中的所有資料，
 
    ```php
    $post = Post::cursor()->remember();
-   $post->take(1)->all();
    $post->take(3)->all();
+   $post->take(10)->all();
    ```
 
-   例如：Post的lazy collection物件，已經將集合中全部的資料，記到cache裡，在用take取第1-第3筆資料
+   例如：Post的lazy collection物件，記住集合中全部的資料，在用`take(3)`將前3筆資料，記到cache裡，在執行`take(10)`時，前3筆的資料會從cache裡拿，如果資料越多會更明顯讀取資料的速度。
+   
+   
+
+參考資料：
+
+- https://ithelp.ithome.com.tw/articles/10194457
+- https://laravel.com/api/8.x/Illuminate/Support/LazyCollection.html#method_takeUntilTimeout
+- https://laravel.com/api/8.x/Illuminate/Support/LazyCollection.html#method_tapEach
+- https://laravel.com/api/8.x/Illuminate/Support/LazyCollection.html#method_remember
+- https://tn710617.github.io/zh-tw/laravel-digging-deeper-collections/
+

@@ -600,21 +600,21 @@ $this->assertSoftDeleted($user);
            'name' => 'Write Article',
            'description' => 'Write and publish an article'
        ]);
-       $response->assertStatus(201);
+       $response->assertStatus(200);
        $this->assertTrue(count(Task::all()) > 1);
    }
    ```
 
-   先執行withoutExceptionHandling，會列出所有PHPUnit會拋錯的訊息，以方便追蹤程式，在去做post請求`api/tasks/create`，帶`name`、`description`兩個參數，在用assertStatus確認是否有建立成功，最後再用assertTrue，建立的資料是否有一筆以上。
+   先執行`withoutExceptionHandling()`，會列出所有PHPUnit會拋錯的訊息，以方便追蹤程式，在去做post請求`tasks/create`，帶`name`、`description`兩個參數，在用assertStatus確認response的status code是否為200，最後再用assertTrue，確認Task的資料是否有一筆以上。
 
 3. 建立route
 
    ```php
-   Route::group(['prefix' => 'tasks'], function () {
-       Route::get('/{task}','TaskController@show');
-       Route::post('/create', 'TaskController@create_task');
-       Route::patch('{task}/complete', 'TaskController@mark_task_as_completed');
-       Route::delete('/{id}', 'TaskController@destroy');
+   Route::prefix('task')->group(function () {
+       Route::get('/{task}', [TaskController::class, 'show']);
+       Route::post('/create', [TaskController::class, 'create_task']);
+       Route::patch('{task}/complete', [TaskController::class, 'mark_task_as_completed']);
+       Route::delete('/{id}', [TaskController::class, 'destroy']);
    });
    
    ```
@@ -632,21 +632,22 @@ $this->assertSoftDeleted($user);
 5. 建立Table
 
    ```php
-    public function up()
-    {
-    	Schema::create('tasks', function (Blueprint $table) {
-    		 $table->id();
-    		 $table->string('name');
-    		 $table->text('description');
-    		 $table->boolean('completed')->default(0);
-    		 $table->timestamps();
-       });
+   class CreateTasksTable extends Migration
+   {
+       public function up()
+       {
+           Schema::create('task', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->text('description');
+                $table->boolean('completed')->default(0);
+                $table->timestamps();
+           });
+       }
    }
    ```
 
-   Tasks table建立id、name、text
-
-   將CreateTasksTable.php的up()，調整成上面這段程式，在執行下面這段指令
+   Tasks table建立name、description、completed等3個欄位，將CreateTasksTable.php的up()，調整成上面這段程式，在執行下面這段指令
 
    ```bash
    php artisan migrate
@@ -675,50 +676,109 @@ $this->assertSoftDeleted($user);
 7. 調整Factory
 
    ```php
-   public function definition()
+   class TaskFactory extends Factory
    {
-       return [
-           'name' => $this->faker->sentence(4),
-           'description' => $this->faker->sentence(20),
-           'completed' => random_int(0, 1)
-       ];
+       public function definition()
+       {
+           return [
+               'name' => $this->faker->sentence(4),
+               'description' => $this->faker->sentence(20),
+               'completed' => random_int(0, 1)
+           ];
+       }
    }
    ```
 
-   建立假資料，`name`指定4個字元、`description`指定20個字元、`completed`產生10位數以上的數字
+   建立假資料，`name`指定4個字元、`description`指定20個字元、`completed`產生0或1的數字
 
 8. 調整Controller
 
    ```php
-   public function destroy($task)
+   class TaskController extends Controller
    {
-       $task_to_be_deleted = Task::findOrFail($task);
-       $task_to_be_deleted->delete();
-       return response()->json(['
-       	' => 'task deleted successfully'
-       ], 410);
-   }
-   ```
-
-   刪除Task Table指定的資料
-
-9. 補上測試刪除function
-
-   ```bash
-   public function test_that_a_task_can_be_completed(){
-     $this->withoutExceptionHandling();
-     $task_id = Task::create([
-           'name' => 'Example Name',
-           'description' => 'Demo dscription'
-     ])->id;
-     $response = $this->patch("/api/tasks/$task_id/complete"); 
-     $this->assertTrue(Task::findOrFail($task_id)->is_completed() == 1); 
-     $response->assertJson([
+       public function destroy($task)
+       {
+           //查詢task第一筆資料後執行刪除，在回傳Response物件，設定status code為410，組message為task deleted successfully
+           $task_to_be_deleted = Task::findOrFail($task);
+           $task_to_be_deleted->delete();
+           return response()->json([
+               'message' => 'task deleted successfully'
+           ], 410);
+       }
+   
+       public function mark_task_as_completed(Task $task)
+       {
+           //執行model-task的mark_task_as_completed()在回傳Response物件，設定status code為200，組message為task deleted successfully marked as updated
+           $task->mark_task_as_completed(); 
+           return response()->json([
                'message' => 'task successfully marked as updated'
-     ], true); 
-     $response->assertStatus(200); 
+           ], 200);
+       }
+       
+   	public function create_task(Request $request)
+       {
+           DB::table('task')->insert([
+               'name' => $request->name,
+               'description' => $request->description,
+               'completed' => random_int(0, 1)
+           ]);
+   
+           return 'success';
+       }
    }
    ```
+
+9. 補上測試function
+
+   ```php
+   class InsertionTest extends TestCase
+   {
+       public function test_that_a_task_can_be_added()
+       {
+           //使用withoutExceptionHandling()時，會顯示所有錯誤訊息
+           $this->withoutExceptionHandling();
+           //建立response物件，執行post task/create route，帶name、description兩個參數
+           $response = $this->post('/task/create', [
+               'name' => 'Write Article',
+               'description' => 'Write and publish an article'
+           ]);
+           //確認response物件的status code是否為200
+           $response->assertStatus(200);
+           //確認task 資料有沒有一筆以上
+           $this->assertTrue(count(Task::all()) > 1);
+       }
+   
+       public function test_that_a_task_can_be_deleted()
+       {
+           //使用withoutExceptionHandling()時，會顯示所有錯誤訊息
+           $this->withoutExceptionHandling();
+           //建立5筆task資料
+           $task = Task::factory()->times(5)->create();
+           //隨機產生
+           $id_to_be_deleted = random_int(1, 5);
+           $this->delete("/task/$id_to_be_deleted/"); // send a request to delete it
+           $this->assertDatabaseMissing('task', ['id' => $id_to_be_deleted]); // assert that the task deleted previouly does not exist in the database anymore.
+       }
+   
+       public function test_that_a_task_can_be_completed(){
+           $this->withoutExceptionHandling();
+           $task_id = Task::create([
+                 'name' => 'Example Name',
+                 'description' => 'Demo dscription'
+           ])->id; // create a task and store the id in the $task_id variable
+           $response = $this->patch("/task/$task_id/complete"); //sends a patch request in order to complete the created task
+           $this->assertTrue(Task::findOrFail($task_id)->is_completed() == 1); // assert that the task is now marked as completed in the database
+           $response->assertJson([
+                     'message' => 'task successfully marked as updated'
+           ], true); // ensure that the JSON response recieved contains the message specified
+           $response->assertStatus(200); // furthe ensures that a 200 response code is recieved from the patch request
+         }
+   }
+   ```
+
+   先執行`withoutExceptionHandling()`，會列出所有PHPUnit會拋錯的訊息，以方便追蹤程式，在建立Task的資料，拿id去設定route後執行，這時會回傳response物件，在用id去查詢，這筆資料的completed欄位，資料是否為1，再把response物件，確認json格式資料是不是key=message，value=task successfully marked as updated，之後在確認status code是否為200
+
+
 
 DataBase Test適合
 
