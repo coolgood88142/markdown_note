@@ -18,6 +18,8 @@
 
    去找cursor的LazyCollection，怎麼做到節省記憶體，yield的用法是怎麼做的
 
+   cursor跟laravel的chunk很類似，做分批查詢，但是cursor是每次回傳LazyCollection物件，例如有10萬筆資料，每跑一次就多一個Eloquent  model，將10萬個Eloquent  model同時存到一個記憶體，所以才會節省很多。
+
    去找84M是怎麼寫的
 
    ```php
