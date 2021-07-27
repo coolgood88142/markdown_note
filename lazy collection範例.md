@@ -12,15 +12,21 @@
 
 1. #### 為什麼cursor程式碼 在加上$sum = $post->sum()，18M變成84M，正常要維持18M才對
 
+   重做
+
+   
+
+   
+
    lazy collection算是collection的一種，如果用sum的話，就是用collection做加總，而不是lazy collection，所以存取變數的記憶體，才會變大。
+
+   
 
    我們可以自行建立laztcollection，使用yieldt回傳物件，在跑迴圈做加總
 
    去找cursor的LazyCollection，怎麼做到節省記憶體，yield的用法是怎麼做的
 
    cursor跟laravel的chunk很類似，做分批查詢，但是cursor是每次回傳LazyCollection物件，例如有10萬筆資料，每跑一次就多一個Eloquent  model，將10萬個Eloquent  model同時存到一個記憶體，所以才會節省很多。
-
-   去找84M是怎麼寫的
 
    ```php
    $data = LazyCollection::make(function() {   
@@ -35,6 +41,8 @@
    ```
 
 2. #### 為什麼加上groupBy(['id'])之後，不能使用?
+
+   重做
 
    要改用sortBy('id')，才可以用lazy collection的id做排序
 
@@ -102,4 +110,5 @@
 - https://laravel.com/api/8.x/Illuminate/Support/LazyCollection.html#method_tapEach
 - https://laravel.com/api/8.x/Illuminate/Support/LazyCollection.html#method_remember
 - https://tn710617.github.io/zh-tw/laravel-digging-deeper-collections/
+- https://laravel.com/docs/8.x/eloquent#streaming-results-lazily
 
