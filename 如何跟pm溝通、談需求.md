@@ -17,6 +17,7 @@
 
 - 溝通SOP-PM把功能丟給工程師中間會有很多個步驟，SOP列下來後要畫流程圖
 
+  - 流程圖
   - 需求問題? (為什麼要這樣做?)
 
 - 如何與工作同事順利溝通?
@@ -117,6 +118,20 @@
 
      我會評估系統上是否可以呈現，在來詢問PM報表上全部的欄位資料，他們用意是什麼，在去確認系統上能不能拿到資料
 
+#### 溝通SOP
+
+- ​	流程圖
+
+  ![pm](C:\xampp\htdocs\markdown_note\assets\images\pm.png)
+
+- 說明
+
+  1. 詢問PM為什麼客戶會有這個需求？ 原因是什麼?
+  2. PM說明原因後，評估客戶需求是否會對系統造成影響
+  3. 如果客戶需求會造成影響，是否有別的方法，可以做到客戶需求
+  4. 評估實做時間後跟PM回報
+  5. 沒有別的方法，可以做到客戶需求，要跟PM說明原因，例如有預算、時間、系統範圍等等
+
 #### 如何與工作同事順利溝通?
 
 - 先確認要溝通的事項，在溝通時要明確的講出，項目的目標是什麼，為什麼會這樣做，客戶又會怎麼操作
@@ -131,3 +146,7 @@ PM對於預算、時間、系統範圍極為重要，在跟客戶訪談過程，
 
 - https://w3c.hexschool.com/-30-/b1ad0826
 - https://ithelp.ithome.com.tw/articles/10214057
+- https://www.bnext.com.tw/article/56717/disagreement-engineer-and-pm
+- https://www.pmtone.com/as-a-pm-how-to-cowork-with-engineers/
+- https://kknews.cc/zh-tw/career/mkkebl2.html
+- https://sydneypmbrain.com/communication/
