@@ -74,21 +74,37 @@
 
 - 自己想4個情境，自己有遇過的情況
 
-  不要寫範例 要寫情境
+  1. PM一直遵從客戶的意思，什麼都想要新增功能
 
-  1. PM跟我說，客戶想要在系統上，多一個使用單位，但是只有特定作業才會用到
+     例如：PM說客戶反應，想要在產品上新增功能
 
-     
+     問PM為什麼會想要新增? PM回覆我之後，我評估之後認為，對產品上沒有影響，但是總不可能要白做工吧。
 
-  2. PM說客戶反應系統發生錯誤，並且告知我，系統怎麼操作才會發生
+     跟PM說明後，詢問主管看看，是否要將此項目列到增修案，可以跟客戶談。
 
-     
+     如果對產品有影響，回絕PM驗證對產品沒有幫助。
 
-  3. PM說客戶要調整大量資料，需要你幫忙協助
+  2. PM不確認好問題，就詢問我
 
-     
+     例如：PM說客戶在上傳檔案沒反應，要我協助處理
 
-  4. PM說客戶希望，報表格式換成他們想要的格式，並且寄一份新的報表格式給我
+     問PM是在哪個時間點? 是否有畫面可以提供? 客戶上傳哪些檔案?
+  
+     跟PM說明後，請PM跟客戶詢問，在協助客戶處理問題。
+  
+  3. PM說客戶要調整資料
+  
+     例如：問PM客戶為什麼要調整資料? 主管有同意嗎? 
+  
+     評估調整資料後，會不會對產品有影響，如果有的話，確認有沒有別的方法，可以改善。
+  
+     主管同意的話，請PM跟客戶說調整資料完成後，在回覆客戶。
+  
+  4. PM問我客戶的怎麼在系統上操作，才會有資料
+  
+     例如：PM對產品不熟，想要問整個操作流程
+  
+     回覆PM依照不同的使用者，個別說明有不同種的情境
   
      
 
@@ -98,11 +114,23 @@
 
   新增功能的溝通SOP
 
-  所有項目的SOP都列出，至少5個
+  bug的溝通SOP
 
-  
+  詢問進度的溝通SOP
 
-  ![pm](C:\xampp\htdocs\markdown_note\assets\images\pm.png)
+  不了解問題的溝通SOP
+
+  調整資料的溝通SOP
+
+  ![pm](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/pm.png>)
+
+  ![bug](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/bug.png>)
+
+  ![schedule](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/schedule.png>)
+
+  ![PMquestion](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/PMquestion.png>)
+
+  ![updateData](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/updateData.png>)
 
 - 說明
 
