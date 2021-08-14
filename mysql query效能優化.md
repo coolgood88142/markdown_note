@@ -64,6 +64,42 @@ union是一個臨時用多個table組成的查詢表，跟join的差異是union�
 select id from user where (index(索引名稱))
 ```
 
+#### EXPLAIN
+
+可以查詢執行時間，可以查看type、key、key_len、rows、extra
+
+- type：顯示使用了哪些類型
+- key：使用到的索引值
+- key_len：索引值的長度
+- rows：顯示查詢的資料有多少筆
+- extra：解析額外的查詢資訊，如果值是null就查不到
+
+#### 不使用Order By Rand()
+
+在做排序時如果需要用Rand()，每筆資料會隨機取一個數字，這樣效能會很差，可以用join在額外資料
+
+#### 區分in和exists、not in和not exists
+
+例如：
+
+```sql
+select * from 表A where id in (select id from 表B) --in
+select * from 表A where exists(select * from 表B where 表B.id=表A.id) --exists
+```
+
+以上兩種寫法是一樣的
+
+- in：先查詢表B之後，再去從表A找條件
+- exists：先查詢表A全部資料後，在去找表B的id有跟表A的id一樣的資料
+
+in比較適合查詢表B比表A資料小的情況，exists比較適合查詢表A比表B資料小的情況
+
+##### not in和not exists的比較
+
+使用not in會先搜尋完整個table資料，並不會從索引值尋找，not exists雖然會從表A開始找資料，但是會從索引值開始找，速度會比較快
+
+
+
 參考資料：
 
 - https://www.cloudways.com/blog/mysql-performance-tuning/
