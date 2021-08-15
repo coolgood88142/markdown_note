@@ -102,7 +102,7 @@ in比較適合查詢表B比表A資料小的情況，exists比較適合查詢表A
 
 參考資料：
 
-- https://www.cloudways.com/blog/mysql-performance-tuning/
+- https://www.cloudways.com/blog/mysql-performance-tuning/   
 - https://codingnote.cc/zh-tw/p/21053/
 - http://inspiregate.com/programming/mysql/360-8-strokes-allows-you-to-optimize-query-performance-mysql.html
 - https://www.ipshop.xyz/12094.html
