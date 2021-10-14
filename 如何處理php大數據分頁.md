@@ -48,5 +48,6 @@ Echo $show." ";
 
 ```
 
+### 參考資料
 
-
+https://www.zymseo.com/big5/dashuju_242908
