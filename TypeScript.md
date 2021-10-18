@@ -14,9 +14,9 @@
 
 - 協助開發： TypeScript 在 IDE 上的 Autocomplete Feature 來協助開發並且防止錯誤
 
-  ![typescript1](C:\xampp\htdocs\markdown_note\assets\images\typescript1.png)
+  ![typescript1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/typescript1.png>)
 
-  ![typescript2](C:\xampp\htdocs\markdown_note\assets\images\typescript2.png)
+  ![typescript2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/typescript2.png>)
 
 ### 安裝
 
