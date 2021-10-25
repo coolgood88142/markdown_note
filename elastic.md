@@ -98,7 +98,7 @@ output {
 
 
 
-新增空白檔案後，在bin的目錄底下執行指令，成功之後，在瀏覽器輸入http://127.0.0.1:9200/，就會看到Logsearch的資訊
+新增空白檔案後，在bin的目錄底下執行指令，成功之後，在瀏覽器輸入http://127.0.0.1:9600/，就會看到Logsearch的資訊
 
 ```javascript
 logstash -f logstash.conf
