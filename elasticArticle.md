@@ -71,6 +71,46 @@ https://www.elastic.co/cn/downloads/kibana
 
 ![elasticArticle6](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elasticArticle7.png>)
 
+### 程式
+
+```php
+
+```
+
+```php
+class ElasticService
+{
+    public function connElastic()
+    {
+        $elastic = Config::get('elastic');
+
+        $client = ClientBuilder::create()->setHosts($elastic['hosts'])->build();
+
+        return $client;
+    }
+
+    public function createElastic($client, $data)
+    {
+        $response = $client->create($data);
+    }
+
+    public function updateElastic($client, $data)
+    {
+        $response = $client->update($data);
+    }
+
+    public function deleteElastic($client, $data)
+    {
+        $response = $client->delete($data);
+    }
+
+    public function searchElastic($client, $data)
+    {
+        return $client->search($data);
+    }
+}
+```
+
 
 
 參考資料:
@@ -80,3 +120,7 @@ https://linyencheng.github.io/2020/09/10/elastic-kibana-quick-start/、
 https://kknews.cc/zh-tw/code/qljaxbb.html、
 
 https://github.com/cviebrock/laravel-elasticsearch
+
+https://github.com/babenkoivan/scout-elasticsearch-driver
+
+https://zhuanlan.zhihu.com/p/215756862
