@@ -7,9 +7,9 @@ categories: ["Elastic"]
 tags: ["Elastic","import","Article"]
 ---
 
-## Elasticsearch實做匯出文章
+## Elasticsearch實做文章模糊查詢
 
-以下介紹，用Elasticsearch實做匯出文章
+以下介紹，用Elasticsearch實做文章模糊查詢
 
 ## 安裝篇
 
