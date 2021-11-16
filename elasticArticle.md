@@ -71,6 +71,8 @@ https://www.elastic.co/cn/downloads/kibana
 
 ![elasticArticle6](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elasticArticle6.png>)
 
+
+
 ## laravel 專案開發
 
 ### 1.流程圖
@@ -124,12 +126,13 @@ deactivate user
 
 ### 2.安裝套件
 
-已經有laravel專案的情況下，安裝這三個套件
+已經有`laravel`專案的情況下，安裝這三個套件
 
 ```bash
 composer require elasticsearch/elasticsearch
 composer require tamayo/laravel-scout-elastic
 composer require laravel/scout 
+composer require maatwebsite/excel
 ```
 
 安裝好之後，在`config/app.php`新增這兩行
@@ -137,17 +140,18 @@ composer require laravel/scout
 ```php
 'providers' =  [ 
     Laravel\Scout\ScoutServiceProvider::class, 
-    ScoutEngines\Elasticsearch\ElasticsearchProvider::class, 
+    Maatwebsite\Excel\ExcelServiceProvider::class, 
 ]
 ```
 
-在執行這個指令產生`config/scout.php`檔案
+在執行這個指令產生`config/scout.php`與`config/excel.php`檔案
 
-```php
+```bash
 php artisan vendor:publish --provider="Laravel\Scout\ScoutServiceProvider"
+php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider"
 ```
 
-修改`config/scout.php`檔案內容，Index自己取，例如我設定elastic
+修改`config/scout.php`檔案內容，`Index`自己取，例如我設定`elastic`
 
 ```php
 'driver' =  env('SCOUT_DRIVER', 'elasticsearch'),
@@ -158,6 +162,15 @@ php artisan vendor:publish --provider="Laravel\Scout\ScoutServiceProvider"
       env('ELASTICSEARCH_HOST', 'http://localhost:9200'),
     ],
   ],
+```
+
+在`config/app.php`的`aliases`，新增`excel`的類別，可以方便做匯入
+
+```bash
+'aliases' => [
+	'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+	...
+]
 ```
 
 ### 3.建立Commend檔案
@@ -251,24 +264,11 @@ class Articles extends Model
     protected $fillable = [
         'title',
         'author',
+        'create_date',
         'content',
     ];
 
-    /**
-     * Set the content attribute.
-     *
-     * @param $value
-     */
-    public function setContentAttribute($value)
-    {
-        $data = [
-            'raw'  => $value,
-            'html' => (new Markdowner)->convertMarkdownToHtml($value)
-        ];
-
-        $this->attributes['content'] = json_encode($data);
-    }
-
+    //設定索引值
     public function searchableAs()
     {
         return 'elastic';
@@ -291,19 +291,11 @@ class Articles extends Model
 
 ```
 
-### 5.新增索引值
+利用laravel Scout，將Articles做文章搜尋
 
-**在產生索引值之前，請先在自己的DB，先建立幾筆資料，我們會把DB資料連同索引值，一起新增到elasticsearch**
+### 5.建立匯入的類別
 
-執行這個指令，產生elasticsearch
-
-```bash
-php artisan scout:import "App\Articles"
-```
-
-![elasticArticle7](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elasticArticle7.png>)
-
-### 7.程式撰寫
+### .程式撰寫
 
 ```php
 class ArticlesController extends Controller
@@ -318,6 +310,15 @@ class ArticlesController extends Controller
         
         //將查詢到的資料與關鍵字，丟到articles頁面上
         return view('articles', ['articles' => $articles, 'keyword' => $keyword]);
+    }
+    
+    public function importArticles()
+    {
+        //用laravel excel套件，建立ArticlesImport類別，去找storage資料夾裡的articles.xls檔做匯入
+        Excel::import(new ArticlesImport, storage_path('articles.xls'));
+		
+        //執行完之後，導頁到查詢畫面
+        return redirect('/showArticles');
     }
 }
 ```
@@ -338,20 +339,24 @@ class ElasticService
    //帶關鍵字做模糊查詢
     public function fuzzySearch($search)
     {
-        //從config/scout.php有個elasticsearch.index取得索引值
-        $params = ['index' => config('scout.elasticsearch.index')];
+        $params = [
+            //從config/scout.php有個elasticsearch.index取得索引值
+            'index' => config('scout.elasticsearch.index'),
+            'body' => [
+                //用createDate欄位做排序，由大至小
+                'sort' => [
+                    'createDate' => [
+                        "order" => "desc"
+                    ]
+                ]
+            ]
+        ];
 
         //判斷關鍵字不等於空值和null
         if($search != '' && $search != null){
 			
             //建立模糊查詢條件
             $params['body'] = [
-                //用createDate欄位做排序，由大至小
-                'sort' => [
-                    'createDate' => [
-                        "order" => "desc"
-                    ]
-                ],
                 //設定模糊查詢，針對title、author、content，這3個欄位找資料
                 'query' => [
                     'multi_match' => [
@@ -377,7 +382,17 @@ class ElasticService
 }
 ```
 
+### 6.新增索引值
 
+**在產生索引值之前，請先在自己的DB，建立幾筆資料，我們會把DB資料連同索引值，一起新增到elasticsearch**
+
+執行這個指令，產生elasticsearch的資料，用laravel scout
+
+```bash
+php artisan scout:import "App\Articles"
+```
+
+![elasticArticle7](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elasticArticle7.png>)
 
 ### 參考資料:
 
@@ -392,3 +407,18 @@ https://github.com/babenkoivan/scout-elasticsearch-driver
 https://zhuanlan.zhihu.com/p/215756862
 
 https://learnku.com/articles/40289
+
+https://pandalab.org/articles/86
+
+https://docs.laravel-excel.com/3.1/exports/column-formatting.html#dates
+
+https://www.itread01.com/content/1549386551.html
+
+https://www.codecheef.org/article/laravel-excel-import-date-format-issue-solved
+
+https://discuss.elastic.co/t/warning-299-elasticsearch-7-15-1-setup-minimal-security/287179
+
+https://github.com/elastic/elasticsearch/issues/78500
+
+https://ithelp.ithome.com.tw/articles/10216666
+
