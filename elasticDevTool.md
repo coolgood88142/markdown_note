@@ -73,6 +73,748 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
 elasticsearch 的Mapping，是以metadata fields組成的
 
+- data type 
+
+  - common types
+
+    - binary
+
+      設定某個字串不可搜尋，但是字串要符合`Base64` 編碼
+
+      ```json
+      //更新my-index-00000的doc，id為1的資料，不可以搜尋U29tZSBiaW5hcnkgYmxvYg
+      PUT my-index-000001/_doc/1
+      {
+        "name": "Some binary blob",
+        "blob": "U29tZSBiaW5hcnkgYmxvYg" 
+      }
+      ```
+
+    - boolean
+
+      
+
+      ```json
+      POST my-index-000001/_doc/1?refresh
+      {
+        "is_published": "true" 
+      }
+      
+      GET my-index-000001/_search
+      {
+        "query": {
+          "term": {
+            "is_published": true 
+          }
+        }
+      }
+      ```
+
+    - keywords
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "tags": {
+              "type":  "keyword"
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+    - numbers
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "number_of_bytes": {
+              "type": "integer"
+            },
+            "time_in_seconds": {
+              "type": "float"
+            },
+            "price": {
+              "type": "scaled_float",
+              "scaling_factor": 100
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+    - dates
+
+      
+
+    - alias
+
+      ```
+      PUT trips
+      {
+        "mappings": {
+          "properties": {
+            "distance": {
+              "type": "long"
+            },
+            "route_length_miles": {
+              "type": "alias",
+              "path": "distance" 
+            },
+            "transit_mode": {
+              "type": "keyword"
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+  - Obeject  and relational types
+
+    - Object
+
+      ```
+      PUT my-index-000001/_doc/1
+      { 
+        "region": "US",
+        "manager": { 
+          "age":     30,
+          "name": { 
+            "first": "John",
+            "last":  "Smith"
+          }
+        }
+      }
+      ```
+
+      
+
+    - flattened
+
+      ```
+      PUT bug_reports
+      {
+        "mappings": {
+          "properties": {
+            "title": {
+              "type": "text"
+            },
+            "labels": {
+              "type": "flattened"
+            }
+          }
+        }
+      }
+      
+      POST bug_reports/_doc/1
+      {
+        "title": "Results are not sorted correctly.",
+        "labels": {
+          "priority": "urgent",
+          "release": ["v1.2.5", "v1.3.0"],
+          "timestamp": {
+            "created": 1541458026,
+            "closed": 1541457010
+          }
+        }
+      }
+      ```
+
+      
+
+    - nested
+
+      ```
+      PUT my-index-000001/_doc/1
+      {
+        "group" : "fans",
+        "user" : [ 
+          {
+            "first" : "John",
+            "last" :  "Smith"
+          },
+          {
+            "first" : "Alice",
+            "last" :  "White"
+          }
+        ]
+      }
+      ```
+
+      
+
+    - join
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "my_id": {
+              "type": "keyword"
+            },
+            "my_join_field": { 
+              "type": "join",
+              "relations": {
+                "question": "answer" 
+              }
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+  - Structured data types
+
+    - range
+
+      ```
+      PUT range_index
+      {
+        "settings": {
+          "number_of_shards": 2
+        },
+        "mappings": {
+          "properties": {
+            "expected_attendees": {
+              "type": "integer_range"
+            },
+            "time_frame": {
+              "type": "date_range", 
+              "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+            }
+          }
+        }
+      }
+      
+      PUT range_index/_doc/1?refresh
+      {
+        "expected_attendees" : { 
+          "gte" : 10,
+          "lt" : 20
+        },
+        "time_frame" : {
+          "gte" : "2015-10-31 12:00:00", 
+          "lte" : "2015-11-01"
+        }
+      }
+      ```
+
+      
+
+    - ip
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "ip_addr": {
+              "type": "ip"
+            }
+          }
+        }
+      }
+      
+      PUT my-index-000001/_doc/1
+      {
+        "ip_addr": "192.168.1.1"
+      }
+      
+      GET my-index-000001/_search
+      {
+        "query": {
+          "term": {
+            "ip_addr": "192.168.0.0/16"
+          }
+        }
+      }
+      
+      ```
+
+      
+
+    - version
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "my_version": {
+              "type": "version"
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+    - murmur3
+
+      ```
+      sudo bin/elasticsearch-plugin install mapper-murmur3
+      ```
+
+      
+
+  - Aggregate data types
+
+    - aggregate_metric_double
+
+      ```
+      PUT my-index
+      {
+        "mappings": {
+          "properties": {
+            "my-agg-metric-field": {
+              "type": "aggregate_metric_double",
+              "metrics": [ "min", "max", "sum", "value_count" ],
+              "default_metric": "max"
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+    - historgram
+
+      - [min](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-min-aggregation.html#search-aggregations-metrics-min-aggregation-histogram-fields) aggregation
+      - [max](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-max-aggregation.html#search-aggregations-metrics-max-aggregation-histogram-fields) aggregation
+      - [sum](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-sum-aggregation.html#search-aggregations-metrics-sum-aggregation-histogram-fields) aggregation
+      - [value_count](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-valuecount-aggregation.html#search-aggregations-metrics-valuecount-aggregation-histogram-fields) aggregation
+      - [avg](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-avg-aggregation.html#search-aggregations-metrics-avg-aggregation-histogram-fields) aggregation
+      - [percentiles](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-percentile-aggregation.html) aggregation
+      - [percentile ranks](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-percentile-rank-aggregation.html) aggregation
+      - [boxplot](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-boxplot-aggregation.html) aggregation
+      - [histogram](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html#search-aggregations-bucket-histogram-aggregation-histogram-fields) aggregation
+      - [range](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-range-aggregation.html#search-aggregations-bucket-range-aggregation-histogram-fields) aggregation
+      - [exists](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html) query
+
+      ```
+      PUT my-index-000001/_doc/1
+      {
+        "my_text" : "histogram_1",
+        "my_histogram" : {
+            "values" : [0.1, 0.2, 0.3, 0.4, 0.5], 
+            "counts" : [3, 7, 23, 12, 6] 
+         }
+      }
+      
+      PUT my-index-000001/_doc/2
+      {
+        "my_text" : "histogram_2",
+        "my_histogram" : {
+            "values" : [0.1, 0.25, 0.35, 0.4, 0.45, 0.5], 
+            "counts" : [8, 17, 8, 7, 6, 2] 
+         }
+      }
+      ```
+
+      
+
+    - Text search types
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "full_name": {
+              "type":  "text"
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+    - annotated-text
+
+      ```
+      sudo bin/elasticsearch-plugin install mapper-annotated-text
+      ```
+
+      
+
+    - completion
+
+      ```
+      UT place
+      {
+        "mappings": {
+          "properties": {
+            "suggest": {
+              "type": "completion",
+              "contexts": [
+                {                                 
+                  "name": "place_type",
+                  "type": "category"
+                },
+                {                                 
+                  "name": "location",
+                  "type": "geo",
+                  "precision": 4
+                }
+              ]
+            }
+          }
+        }
+      }
+      PUT place_path_category
+      {
+        "mappings": {
+          "properties": {
+            "suggest": {
+              "type": "completion",
+              "contexts": [
+                {                           
+                  "name": "place_type",
+                  "type": "category",
+                  "path": "cat"
+                },
+                {                           
+                  "name": "location",
+                  "type": "geo",
+                  "precision": 4,
+                  "path": "loc"
+                }
+              ]
+            },
+            "loc": {
+              "type": "geo_point"
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+    - search_as_you_type
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "my_field": {
+              "type": "search_as_you_type"
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+    - token_count
+
+      ```
+      UT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "name": { 
+              "type": "text",
+              "fields": {
+                "length": { 
+                  "type":     "token_count",
+                  "analyzer": "standard"
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      PUT my-index-000001/_doc/1
+      { "name": "John Smith" }
+      
+      PUT my-index-000001/_doc/2
+      { "name": "Rachel Alice Williams" }
+      
+      GET my-index-000001/_search
+      {
+        "query": {
+          "term": {
+            "name.length": 3 
+          }
+        }
+      }
+      
+      ```
+
+      
+
+  - Document ranking types
+
+    - dense_vector
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "my_vector": {
+              "type": "dense_vector",
+              "dims": 3  
+            },
+            "my_text" : {
+              "type" : "keyword"
+            }
+          }
+        }
+      }
+      
+      PUT my-index-000001/_doc/1
+      {
+        "my_text" : "text1",
+        "my_vector" : [0.5, 10, 6]
+      }
+      
+      PUT my-index-000001/_doc/2
+      {
+        "my_text" : "text2",
+        "my_vector" : [-0.5, 10, 10]
+      }
+      ```
+
+      
+
+    - sparse_vector
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "my_vector": {
+              "type": "sparse_vector"
+            },
+            "my_text" : {
+              "type" : "keyword"
+            }
+          }
+        }
+      }
+      
+      PUT my-index-000001/_doc/1
+      {
+        "my_text" : "text1",
+        "my_vector" : {"1": 0.5, "5": -0.5,  "100": 1}
+      }
+      
+      PUT my-index-000001/_doc/2
+      {
+        "my_text" : "text2",
+        "my_vector" : {"103": 0.5, "4": -0.5,  "5": 1, "11" : 1.2}
+      }
+      
+      ```
+
+      
+
+    - rank_features
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "pagerank": {
+              "type": "rank_feature" 
+            },
+            "url_length": {
+              "type": "rank_feature",
+              "positive_score_impact": false 
+            }
+          }
+        }
+      }
+      
+      PUT my-index-000001/_doc/1
+      {
+        "pagerank": 8,
+        "url_length": 22
+      }
+      
+      GET my-index-000001/_search
+      {
+        "query": {
+          "rank_feature": {
+            "field": "pagerank"
+          }
+        }
+      }
+      ```
+
+      
+
+  - Spatial data types
+
+    - geo_point
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "location": {
+              "type": "geo_point"
+            }
+          }
+        }
+      }
+      
+      PUT my-index-000001/_doc/1
+      {
+        "text": "Geopoint as an object",
+        "location": { 
+          "lat": 41.12,
+          "lon": -71.34
+        }
+      }
+      
+      PUT my-index-000001/_doc/2
+      {
+        "text": "Geopoint as a string",
+        "location": "41.12,-71.34" 
+      }
+      
+      PUT my-index-000001/_doc/3
+      {
+        "text": "Geopoint as a geohash",
+        "location": "drm3btev3e86" 
+      }
+      
+      PUT my-index-000001/_doc/4
+      {
+        "text": "Geopoint as an array",
+        "location": [ -71.34, 41.12 ] 
+      }
+      
+      PUT my-index-000001/_doc/5
+      {
+        "text": "Geopoint as a WKT POINT primitive",
+        "location" : "POINT (-71.34 41.12)" 
+      }
+      
+      GET my-index-000001/_search
+      {
+        "query": {
+          "geo_bounding_box": { 
+            "location": {
+              "top_left": {
+                "lat": 42,
+                "lon": -72
+              },
+              "bottom_right": {
+                "lat": 40,
+                "lon": -74
+              }
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+    - geo_shape
+
+      - `distance_error_pct`
+      - `points_only`
+      - `precision`
+      - `strategy`
+      - `tree_levels`
+      - `tree`
+
+      
+
+    - point
+
+      ```
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "location": {
+              "type": "point"
+            }
+          }
+        }
+      }
+      
+      PUT my-index-000001/_doc/1
+      {
+        "text": "Point as an object",
+        "location": { 
+          "x": 41.12,
+          "y": -71.34
+        }
+      }
+      
+      PUT my-index-000001/_doc/2
+      {
+        "text": "Point as a string",
+        "location": "41.12,-71.34" 
+      }
+      
+      
+      PUT my-index-000001/_doc/4
+      {
+        "text": "Point as an array",
+        "location": [41.12, -71.34] 
+      }
+      
+      PUT my-index-000001/_doc/5
+      {
+        "text": "Point as a WKT POINT primitive",
+        "location" : "POINT (41.12 -71.34)" 
+      }
+      ```
+
+      
+
+    - shape
+
+      ```
+      PUT /example
+      {
+        "mappings": {
+          "properties": {
+            "geometry": {
+              "type": "shape"
+            }
+          }
+        }
+      }
+      ```
+
+      
+
+  - Other type
+    - percolator
+
+      由官方的Query DSL介紹
+
 [metadata fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html),
 
 - _index
@@ -480,6 +1222,8 @@ POST /customer/doc/1/_update?pretty
 
   - filter context
 
+    在查詢條件裡，指定某幾個欄位做篩選條件
+
     ```json
     GET /_search
     {
@@ -498,7 +1242,22 @@ POST /customer/doc/1/_update?pretty
     }
     ```
 
-    
+    查詢條件：
+
+    1. title欄位有包含Search文字
+    2. content欄位有包含Elasticsearch文字
+    3. status資料為published
+    4. 查publish_date資料2015-01-01以後的資料
+
+- Compound queries(複合查詢)
+
+  使用多種條件，去搜尋欄位中的資料
+
+  - bool
+  - boosting
+  - constant_score
+  - dis_max
+  - function_score
 
 - 
 
