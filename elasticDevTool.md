@@ -152,7 +152,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
       "aggs": {
         "types": {
           "terms": {
-            "field": "_type", 
+            "field": "_type", //取得type10筆資料
             "size": 10
           }
         }
@@ -160,7 +160,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
       "sort": [
         {
           "_type": { 
-            "order": "desc"
+            "order": "desc" //用type當排序，由小至大
           }
         }
       ],
@@ -168,30 +168,30 @@ elasticsearch 的Mapping，是以metadata fields組成的
         "type": {
           "script": {
             "lang": "painless",
-            "source": "doc['_type']" 
+            "source": "doc['_type']"//擷取索引值的type中doc，這個文字資料
           }
         }
       }
-    }
-    ```
-
     
+    ```
 
 - _id
 
   - 唯一值
 
     ```json
+    // 更新my-index-000001的doc，id為1的資料
     PUT my-index-000001/_doc/1
     {
       "text": "Document with ID 1"
     }
     
+    // 更新my-index-000001的doc，id為2的資料，做完後重新整理
     PUT my-index-000001/_doc/2?refresh=true
     {
       "text": "Document with ID 2"
     }
-    
+    // 查詢my-index-000001的資料，id為1和2篩選條件
     GET my-index-000001/_search
     {
       "query": {
@@ -209,6 +209,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
   - 存在放資料
 
     ```json
+    // 更新my-index-000001的禁止資料存取
     PUT my-index-000001
     {
       "mappings": {
@@ -259,7 +260,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
     }
     ```
-
+    
     
 
 - _size
@@ -471,7 +472,35 @@ POST /customer/doc/1/_update?pretty
 
 ### Query DSL
 
+- Query and filter context
 
+  - Query context(查詢文字)
+
+    用search API在query參數，來查詢mapping裡有符合_score欄位的資料
+
+  - filter context
+
+    ```json
+    GET /_search
+    {
+      "query": { 
+        "bool": { 
+          "must": [
+            { "match": { "title":   "Search"        }},
+            { "match": { "content": "Elasticsearch" }}
+          ],
+          "filter": [ 
+            { "term":  { "status": "published" }},
+            { "range": { "publish_date": { "gte": "2015-01-01" }}}
+          ]
+        }
+      }
+    }
+    ```
+
+    
+
+- 
 
 
 
