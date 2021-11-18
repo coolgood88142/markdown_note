@@ -95,6 +95,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
       
 
       ```json
+      //更新my-index-00000的doc，id為1的資料，設定is_published為true
       POST my-index-000001/_doc/1?refresh
       {
         "is_published": "true" 
@@ -109,9 +110,9 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
     - keywords
-
+  
       ```
       PUT my-index-000001
       {
@@ -124,11 +125,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - numbers
-
+  
       ```
       PUT my-index-000001
       {
@@ -148,15 +149,15 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - dates
-
-      
-
+  
+      設定日期要直接
+  
     - alias
-
+  
       ```
       PUT trips
       {
@@ -176,13 +177,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
   - Obeject  and relational types
-
+  
     - Object
-
+  
       ```
       PUT my-index-000001/_doc/1
       { 
@@ -196,11 +197,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - flattened
-
+  
       ```
       PUT bug_reports
       {
@@ -229,11 +230,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - nested
-
+  
       ```
       PUT my-index-000001/_doc/1
       {
@@ -250,11 +251,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         ]
       }
       ```
-
+  
       
-
+  
     - join
-
+  
       ```
       PUT my-index-000001
       {
@@ -273,13 +274,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
   - Structured data types
-
+  
     - range
-
+  
       ```
       PUT range_index
       {
@@ -311,11 +312,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - ip
-
+  
       ```
       PUT my-index-000001
       {
@@ -343,11 +344,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
       
       ```
-
+  
       
-
+  
     - version
-
+  
       ```
       PUT my-index-000001
       {
@@ -360,21 +361,21 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - murmur3
-
+  
       ```
       sudo bin/elasticsearch-plugin install mapper-murmur3
       ```
-
+  
       
-
+  
   - Aggregate data types
-
+  
     - aggregate_metric_double
-
+  
       ```
       PUT my-index
       {
@@ -389,11 +390,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - historgram
-
+  
       - [min](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-min-aggregation.html#search-aggregations-metrics-min-aggregation-histogram-fields) aggregation
       - [max](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-max-aggregation.html#search-aggregations-metrics-max-aggregation-histogram-fields) aggregation
       - [sum](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-sum-aggregation.html#search-aggregations-metrics-sum-aggregation-histogram-fields) aggregation
@@ -405,7 +406,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
       - [histogram](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html#search-aggregations-bucket-histogram-aggregation-histogram-fields) aggregation
       - [range](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-range-aggregation.html#search-aggregations-bucket-range-aggregation-histogram-fields) aggregation
       - [exists](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html) query
-
+  
       ```
       PUT my-index-000001/_doc/1
       {
@@ -425,11 +426,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
          }
       }
       ```
-
+  
       
-
+  
     - Text search types
-
+  
       ```
       PUT my-index-000001
       {
@@ -442,19 +443,19 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - annotated-text
-
+  
       ```
       sudo bin/elasticsearch-plugin install mapper-annotated-text
       ```
-
+  
       
-
+  
     - completion
-
+  
       ```
       UT place
       {
@@ -504,11 +505,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - search_as_you_type
-
+  
       ```
       PUT my-index-000001
       {
@@ -521,11 +522,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - token_count
-
+  
       ```
       UT my-index-000001
       {
@@ -560,13 +561,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
       
       ```
-
+  
       
-
+  
   - Document ranking types
-
+  
     - dense_vector
-
+  
       ```
       PUT my-index-000001
       {
@@ -595,11 +596,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         "my_vector" : [-0.5, 10, 10]
       }
       ```
-
+  
       
-
+  
     - sparse_vector
-
+  
       ```
       PUT my-index-000001
       {
@@ -628,11 +629,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
       
       ```
-
+  
       
-
+  
     - rank_features
-
+  
       ```
       PUT my-index-000001
       {
@@ -664,13 +665,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
   - Spatial data types
-
+  
     - geo_point
-
+  
       ```
       PUT my-index-000001
       {
@@ -734,22 +735,22 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - geo_shape
-
+  
       - `distance_error_pct`
       - `points_only`
       - `precision`
       - `strategy`
       - `tree_levels`
       - `tree`
-
+  
       
-
+  
     - point
-
+  
       ```
       PUT my-index-000001
       {
@@ -790,11 +791,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         "location" : "POINT (41.12 -71.34)" 
       }
       ```
-
+  
       
-
+  
     - shape
-
+  
       ```
       PUT /example
       {
@@ -807,12 +808,12 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
   - Other type
     - percolator
-
+  
       由官方的Query DSL介紹
 
 [metadata fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html),
@@ -1253,15 +1254,209 @@ POST /customer/doc/1/_update?pretty
 
   使用多種條件，去搜尋欄位中的資料
 
-  - bool
-  - boosting
-  - constant_score
+  - bool(布林值)
+
+    - must：有符合的字段
+    - filter：過濾欄位查詢
+    - should：有包含的字段
+    - must_not：不包含的字段
+
+    ```
+    POST _search
+    {
+      "query": {
+        "bool" : {
+          "must" : {
+            "term" : { "user.id" : "kimchy" }
+          },
+          "filter": {
+            "term" : { "tags" : "production" }
+          },
+          "must_not" : {
+            "range" : {
+              "age" : { "gte" : 10, "lte" : 20 }
+            }
+          },
+          "should" : [
+            { "term" : { "tags" : "env1" } },
+            { "term" : { "tags" : "deployed" } }
+          ],
+          "minimum_should_match" : 1,
+          "boost" : 1.0
+        }
+      }
+    }
+    ```
+
+  - boosting(提升方法)
+
+    - positive：查詢所有的類別資料
+    - negative：排除指定類別資料
+    - negative_boost：使用negative方法，指定分數0到，用浮點數表示
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "boosting": {
+          "positive": {
+            "term": {
+              "text": "apple"
+            }
+          },
+          "negative": {
+            "term": {
+              "text": "pie tart fruit crumble tree"
+            }
+          },
+          "negative_boost": 0.5
+        }
+      }
+    }
+    ```
+
+  - constant_score(過濾子查詢)
+
+    - filter：過濾欄位查詢
+    - boost：查詢的分數
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "constant_score": {
+          "filter": {
+            "term": { "user.id": "kimchy" }
+          },
+          "boost": 1.2
+        }
+      }
+    }
+    ```
+
   - dis_max
-  - function_score
+
+    - queries：包含一個或多個查詢條件
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "dis_max": {
+          "queries": [
+            { "term": { "title": "Quick pets" } },
+            { "term": { "body": "Quick pets" } }
+          ],
+          "tie_breaker": 0.7
+        }
+      }
+    }
+    ```
+
+  - function_score(功能查詢)
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "function_score": {
+          "query": { "match_all": {} },
+          "boost": "5", 
+          "functions": [
+            {
+              "filter": { "match": { "test": "bar" } },
+              "random_score": {}, 
+              "weight": 23
+            },
+            {
+              "filter": { "match": { "test": "cat" } },
+              "weight": 42
+            }
+          ],
+          "max_boost": 42,
+          "score_mode": "max",
+          "boost_mode": "multiply",
+          "min_score": 42
+        }
+      }
+    }
+    ```
+
+- Full text queries(全文查詢)
+
+  - Intervals
+  - Match
+  - Match boolean prefix
+  - Match phrase
+  - Match phrase prefix
+  - Combined fields
+  - Multi-match
+  - Common Terms Query
+  - Query string
+  - Simple query string
+
+- Geo queries
+
+  - Geo-bounding box
+  - Geo-distance
+  - Geo-polygon
+  - Geoshape
+
+- Shape queries
+
+- Joining queries
+
+  - Nested
+  - Has child
+  - Has parent
+  - Parent ID
+
+- Match all
+
+- Span queries
+
+  - Span containing
+  - Span field masking
+  - Span first
+  - Span multi-term
+  - Span near
+  - Span not
+  - Span or
+  - Span term
+  - Span within
+
+- Specialized queries
+
+  - Distance feature
+  - More like this
+  - Percolate
+  - Rank feature
+  - Script
+  - Script score
+  - Wrapper
+  - Pinned Query
+
+- Term-level queries
+
+  - Exists
+  - Fuzzy
+    IDs
+  - Prefix
+  - Range
+  - Regexp
+  - Term
+  - Terms
+  - Terms set
+  - Type Query
+  - Wildcard
+
+- minimum_should_match parameter
+
+- rewrite parameter
+
+- Regular expression syntax
 
 - 
-
-
 
 ### Dev Tools
 
