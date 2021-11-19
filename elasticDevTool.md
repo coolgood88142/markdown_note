@@ -1072,75 +1072,6 @@ elasticsearch 的Mapping，是以metadata fields組成的
 
   
 
-#### **document metadata** 
-
-描述 document 本身屬性用的資料，通常會包含以下內容：
-
-- `_index`：document 所屬的 index 名稱
-- `_type`：document 類型 (例如：**_doc**)
-- `_id`：document ID
-- `_source`：document 的原始 JSON 資料樣貌
-- `_version`：版本訊息 (有這欄位就表示 ES 具有版本控管的能力)
-- `_score`：查詢時的算分結果 (每次的搜尋都會根據 document 對於搜尋內容的相關度進行算分)
-
-#### Index
-
-- `index` 在 ES 中是個邏輯空間的概念，用來儲存 document 的容器，而這些 document 內容都是相似的 (跟其他領域的 index 用法不太一樣)
-- `shard` 在 ES 中則是個物理空間的的概念，**index 中的資料會分散放在不同的 shard 中**
-- index 由以下幾個部份組成：
-  - `data`：由 document + metadata 所組成
-  - `mapping`：用來定義每個欄位名稱 & 類型
-  - `setting`：定義資料是如何存放(例如：replication 數量, 使用的 shard 數量)
-
-範例
-
-```
-"properties" => [
-    "title" => [
-        "type" => "string",
-        "boost" => 1.5,
-        "analyzer" => "standard",
-        "fields" => [
-            "english" => [
-                "type" => "string",
-                "analyzer" => "standard",
-                "search_analyzer" => "english",
-                "boost" => 1.0
-            ],
-            "synonym" => [
-                "type" => "string",
-                "analyzer" => "standard",
-                "search_analyzer" => "synonym",
-                "boost" => 0.5
-            ]
-        ]
-    ]
-]
-
-"settings"=> [
-    "analysis" => [
-        "analyzer" => [
-            "synonym" => [
-                "type" => "custom",
-                "tokenizer" => "standard",
-                "filter" => ["lowercase", "trim", "synonym"],
-                "char_filter" => ["html_strip"]
-            ]
-        ],
-        "filter" => [
-            "synonym" => [
-                "type" => "synonym",
-                "synonyms_path" => "analysis/synonyms.txt"
-            ]
-        ]
-    ]
-]
-```
-
-
-
-
-
 ### CURD
 
 Elastic 也可以用url+get參數來查看資料，對應SQL的CURD，改用寫法
@@ -1382,17 +1313,67 @@ POST /customer/doc/1/_update?pretty
     }
     ```
 
-- Full text queries(全文查詢)
+- Full text queries
 
-  - Intervals
+  - Intervals(間隔查詢)
+
+    - match
+    - prefix
+    - wildcard
+    - fuzzy
+    - all_of
+    - any_of
+
+    ```
+    POST _search
+    {
+      "query": {
+        "intervals" : {
+          "my_text" : {
+            "all_of" : {
+              "ordered" : true,
+              "intervals" : [
+                {
+                  "match" : {
+                    "query" : "my favorite food",
+                    "max_gaps" : 0,
+                    "ordered" : true
+                  }
+                },
+                {
+                  "any_of" : {
+                    "intervals" : [
+                      { "match" : { "query" : "hot water" } },
+                      { "match" : { "query" : "cold porridge" } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
   - Match
+
   - Match boolean prefix
+
   - Match phrase
+
   - Match phrase prefix
+
   - Combined fields
+
   - Multi-match
+
   - Common Terms Query
+
   - Query string
+
   - Simple query string
 
 - Geo queries
