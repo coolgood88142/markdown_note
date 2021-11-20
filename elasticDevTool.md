@@ -1360,30 +1360,347 @@ POST /customer/doc/1/_update?pretty
 
   - Match
 
+    ```
+    GET /_search
+    {
+      "query": {
+        "match": {
+          "message": {
+            "query": "this is a test"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
   - Match boolean prefix
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "match_bool_prefix": {
+          "message": {
+            "query": "quick brown f",
+            "analyzer": "keyword"
+          }
+        }
+      }
+    }
+    ```
+
+    
 
   - Match phrase
 
+    ```
+    GET /_search
+    {
+      "query": {
+        "match_phrase": {
+          "message": {
+            "query": "this is a test",
+            "analyzer": "my_analyzer"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
   - Match phrase prefix
+
+    ```console
+    GET /_search
+    {
+      "query": {
+        "match_phrase_prefix": {
+          "message": {
+            "query": "quick brown f"
+          }
+        }
+      }
+    }
+    ```
 
   - Combined fields
 
+    ```
+    GET /_search
+    {
+      "query": {
+        "combined_fields" : {
+          "query":      "database systems",
+          "fields":     [ "title", "abstract"],
+          "operator":   "and"
+        }
+      }
+    }
+    ```
+
   - Multi-match
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "multi_match" : {
+          "query":    "this is a test", 
+          "fields": [ "subject", "message" ] 
+        }
+      }
+    }
+    ```
+
+    
 
   - Common Terms Query
 
+    ```
+    GET /_search
+    {
+      "query": {
+        "common": {
+          "body": {
+            "query": "this is bonsai cool",
+            "cutoff_frequency": 0.001
+          }
+        }
+      }
+    }
+    ```
+
+    
+
   - Query string
 
+    ```
+    GET /_search
+    {
+      "query": {
+        "query_string": {
+          "query": "(new york city) OR (big apple)",
+          "default_field": "content"
+        }
+      }
+    }
+    ```
+
+    
+
   - Simple query string
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "simple_query_string" : {
+            "query": "\"fried eggs\" +(eggplant | potato) -frittata",
+            "fields": ["title^5", "body"],
+            "default_operator": "and"
+        }
+      }
+    }
+    ```
+
+    
 
 - Geo queries
 
   - Geo-bounding box
+
+    ```
+    PUT /my_locations
+    {
+      "mappings": {
+        "properties": {
+          "pin": {
+            "properties": {
+              "location": {
+                "type": "geo_point"
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    PUT /my_locations/_doc/1
+    {
+      "pin": {
+        "location": {
+          "lat": 40.12,
+          "lon": -71.34
+        }
+      }
+    }
+    
+    PUT /my_geoshapes
+    {
+      "mappings": {
+        "properties": {
+          "pin": {
+            "properties": {
+              "location": {
+                "type": "geo_shape"
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    PUT /my_geoshapes/_doc/1
+    {
+      "pin": {
+        "location": {
+          "type" : "polygon",
+          "coordinates" : [[[13.0 ,51.5], [15.0, 51.5], [15.0, 54.0], [13.0, 54.0], [13.0 ,51.5]]]
+        }
+      }
+    }
+    ```
+
+    
+
   - Geo-distance
+
+    ```
+    PUT /my_locations
+    {
+      "mappings": {
+        "properties": {
+          "pin": {
+            "properties": {
+              "location": {
+                "type": "geo_point"
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    PUT /my_locations/_doc/1
+    {
+      "pin": {
+        "location": {
+          "lat": 40.12,
+          "lon": -71.34
+        }
+      }
+    }
+    
+    PUT /my_geoshapes
+    {
+      "mappings": {
+        "properties": {
+          "pin": {
+            "properties": {
+              "location": {
+                "type": "geo_shape"
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    PUT /my_geoshapes/_doc/1
+    {
+      "pin": {
+        "location": {
+          "type" : "polygon",
+          "coordinates" : [[[13.0 ,51.5], [15.0, 51.5], [15.0, 54.0], [13.0, 54.0], [13.0 ,51.5]]]
+        }
+      }
+    }
+    ```
+
+    
+
   - Geo-polygon
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "bool": {
+          "must": {
+            "match_all": {}
+          },
+          "filter": {
+            "geo_polygon": {
+              "person.location": {
+                "points": [
+                  { "lat": 40, "lon": -70 },
+                  { "lat": 30, "lon": -80 },
+                  { "lat": 20, "lon": -90 }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
   - Geoshape
 
+    ```
+    PUT /example
+    {
+      "mappings": {
+        "properties": {
+          "location": {
+            "type": "geo_shape"
+          }
+        }
+      }
+    }
+    
+    POST /example/_doc?refresh
+    {
+      "name": "Wind & Wetter, Berlin, Germany",
+      "location": {
+        "type": "point",
+        "coordinates": [ 13.400544, 52.530286 ]
+      }
+    }
+    ```
+
+    
+
 - Shape queries
+
+  ```
+  PUT /example
+  {
+    "mappings": {
+      "properties": {
+        "geometry": {
+          "type": "shape"
+        }
+      }
+    }
+  }
+  
+  PUT /example/_doc/1?refresh=wait_for
+  {
+    "name": "Lucky Landing",
+    "geometry": {
+      "type": "point",
+      "coordinates": [ 1355.400544, 5255.530286 ]
+    }
+  }
+  ```
+
+  
 
 - Joining queries
 
