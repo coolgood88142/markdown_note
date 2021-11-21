@@ -113,7 +113,8 @@ elasticsearch 的Mapping，是以metadata fields組成的
   
     - keywords
   
-      ```
+      ```json
+      //更新my-index-000001做關鍵字搜尋
       PUT my-index-000001
       {
         "mappings": {
@@ -126,11 +127,20 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
       ```
   
-      
-  
     - numbers
   
-      ```
+      - long
+      - integer
+      - short
+      - byte
+      - double
+      - float
+      - half_float
+      - scaled_float
+      - unsigned_long
+  
+      ```json
+      //更新my-index-000001的number_of_bytes欄位為nteger、time_in_seconds欄位為float、price欄位為long，但是用double資料型態表示
       PUT my-index-000001
       {
         "mappings": {
@@ -150,11 +160,9 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
       ```
   
-      
-  
     - dates
   
-      設定日期要直接
+      設定日期資料型態
   
     - alias
   
@@ -1068,9 +1076,1212 @@ elasticsearch 的Mapping，是以metadata fields組成的
 
   
 
+
+### Query DSL
+
+- Query and filter context
+
+  - Query context(查詢文字)
+
+    用search API在query參數，來查詢mapping裡有符合_score欄位的資料
+
+  - filter context
+
+    在查詢條件裡，指定某幾個欄位做篩選條件
+
+    ```json
+    GET /_search
+    {
+      "query": { 
+        "bool": { 
+          "must": [
+            { "match": { "title":   "Search"        }},
+            { "match": { "content": "Elasticsearch" }}
+          ],
+          "filter": [ 
+            { "term":  { "status": "published" }},
+            { "range": { "publish_date": { "gte": "2015-01-01" }}}
+          ]
+        }
+      }
+    }
+    ```
+
+    查詢條件：
+
+    1. title欄位有包含Search文字
+    2. content欄位有包含Elasticsearch文字
+    3. status資料為published
+    4. 查publish_date資料2015-01-01以後的資料
+
+- Compound queries(複合查詢)
+
+  使用多種條件，去搜尋欄位中的資料
+
+  - bool(布林值)
+
+    - must：有符合的字段
+    - filter：過濾欄位查詢
+    - should：有包含的字段
+    - must_not：不包含的字段
+
+    ```json
+    POST _search
+    {
+      "query": {
+        "bool" : {
+          "must" : {
+            "term" : { "user.id" : "kimchy" }
+          },
+          "filter": {
+            "term" : { "tags" : "production" }
+          },
+          "must_not" : {
+            "range" : {
+              "age" : { "gte" : 10, "lte" : 20 }
+            }
+          },
+          "should" : [
+            { "term" : { "tags" : "env1" } },
+            { "term" : { "tags" : "deployed" } }
+          ],
+          "minimum_should_match" : 1,
+          "boost" : 1.0
+        }
+      }
+    }
+    ```
+
+  - boosting(提升方法)
+
+    - positive：查詢所有的類別資料
+    - negative：排除指定類別資料
+    - negative_boost：使用negative方法，指定分數0到，用浮點數表示
+
+    ```json
+    GET /_search
+    {
+      "query": {
+        "boosting": {
+          "positive": {
+            "term": {
+              "text": "apple"
+            }
+          },
+          "negative": {
+            "term": {
+              "text": "pie tart fruit crumble tree"
+            }
+          },
+          "negative_boost": 0.5
+        }
+      }
+    }
+    ```
+
+  - constant_score(過濾子查詢)
+
+    - filter：過濾欄位查詢
+    - boost：查詢的分數
+
+    ```json
+    GET /_search
+    {
+      "query": {
+        "constant_score": {
+          "filter": {
+            "term": { "user.id": "kimchy" }
+          },
+          "boost": 1.2
+        }
+      }
+    }
+    ```
+
+  - dis_max
+
+    - queries：包含一個或多個查詢條件
+
+    ```json
+    GET /_search
+    {
+      "query": {
+        "dis_max": {
+          "queries": [
+            { "term": { "title": "Quick pets" } },
+            { "term": { "body": "Quick pets" } }
+          ],
+          "tie_breaker": 0.7
+        }
+      }
+    }
+    ```
+
+  - function_score(功能查詢)
+
+    ```json
+    GET /_search
+    {
+      "query": {
+        "function_score": {
+          "query": { "match_all": {} },
+          "boost": "5", 
+          "functions": [
+            {
+              "filter": { "match": { "test": "bar" } },
+              "random_score": {}, 
+              "weight": 23
+            },
+            {
+              "filter": { "match": { "test": "cat" } },
+              "weight": 42
+            }
+          ],
+          "max_boost": 42,
+          "score_mode": "max",
+          "boost_mode": "multiply",
+          "min_score": 42
+        }
+      }
+    }
+    ```
+
+- Full text queries
+
+  - Intervals(間隔查詢)
+
+    - match(取得相同的文字)
+
+      - query：必填，查詢文字
+      - max_gaps：設定文字的長度，預設值為0
+      - ordered：設定找到的結果是否排序，預設值為false
+      - analyzer：設定分詞，使用時把query更換成analyzer
+      - filter：設定篩選的欄位
+      - use_field：自行設定欄位做搜尋
+
+    - prefix(正規化查詢)
+
+      - prefix
+      - anlyzer：設定分詞
+      - use_field：自行設定欄位做搜尋
+
+    - wildcard(萬用字元查詢)
+
+      有包含* ? 等等符號做模糊查詢
+
+      - pattern：
+      - anlyzer：設定分詞
+      - use_field：自行設定欄位做搜尋
+
+    - fuzzy(模糊查詢)
+
+      - term：搜尋文字的相關資料
+      - prefix_length：
+      - transpositions：搜尋文字是否要更換位置的資料，例如：cat->act
+      - fuzziness：搜尋文字的長度
+      - analyzer：設定分詞
+      - use_field：自行設定欄位做搜尋
+
+    - all_of
+
+      - intervals：符合規則的文字資料
+      - max_gaps：設定文字的長度，預設值為0
+      - ordered：設定排序
+      - filter：設定篩選的欄位
+
+    - any_of
+
+      - intervals：符合規則的文字資料
+      - filter：設定篩選的欄位
+
+    - filter
+
+      - after：設定篩選欄位的
+      - before
+      - contained_by
+      - containing
+      - not_contained_by：設定不包含篩選欄位的間隔資料
+      - not_containing：設定不包含篩選的欄位資料
+      - not_overlapping
+      - overlapping：設定間隔
+      - script：設定腳本
+
+    ```json
+    POST _search
+    {
+      "query": {
+        "intervals" : {
+          "my_text" : {
+            "all_of" : {
+              "ordered" : true,
+              "intervals" : [
+                {
+                  "match" : {
+                    "query" : "my favorite food",
+                    "max_gaps" : 0,
+                    "ordered" : true
+                  }
+                },
+                {
+                  "any_of" : {
+                    "intervals" : [
+                      { "match" : { "query" : "hot water" } },
+                      { "match" : { "query" : "cold porridge" } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Match
+
+    - query：必填，查詢文字
+    - analyzer：設定分詞，使用時把query更換成analyzer
+    - auto_generate_synonyms_phrase_query：設定是否要用同義詞查詢
+    - fuzziness：搜尋文字的長度
+    - max_expansions：設定查詢件數，預設值為50
+    - prefix_length：設定模糊查詢的從第幾個開始找
+    - fuzzy_transpositions：設定模糊查詢找到的資料，可以做更換位置
+    - fuzzy_rewrite：設定重複模糊查詢
+    - lenient：設定是否要忽略格式錯誤
+    - operator：設定query的值，修改查詢條件
+      - or：query的值是capital of Hungary，查詢條件變成capital或of或Hungary，查詢文字有符合3個條件任1個的資料
+      - and：query的值是capital of Hungary，查詢條件變成capital和of和Hungary，查詢文字有符合3個條件的資料
+    - minimum_should_match
+    - zero_terms_query：
+      - none：刪除analyzer所有的標記資料
+      - all：回傳analyzer所有的標記資料
+
+    ```json
+    GET /_search
+    {
+      "query": {
+        "match": {
+          "message": {
+            "query": "this is a test"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Match boolean prefix
+
+    
+
+    ```json
+    GET /_search
+    {
+      "query": {
+        "match_bool_prefix": {
+          "message": {
+            "query": "quick brown f"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Match phrase
+
+    搜尋資料中有符合文字的全部資料
+
+    ```json
+    GET /_search
+    {
+      "query": {
+        "match_phrase": {
+          "message": {
+            "query": "this is a test",
+            "analyzer": "my_analyzer"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Match phrase prefix
+
+    - query
+    - analyzer
+    - max_expansions
+    - slop
+    - zero_terms_query
+
+    ```json
+    GET /_search
+    {
+      "query": {
+        "match_phrase_prefix": {
+          "message": {
+            "query": "quick brown f"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Combined fields
+
+    - fields：設定查詢的欄位名稱
+    - query：設定查詢文字的內容
+    - auto_generate_synonyms_phrase_query：設定是否要用同義詞查詢
+    - operator：設定query的值，修改查詢條件
+      - or：query的值是capital of Hungary，查詢條件變成capital或of或Hungary，查詢文字有符合3個條件任1個的資料
+      - and：query的值是capital of Hungary，查詢條件變成capital和of和Hungary，查詢文字有符合3個條件的資料
+    - minimum_should_match
+    - zero_terms_query
+      - none：刪除analyzer所有的標記資料
+      - all：回傳analyzer所有的標記資料
+
+    ```json
+    GET /_search
+    {
+      "query": {
+        "combined_fields" : {
+          "query":      "database systems",
+          "fields":     [ "title", "abstract"],
+          "operator":   "and"
+        }
+      }
+    }
+    ```
+
+  - Multi-match
+
+    type：
+
+    - best_fields
+    - most_fields
+    - cross_fields
+    - phrase
+    - phrase_prefix
+    - bool_prefix
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "multi_match" : {
+          "query":    "this is a test", 
+          "fields": [ "subject", "message" ] 
+        }
+      }
+    }
+    ```
+
+    
+
+  - Common Terms Query
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "common": {
+          "body": {
+            "query": "this is bonsai cool",
+            "cutoff_frequency": 0.001
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Query string
+
+    - query
+    - default_field
+    - allow_leading_wildcard
+    - analyze_wildcard
+    - analyzer
+    - auto_generate_synonyms_phrase_query
+    - boost
+    - default_operator
+      - or
+      - and
+    - enable_position_increments
+    - fields
+    - fuzziness
+    - fuzzy_max_expansions
+    - fuzzy_prefix_length
+    - fuzzy_transpositions
+    - lenient
+    - max_determinized_states
+    - minimum_should_match
+    - quote_analyzer
+    - phrase_slop
+    - quote_field_suffix
+    - rewrite
+    - time_zone
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "query_string": {
+          "query": "(new york city) OR (big apple)",
+          "default_field": "content"
+        }
+      }
+    }
+    ```
+
+    
+
+  - Simple query string
+
+    - query
+    - fields
+    - default_operator
+      - or
+      - and
+    - all_fields
+    - analyze_wildcard
+    - analyzer
+    - auto_generate_synonyms_phrase_query
+    - flags
+    - fuzzy_max_expansions
+    - fuzzy_prefix_length
+    - fuzzy_transpositions
+    - lenient
+    - minimum_should_match
+    - quote_field_suffix
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "simple_query_string" : {
+            "query": "\"fried eggs\" +(eggplant | potato) -frittata",
+            "fields": ["title^5", "body"],
+            "default_operator": "and"
+        }
+      }
+    }
+    ```
+
+    
+
+- Geo queries(地理查詢)
+
+  ```json
+  //更新my_locations有地理座標資料
+  PUT /my_locations
+  {
+    "mappings": {
+      "properties": {
+        "pin": {
+          "properties": {
+            "location": {
+              "type": "geo_point"
+            }
+          }
+        }
+      }
+    }
+  }
   
+  //更新my_locations的doc，id為1的地理資料，緯度40.12，經度-71.34
+  PUT /my_locations/_doc/1
+  {
+    "pin": {
+      "location": {
+        "lat": 40.12,
+        "lon": -71.34
+      }
+    }
+  }
+  
+  //更新my_geoshapes有地理範圍資料
+  PUT /my_geoshapes
+  {
+    "mappings": {
+      "properties": {
+        "pin": {
+          "properties": {
+            "location": {
+              "type": "geo_shape"
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  //更新my_geoshapes的doc，id為1的地理資料，設定某個地理範圍資料
+  PUT /my_geoshapes/_doc/1
+  {
+    "pin": {
+      "location": {
+        "type" : "polygon",
+        "coordinates" : [[[13.0 ,51.5], [15.0, 51.5], [15.0, 54.0], [13.0, 54.0], [13.0 ,51.5]]]
+      }
+    }
+  }
+  ```
+
+  - Geo-bounding box(地理邊界查詢)
+
+    ```json
+    //查詢my_locations或my_geoshapes的pin location的資料，是否在緯度40.73 經度-74.1與緯度40.01 經度-71.12的之間
+    GET my_locations,my_geoshapes/_search
+    {
+      "query": {
+        "bool": {
+          "must": {
+            "match_all": {}
+          },
+          "filter": {
+            "geo_bounding_box": {
+              "pin.location": {
+                "top_left": {
+                  "lat": 40.73,
+                  "lon": -74.1
+                },
+                "bottom_right": {
+                  "lat": 40.01,
+                  "lon": -71.12
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+  - Geo-distance(地理距離查詢)
+
+    ```json
+    //查詢my_locations或my_geoshapes的pin location的資料，是否緯度40 經度-70座標方圓200公里範圍內
+    GET my_locations,my_geoshapes/_search
+    {
+      "query": {
+        "bool": {
+          "must": {
+            "match_all": {}
+          },
+          "filter": {
+            "geo_distance": {
+              "distance": "200km",
+              "pin.location": {
+                "lat": 40,
+                "lon": -70
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Geo-polygon
+
+    7.12板後棄用
+
+    ```json
+    GET my_locations,my_geoshapes/_search
+    {
+      "query": {
+        "bool": {
+          "must": {
+            "match_all": {}
+          },
+          "filter": {
+            "geo_polygon": {
+              "person.location": {
+                "points": [
+                  { "lat": 40, "lon": -70 },
+                  { "lat": 30, "lon": -80 },
+                  { "lat": 20, "lon": -90 }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Geoshape(地理形狀查詢)
+
+    ```json
+    //查詢example的geo_shape欄位
+    GET /example/_search
+    {
+      "query": {
+        "bool": {
+          "must": {
+            "match_all": {}
+          },
+          "filter": {
+            "geo_shape": {
+              "location": {
+                "shape": {
+                  "type": "envelope",
+                  "coordinates": [ [ 13.0, 53.0 ], [ 14.0, 52.0 ] ]
+                },
+                "relation": "within"
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+- Shape queries(形狀查詢)
+
+  Geoshape與Shape差別?
+
+  ```json
+  
+  GET /example_points/_search
+  {
+    "query": {
+      "bool": {
+        "must": {
+          "match_all": {}
+        },
+        "filter": {
+          "geo_shape": {
+            "location": {
+              "shape": {
+                "type": "envelope",
+                "coordinates": [ [ 13.0, 53.0 ], [ 14.0, 52.0 ] ]
+              },
+              "relation": "intersects"
+            }
+          }
+        }
+      }
+    }
+  }
+  ```
 
   
+
+- Joining queries
+
+  - Nested：巢狀型別查詢
+
+    - path：要查詢對象的路徑
+    - query：查詢對象的名稱
+    - score_mode：查詢時用對象的_score來做查詢
+      - avg：設定查詢的平均分數
+      - max：設定查詢的最高分數
+      - none：設定查詢的最低分數
+      - sum：設定查詢的總和
+    - ignore_unmapped：忽略path的錯誤搜尋
+
+    ```json
+    //更新drivers資料型態，設定driver為巢狀資料型態，有包含last_name、vehicle
+    //last_name設定為text，vehicle設定為巢狀資料型態
+    //vehicle有包含make、model，兩個都是設定為文字
+    PUT /drivers
+    {
+      "mappings": {
+        "properties": {
+          "driver": {
+            "type": "nested",
+            "properties": {
+              "last_name": {
+                "type": "text"
+              },
+              "vehicle": {
+                "type": "nested",
+                "properties": {
+                  "make": {
+                    "type": "text"
+                  },
+                  "model": {
+                    "type": "text"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    //更新drivers的doc，id為1的資料，last_name為McQueen，vehicle設定兩組資料
+    //第一組 make為Powell Motors mode為Canyonero
+    //第二組 make為Miller-Meteor mode為Ecto-1
+    PUT /drivers/_doc/1
+    {
+      "driver" : {
+            "last_name" : "McQueen",
+            "vehicle" : [
+                {
+                    "make" : "Powell Motors",
+                    "model" : "Canyonero"
+                },
+                {
+                    "make" : "Miller-Meteor",
+                    "model" : "Ecto-1"
+                }
+            ]
+        }
+    }
+    ```
+
+    ```json
+    //查詢drivers的巢狀資料型態的driver vehicle的資料，make有符合Powell Motor和model有符合Canyonero的資料
+    GET /drivers/_search
+    {
+      "query": {
+        "nested": {
+          "path": "driver",
+          "query": {
+            "nested": {
+              "path": "driver.vehicle",
+              "query": {
+                "bool": {
+                  "must": [
+                    { "match": { "driver.vehicle.make": "Powell Motors" } },
+                    { "match": { "driver.vehicle.model": "Canyonero" } }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Has child(子類別查詢)
+
+    - type：搜尋子關係的欄位名稱
+    - query：設定子關係的搜尋文字
+    - ignore_unmapped：忽略type的錯誤搜尋
+    - max_children：設定子關係的最大件數
+    - min_children：設定子關係的最小件數
+    - score_mode：查詢時用子關係的_score來做查詢
+      - avg：設定查詢的平均分數
+      - max：設定查詢的最高分數
+      - none：設定查詢的最低分數
+      - sum：設定查詢的總和
+
+    ```json
+    //更新my-index-000001的my-join-field欄位，設定子類別
+    PUT /my-index-000001
+    {
+      "mappings": 
+        "properties": {
+          "my-join-field": {
+            "type": "join",
+            "relations": {
+              "parent": "child"
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    ```json
+    //查詢所有的子關係，設定最多10筆，最少2筆
+    GET /_search
+    {
+      "query": {
+        "has_child": {
+          "type": "child",
+          "query": {
+            "match_all": {}
+          },
+          "max_children": 10,
+          "min_children": 2,
+          "score_mode": "min"
+        }
+      }
+    }
+    ```
+
+    
+
+  - Has parent(父類別查詢)
+
+    - parent_type：查詢父類別欄位名稱
+    - query：搜尋父類別的文字資料，根據parent_type做搜尋
+    - score：是否要查子類別
+    - ignore_unmapped：忽略parent_type的錯誤搜尋
+
+    ```json
+    //更新my-index-000002的my-join-field欄位，設定子類別，以及tag欄位type為keyword
+    PUT /my-index-000002
+    {
+      "mappings": {
+        "properties": {
+          "my-join-field": {
+            "type": "join",
+            "relations": {
+              "parent": "child"
+            }
+          },
+          "tag": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+    ```
+
+    ```json
+    //查詢my-index-000002的父類別，找tag欄位中value欄位有符合Elasticsearch的資料
+    GET /my-index-000002/_search
+    {
+      "query": {
+        "has_parent": {
+          "parent_type": "parent",
+          "query": {
+            "term": {
+              "tag": {
+                "value": "Elasticsearch"
+              }
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Parent ID(父類別ID查詢)
+
+    ```json
+    //更新my-index-000003的my-join-field欄位，建立父子類別，父類別(my-parent)對應子類別(my-child)
+    PUT /my-index-000003
+    {
+      "mappings": {
+        "properties": {
+          "my-join-field": {
+            "type": "join",
+            "relations": {
+              "my-parent": "my-child"
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    ```json
+    //更新my-index-000003的doc，id為1，設定my-join-field欄位為父類別，text為This is a parent document.
+    PUT /my-index-000003/_doc/1?refresh
+    {
+      "text": "This is a parent document.",
+      "my-join-field": "my-parent"
+    }
+    ```
+
+    ```json
+    //更新my-index-000003的doc，id為2，設定my-join-field欄位為子類別，對應父類別id為1的資料，，text為This is a child document.
+    PUT /my-index-000003/_doc/2?routing=1&refresh
+    {
+      "text": "This is a child document.",
+      "my-join-field": {
+        "name": "my-child",
+        "parent": "1"
+      }
+    }
+    ```
+
+  
+
+- Match all
+
+  ```json
+  //查詢所有資料，找出_score欄位為1.2分的資料
+  GET /_search
+  {
+    "query": {
+      "match_all": { "boost" : 1.2 }
+    }
+  }
+  ```
+
+  
+
+- Span queries(跨越查詢)
+
+  - Span containing
+
+    ```json
+    //查詢所有資料中，不限制欄位找出little的foo與big的bar跟baz的相同資料，但是有符合big的資料中，只抓前5筆
+    GET /_search
+    {
+      "query": {
+        "span_containing": {
+          "little": {
+            "span_term": { "field1": "foo" }
+          },
+          "big": {
+            "span_near": {
+              "clauses": [
+                { "span_term": { "field1": "bar" } },
+                { "span_term": { "field1": "baz" } }
+              ],
+              "slop": 5,
+              "in_order": true
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Span field masking
+
+    ```json
+    //查詢所有資料中
+    GET /_search
+    {
+      "query": {
+        "span_near": {
+          "clauses": [
+            {
+              "span_term": {
+                "text": "quick brown"
+              }
+            },
+            {
+              "span_field_masking": {
+                "query": {
+                  "span_term": {
+                    "text.stems": "fox"
+                  }
+                },
+                "field": "text"
+              }
+            }
+          ],
+          "slop": 5,
+          "in_order": false
+        }
+      }
+    }
+    ```
+
+    
+
+  - Span first
+
+    ```json
+    GET /_search
+    {
+      "query": {
+        "span_first": {
+          "match": {
+            "span_term": { "user.id": "kimchy" }
+          },
+          "end": 3
+        }
+      }
+    }
+    ```
+
+    
+
+  - Span multi-term
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "span_multi": {
+          "match": {
+            "prefix": { "user.id": { "value": "ki" } }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Span near
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "span_near": {
+          "clauses": [
+            { "span_term": { "field": "value1" } },
+            { "span_term": { "field": "value2" } },
+            { "span_term": { "field": "value3" } }
+          ],
+          "slop": 12,
+          "in_order": false
+        }
+      }
+    }
+    ```
+
+    
+
+  - Span not
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "span_not": {
+          "include": {
+            "span_term": { "field1": "hoya" }
+          },
+          "exclude": {
+            "span_near": {
+              "clauses": [
+                { "span_term": { "field1": "la" } },
+                { "span_term": { "field1": "hoya" } }
+              ],
+              "slop": 0,
+              "in_order": true
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - Span or
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "span_or" : {
+          "clauses" : [
+            { "span_term" : { "field" : "value1" } },
+            { "span_term" : { "field" : "value2" } },
+            { "span_term" : { "field" : "value3" } }
+          ]
+        }
+      }
+    }
+    ```
+
+    
+
+  - Span term
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "span_term" : { "user.id" : "kimchy" }
+      }
+    }
+    ```
+
+    
+
+  - Span within
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "span_within": {
+          "little": {
+            "span_term": { "field1": "foo" }
+          },
+          "big": {
+            "span_near": {
+              "clauses": [
+                { "span_term": { "field1": "bar" } },
+                { "span_term": { "field1": "baz" } }
+              ],
+              "slop": 5,
+              "in_order": true
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+- Specialized queries
+
+  - Distance feature
+
+    
+
+    ```
+    
+    ```
+
+    
+
+  - More like this
+
+  - Percolate
+
+  - Rank feature
+
+  - Script
+
+  - Script score
+
+  - Wrapper
+
+  - Pinned Query
+
+- Term-level queries
+
+  - Exists
+  - Fuzzy
+    IDs
+  - Prefix
+  - Range
+  - Regexp
+  - Term
+  - Terms
+  - Terms set
+  - Type Query
+  - Wildcard
+
+- minimum_should_match parameter
+
+- rewrite parameter
+
+- Regular expression syntax
 
 ### CURD
 
@@ -1141,620 +2352,6 @@ POST /customer/doc/1/_update?pretty
 ```
 
 
-
-
-
-### Query DSL
-
-- Query and filter context
-
-  - Query context(查詢文字)
-
-    用search API在query參數，來查詢mapping裡有符合_score欄位的資料
-
-  - filter context
-
-    在查詢條件裡，指定某幾個欄位做篩選條件
-
-    ```json
-    GET /_search
-    {
-      "query": { 
-        "bool": { 
-          "must": [
-            { "match": { "title":   "Search"        }},
-            { "match": { "content": "Elasticsearch" }}
-          ],
-          "filter": [ 
-            { "term":  { "status": "published" }},
-            { "range": { "publish_date": { "gte": "2015-01-01" }}}
-          ]
-        }
-      }
-    }
-    ```
-
-    查詢條件：
-
-    1. title欄位有包含Search文字
-    2. content欄位有包含Elasticsearch文字
-    3. status資料為published
-    4. 查publish_date資料2015-01-01以後的資料
-
-- Compound queries(複合查詢)
-
-  使用多種條件，去搜尋欄位中的資料
-
-  - bool(布林值)
-
-    - must：有符合的字段
-    - filter：過濾欄位查詢
-    - should：有包含的字段
-    - must_not：不包含的字段
-
-    ```
-    POST _search
-    {
-      "query": {
-        "bool" : {
-          "must" : {
-            "term" : { "user.id" : "kimchy" }
-          },
-          "filter": {
-            "term" : { "tags" : "production" }
-          },
-          "must_not" : {
-            "range" : {
-              "age" : { "gte" : 10, "lte" : 20 }
-            }
-          },
-          "should" : [
-            { "term" : { "tags" : "env1" } },
-            { "term" : { "tags" : "deployed" } }
-          ],
-          "minimum_should_match" : 1,
-          "boost" : 1.0
-        }
-      }
-    }
-    ```
-
-  - boosting(提升方法)
-
-    - positive：查詢所有的類別資料
-    - negative：排除指定類別資料
-    - negative_boost：使用negative方法，指定分數0到，用浮點數表示
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "boosting": {
-          "positive": {
-            "term": {
-              "text": "apple"
-            }
-          },
-          "negative": {
-            "term": {
-              "text": "pie tart fruit crumble tree"
-            }
-          },
-          "negative_boost": 0.5
-        }
-      }
-    }
-    ```
-
-  - constant_score(過濾子查詢)
-
-    - filter：過濾欄位查詢
-    - boost：查詢的分數
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "constant_score": {
-          "filter": {
-            "term": { "user.id": "kimchy" }
-          },
-          "boost": 1.2
-        }
-      }
-    }
-    ```
-
-  - dis_max
-
-    - queries：包含一個或多個查詢條件
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "dis_max": {
-          "queries": [
-            { "term": { "title": "Quick pets" } },
-            { "term": { "body": "Quick pets" } }
-          ],
-          "tie_breaker": 0.7
-        }
-      }
-    }
-    ```
-
-  - function_score(功能查詢)
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "function_score": {
-          "query": { "match_all": {} },
-          "boost": "5", 
-          "functions": [
-            {
-              "filter": { "match": { "test": "bar" } },
-              "random_score": {}, 
-              "weight": 23
-            },
-            {
-              "filter": { "match": { "test": "cat" } },
-              "weight": 42
-            }
-          ],
-          "max_boost": 42,
-          "score_mode": "max",
-          "boost_mode": "multiply",
-          "min_score": 42
-        }
-      }
-    }
-    ```
-
-- Full text queries
-
-  - Intervals(間隔查詢)
-
-    - match
-    - prefix
-    - wildcard
-    - fuzzy
-    - all_of
-    - any_of
-
-    ```
-    POST _search
-    {
-      "query": {
-        "intervals" : {
-          "my_text" : {
-            "all_of" : {
-              "ordered" : true,
-              "intervals" : [
-                {
-                  "match" : {
-                    "query" : "my favorite food",
-                    "max_gaps" : 0,
-                    "ordered" : true
-                  }
-                },
-                {
-                  "any_of" : {
-                    "intervals" : [
-                      { "match" : { "query" : "hot water" } },
-                      { "match" : { "query" : "cold porridge" } }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    }
-    ```
-
-    
-
-  - Match
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "match": {
-          "message": {
-            "query": "this is a test"
-          }
-        }
-      }
-    }
-    ```
-
-    
-
-  - Match boolean prefix
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "match_bool_prefix": {
-          "message": {
-            "query": "quick brown f",
-            "analyzer": "keyword"
-          }
-        }
-      }
-    }
-    ```
-
-    
-
-  - Match phrase
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "match_phrase": {
-          "message": {
-            "query": "this is a test",
-            "analyzer": "my_analyzer"
-          }
-        }
-      }
-    }
-    ```
-
-    
-
-  - Match phrase prefix
-
-    ```console
-    GET /_search
-    {
-      "query": {
-        "match_phrase_prefix": {
-          "message": {
-            "query": "quick brown f"
-          }
-        }
-      }
-    }
-    ```
-
-  - Combined fields
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "combined_fields" : {
-          "query":      "database systems",
-          "fields":     [ "title", "abstract"],
-          "operator":   "and"
-        }
-      }
-    }
-    ```
-
-  - Multi-match
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "multi_match" : {
-          "query":    "this is a test", 
-          "fields": [ "subject", "message" ] 
-        }
-      }
-    }
-    ```
-
-    
-
-  - Common Terms Query
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "common": {
-          "body": {
-            "query": "this is bonsai cool",
-            "cutoff_frequency": 0.001
-          }
-        }
-      }
-    }
-    ```
-
-    
-
-  - Query string
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "query_string": {
-          "query": "(new york city) OR (big apple)",
-          "default_field": "content"
-        }
-      }
-    }
-    ```
-
-    
-
-  - Simple query string
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "simple_query_string" : {
-            "query": "\"fried eggs\" +(eggplant | potato) -frittata",
-            "fields": ["title^5", "body"],
-            "default_operator": "and"
-        }
-      }
-    }
-    ```
-
-    
-
-- Geo queries
-
-  - Geo-bounding box
-
-    ```
-    PUT /my_locations
-    {
-      "mappings": {
-        "properties": {
-          "pin": {
-            "properties": {
-              "location": {
-                "type": "geo_point"
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    PUT /my_locations/_doc/1
-    {
-      "pin": {
-        "location": {
-          "lat": 40.12,
-          "lon": -71.34
-        }
-      }
-    }
-    
-    PUT /my_geoshapes
-    {
-      "mappings": {
-        "properties": {
-          "pin": {
-            "properties": {
-              "location": {
-                "type": "geo_shape"
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    PUT /my_geoshapes/_doc/1
-    {
-      "pin": {
-        "location": {
-          "type" : "polygon",
-          "coordinates" : [[[13.0 ,51.5], [15.0, 51.5], [15.0, 54.0], [13.0, 54.0], [13.0 ,51.5]]]
-        }
-      }
-    }
-    ```
-
-    
-
-  - Geo-distance
-
-    ```
-    PUT /my_locations
-    {
-      "mappings": {
-        "properties": {
-          "pin": {
-            "properties": {
-              "location": {
-                "type": "geo_point"
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    PUT /my_locations/_doc/1
-    {
-      "pin": {
-        "location": {
-          "lat": 40.12,
-          "lon": -71.34
-        }
-      }
-    }
-    
-    PUT /my_geoshapes
-    {
-      "mappings": {
-        "properties": {
-          "pin": {
-            "properties": {
-              "location": {
-                "type": "geo_shape"
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    PUT /my_geoshapes/_doc/1
-    {
-      "pin": {
-        "location": {
-          "type" : "polygon",
-          "coordinates" : [[[13.0 ,51.5], [15.0, 51.5], [15.0, 54.0], [13.0, 54.0], [13.0 ,51.5]]]
-        }
-      }
-    }
-    ```
-
-    
-
-  - Geo-polygon
-
-    ```
-    GET /_search
-    {
-      "query": {
-        "bool": {
-          "must": {
-            "match_all": {}
-          },
-          "filter": {
-            "geo_polygon": {
-              "person.location": {
-                "points": [
-                  { "lat": 40, "lon": -70 },
-                  { "lat": 30, "lon": -80 },
-                  { "lat": 20, "lon": -90 }
-                ]
-              }
-            }
-          }
-        }
-      }
-    }
-    ```
-
-    
-
-  - Geoshape
-
-    ```
-    PUT /example
-    {
-      "mappings": {
-        "properties": {
-          "location": {
-            "type": "geo_shape"
-          }
-        }
-      }
-    }
-    
-    POST /example/_doc?refresh
-    {
-      "name": "Wind & Wetter, Berlin, Germany",
-      "location": {
-        "type": "point",
-        "coordinates": [ 13.400544, 52.530286 ]
-      }
-    }
-    ```
-
-    
-
-- Shape queries
-
-  ```
-  PUT /example
-  {
-    "mappings": {
-      "properties": {
-        "geometry": {
-          "type": "shape"
-        }
-      }
-    }
-  }
-  
-  PUT /example/_doc/1?refresh=wait_for
-  {
-    "name": "Lucky Landing",
-    "geometry": {
-      "type": "point",
-      "coordinates": [ 1355.400544, 5255.530286 ]
-    }
-  }
-  ```
-
-  
-
-- Joining queries
-
-  - Nested
-  - Has child
-  - Has parent
-  - Parent ID
-
-- Match all
-
-- Span queries
-
-  - Span containing
-  - Span field masking
-  - Span first
-  - Span multi-term
-  - Span near
-  - Span not
-  - Span or
-  - Span term
-  - Span within
-
-- Specialized queries
-
-  - Distance feature
-  - More like this
-  - Percolate
-  - Rank feature
-  - Script
-  - Script score
-  - Wrapper
-  - Pinned Query
-
-- Term-level queries
-
-  - Exists
-  - Fuzzy
-    IDs
-  - Prefix
-  - Range
-  - Regexp
-  - Term
-  - Terms
-  - Terms set
-  - Type Query
-  - Wildcard
-
-- minimum_should_match parameter
-
-- rewrite parameter
-
-- Regular expression syntax
-
-- 
 
 ### Dev Tools
 
