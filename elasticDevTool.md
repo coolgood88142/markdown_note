@@ -1074,7 +1074,16 @@ elasticsearch 的Mapping，是以metadata fields組成的
 
 - _tier
 
-  
+
+https://ithelp.ithome.com.tw/articles/10241212
+
+https://www.itread01.com/content/1564456805.html
+
+https://www.itread01.com/content/1549391948.html
+
+https://blog.tienyulin.com/elasticsearch-kibana-command-dsl-docker-compose/
+
+
 
 
 ### Query DSL
@@ -2374,3 +2383,5 @@ https://github.com/cviebrock/laravel-elasticsearch、
 https://www.elastic.co/guide/cn/elasticsearch/php/current/_configuration.html
 
 https://dotblogs.com.tw/supershowwei/2016/05/17/142101
+
+https://kknews.cc/zh-tw/code/pb3rvpp.html
