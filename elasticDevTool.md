@@ -2250,9 +2250,34 @@ https://blog.tienyulin.com/elasticsearch-kibana-command-dsl-docker-compose/
 
   - Distance feature
 
+    ```
     
+    PUT /items
+    {
+      "mappings": {
+        "properties": {
+          "name": {
+            "type": "keyword"
+          },
+          "production_date": {
+            "type": "date"
+          },
+          "location": {
+            "type": "geo_point"
+          }
+        }
+      }
+    }
+    
+    ```
 
     ```
+    PUT /items/_doc/1?refresh
+    {
+      "name" : "chocolate",
+      "production_date": "2018-02-01",
+      "location": [-71.34, 41.12]
+    }
     
     ```
 
@@ -2260,30 +2285,229 @@ https://blog.tienyulin.com/elasticsearch-kibana-command-dsl-docker-compose/
 
   - More like this
 
+    ```
+    GET /_search
+    {
+      "query": {
+        "more_like_this": {
+          "fields": [ "title", "description" ],
+          "like": [
+            {
+              "_index": "imdb",
+              "_id": "1"
+            },
+            {
+              "_index": "imdb",
+              "_id": "2"
+            },
+            "and potentially some more text here as well"
+          ],
+          "min_term_freq": 1,
+          "max_query_terms": 12
+        }
+      }
+    }
+    ```
+
+    
+
   - Percolate
+
+    ```
+    PUT /my-index-00001
+    {
+      "mappings": {
+        "properties": {
+          "message": {
+            "type": "text"
+          },
+          "query": {
+            "type": "percolator"
+          }
+        }
+      }
+    }
+    ```
+
+    
 
   - Rank feature
 
+    - field
+    - boost
+    - saturation
+    - log
+    - sigmoid
+    - linear
+
+    ```
+    PUT /test
+    {
+      "mappings": {
+        "properties": {
+          "pagerank": {
+            "type": "rank_feature"
+          },
+          "url_length": {
+            "type": "rank_feature",
+            "positive_score_impact": false
+          },
+          "topics": {
+            "type": "rank_features"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
   - Script
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "bool": {
+          "filter": {
+            "script": {
+              "script": """
+                double amount = doc['amount'].value;
+                if (doc['type'].value == 'expense') {
+                  amount *= -1;
+                }
+                return amount < 10;
+              """
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
 
   - Script score
 
+    - query
+    - script
+    - min_score
+    - boost
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "script_score": {
+          "query": {
+            "match": { "message": "elasticsearch" }
+          },
+          "script": {
+            "source": "doc['my-int'].value / 10 "
+          }
+        }
+      }
+    }
+    ```
+
+    
+
   - Wrapper
 
+    ```
+    GET /_search
+    {
+      "query": {
+        "wrapper": {
+          "query": "eyJ0ZXJtIiA6IHsgInVzZXIuaWQiIDogImtpbWNoeSIgfX0=" 
+        }
+      }
+    }
+    ```
+
+    
+
   - Pinned Query
+
+    - ids
+    - docs
+    - organic
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "pinned": {
+          "ids": [ "1", "4", "100" ],
+          "organic": {
+            "match": {
+              "description": "iphone"
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
 
 - Term-level queries
 
   - Exists
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "exists": {
+          "field": "user"
+        }
+      }
+    }
+    ```
+
+    
+
   - Fuzzy
-    IDs
+
+    - value
+    - fuzziness
+    - max_expansions
+    - prefix_length
+    - transpositions
+    - rewrite
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "fuzzy": {
+          "user.id": {
+            "value": "ki"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - IDs
+    
   - Prefix
+
   - Range
+
   - Regexp
+
   - Term
+
   - Terms
+
   - Terms set
+
   - Type Query
+
   - Wildcard
 
 - minimum_should_match parameter
