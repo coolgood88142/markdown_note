@@ -110,9 +110,9 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
     - keywords
-  
+
       ```json
       //更新my-index-000001做關鍵字搜尋
       PUT my-index-000001
@@ -126,9 +126,9 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
     - numbers
-  
+
       - long
       - integer
       - short
@@ -138,7 +138,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
       - half_float
       - scaled_float
       - unsigned_long
-  
+
       ```json
       //更新my-index-000001的number_of_bytes欄位為nteger、time_in_seconds欄位為float、price欄位為long，但是用double資料型態表示
       PUT my-index-000001
@@ -159,13 +159,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
     - dates
-  
+
       設定日期資料型態
-  
+
     - alias
-  
+
       ```
       PUT trips
       {
@@ -185,13 +185,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
   - Obeject  and relational types
-  
+
     - Object
-  
+
       ```
       PUT my-index-000001/_doc/1
       { 
@@ -205,11 +205,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
     - flattened
-  
+
       ```
       PUT bug_reports
       {
@@ -238,11 +238,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
     - nested
-  
+
       ```
       PUT my-index-000001/_doc/1
       {
@@ -259,11 +259,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         ]
       }
       ```
-  
+
       
-  
+
     - join
-  
+
       ```
       PUT my-index-000001
       {
@@ -282,13 +282,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
   - Structured data types
-  
+
     - range
-  
+
       ```
       PUT range_index
       {
@@ -320,11 +320,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
     - ip
-  
+
       ```
       PUT my-index-000001
       {
@@ -352,11 +352,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
       
       ```
-  
+
       
-  
+
     - version
-  
+
       ```
       PUT my-index-000001
       {
@@ -369,21 +369,21 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
     - murmur3
-  
+
       ```
       sudo bin/elasticsearch-plugin install mapper-murmur3
       ```
-  
+
       
-  
+
   - Aggregate data types
-  
+
     - aggregate_metric_double
-  
+
       ```
       PUT my-index
       {
@@ -398,11 +398,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
     - historgram
-  
+
       - [min](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-min-aggregation.html#search-aggregations-metrics-min-aggregation-histogram-fields) aggregation
       - [max](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-max-aggregation.html#search-aggregations-metrics-max-aggregation-histogram-fields) aggregation
       - [sum](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-sum-aggregation.html#search-aggregations-metrics-sum-aggregation-histogram-fields) aggregation
@@ -414,7 +414,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
       - [histogram](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html#search-aggregations-bucket-histogram-aggregation-histogram-fields) aggregation
       - [range](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-range-aggregation.html#search-aggregations-bucket-range-aggregation-histogram-fields) aggregation
       - [exists](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html) query
-  
+
       ```
       PUT my-index-000001/_doc/1
       {
@@ -434,11 +434,30 @@ elasticsearch 的Mapping，是以metadata fields組成的
          }
       }
       ```
-  
-      
-  
-    - Text search types
-  
+
+  - Text search types
+
+    - text fields
+
+      - analyzer
+      - boost
+      - eager_global_ordinals
+      - fielddata
+      - fielddata_frequency_filter
+      - fields
+      - index
+      - index_options
+      - index_prefixes
+      - index_phrases
+      - norms
+      - position_increment_gap
+      - store
+      - search_analyzer
+      - search_quote_analyzer
+      - similarity
+      - term_vector
+      - meta
+
       ```
       PUT my-index-000001
       {
@@ -451,19 +470,19 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
     - annotated-text
-  
+
       ```
       sudo bin/elasticsearch-plugin install mapper-annotated-text
       ```
-  
+
       
-  
+
     - completion
-  
+
       ```
       UT place
       {
@@ -513,11 +532,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
     - search_as_you_type
-  
+
       ```
       PUT my-index-000001
       {
@@ -530,11 +549,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
     - token_count
-  
+
       ```
       UT my-index-000001
       {
@@ -569,13 +588,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
       
       ```
-  
+
       
-  
+
   - Document ranking types
-  
+
     - dense_vector
-  
+
       ```
       PUT my-index-000001
       {
@@ -604,11 +623,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         "my_vector" : [-0.5, 10, 10]
       }
       ```
-  
+
       
-  
+
     - sparse_vector
-  
+
       ```
       PUT my-index-000001
       {
@@ -637,11 +656,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
       
       ```
-  
+
       
-  
+
     - rank_features
-  
+
       ```
       PUT my-index-000001
       {
@@ -673,13 +692,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
   - Spatial data types
-  
+
     - geo_point
-  
+
       ```
       PUT my-index-000001
       {
@@ -743,22 +762,22 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
     - geo_shape
-  
+
       - `distance_error_pct`
       - `points_only`
       - `precision`
       - `strategy`
       - `tree_levels`
       - `tree`
-  
+
       
-  
+
     - point
-  
+
       ```
       PUT my-index-000001
       {
@@ -799,11 +818,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         "location" : "POINT (41.12 -71.34)" 
       }
       ```
-  
+
       
-  
+
     - shape
-  
+
       ```
       PUT /example
       {
@@ -816,12 +835,12 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-  
+
       
-  
+
   - Other type
     - percolator
-  
+
       由官方的Query DSL介紹
 
 [metadata fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html),
@@ -1060,20 +1079,17 @@ elasticsearch 的Mapping，是以metadata fields組成的
     }
     ```
 
-    
 
-- _field_names
+- 
 
-  - 欄位名稱
+### Mapping與MySQL的Data Type差別
 
-- _ingnored
-
-- _routing
-
-- _meta
-
-- _tier
-
+|      | Mapping | MySQL                                 |
+| ---- | ------- | ------------------------------------- |
+| 文字 | binary  | CHAR                                  |
+| 日期 | Dates   | DATE、TIME、YEAR、DATETIME、TIMESTAMP |
+| 數值 | Numbers | INTEGER、DOUBLE、FLOAT                |
+|      |         |                                       |
 
 https://ithelp.ithome.com.tw/articles/10241212
 
@@ -1083,7 +1099,9 @@ https://www.itread01.com/content/1549391948.html
 
 https://blog.tienyulin.com/elasticsearch-kibana-command-dsl-docker-compose/
 
+https://www.runoob.com/mysql/mysql-data-types.html
 
+https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html
 
 
 ### Query DSL
@@ -2512,9 +2530,25 @@ https://blog.tienyulin.com/elasticsearch-kibana-command-dsl-docker-compose/
 
 - minimum_should_match parameter
 
+  - Integer
+  - Negative integer
+  - Percentage
+  - Negative percentage
+  - Combination
+  - Multiple combinations
+
 - rewrite parameter
 
+  - fuzzy
+  - prefix
+  - query_string
+  - regexp
+  - wildcard
+
 - Regular expression syntax
+
+  - regexp
+  - query_string
 
 ### CURD
 
