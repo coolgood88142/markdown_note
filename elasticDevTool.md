@@ -88,12 +88,19 @@ elasticsearch 的Mapping，是以metadata fields組成的
         "name": "Some binary blob",
         "blob": "U29tZSBiaW5hcnkgYmxvYg" 
       }
-      ```
-
-    - boolean
-
       
-
+      //
+      PUT my-index1/_doc/1
+      {
+        "name": "new binary",
+        "blob": "test1234" 
+      }
+      ```
+  
+    - boolean
+  
+      
+  
       ```json
       //更新my-index-00000的doc，id為1的資料，設定is_published為true
       POST my-index-000001/_doc/1?refresh
@@ -109,10 +116,15 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
+      
+      POST my-index1/_doc/1
+      {
+        "is_published": "true" 
+      }
       ```
-
+  
     - keywords
-
+  
       ```json
       //更新my-index-000001做關鍵字搜尋
       PUT my-index-000001
@@ -125,10 +137,21 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
+      
+      PUT my-index1
+      {
+        "mappings": {
+          "properties": {
+            "tags": {
+              "type":  "keyword"
+            }
+          }
+        }
+      }
       ```
-
+  
     - numbers
-
+  
       - long
       - integer
       - short
@@ -158,10 +181,29 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
+      
+      PUT my-index1
+      {
+        "mappings": {
+          "properties": {
+            "number_of_bytes": {
+              "type": "integer"
+            },
+            "time_in_seconds": {
+              "type": "float"
+            },
+            "price": {
+              "type": "scaled_float",
+              "scaling_factor": 100
+            }
+          }
+        }
+      }
+      
       ```
-
+  
     - dates
-
+  
       設定日期資料型態
 
     - alias
@@ -184,14 +226,32 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
-      ```
-
       
-
+      PUT my-index1
+      {
+        "mappings": {
+          "properties": {
+            "distance": {
+              "type": "long"
+            },
+            "route_length_miles": {
+              "type": "alias",
+              "path": "distance" 
+            },
+            "transit_mode": {
+              "type": "keyword"
+            }
+          }
+        }
+      }
+      ```
+      
+      
+  
   - Obeject  and relational types
-
+  
     - Object
-
+  
       ```
       PUT my-index-000001/_doc/1
       { 
@@ -204,12 +264,23 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
-      ```
-
       
-
+      PUT my-index1
+      { 
+        "region": "TW",
+        "manager": { 
+          "name": { 
+            "first": "Lin",
+            "last":  "Kai"
+          }
+        }
+      }
+      ```
+  
+      
+  
     - flattened
-
+  
       ```
       PUT bug_reports
       {
@@ -237,12 +308,26 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
-      ```
-
       
-
+      PUT my-report1
+      {
+        "mappings": {
+          "properties": {
+            "title": {
+              "type": "text"
+            },
+            "labels": {
+              "type": "flattened"
+            }
+          }
+        }
+      }
+      ```
+  
+      
+  
     - nested
-
+  
       ```
       PUT my-index-000001/_doc/1
       {
@@ -258,12 +343,23 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         ]
       }
-      ```
-
       
-
+      PUT my-index1/_doc/1
+      {
+        "group" : "fans",
+        "user" : [ 
+          {
+            "first" : "Lin",
+            "last" :  "Kai"
+          }
+        ]
+      }
+      ```
+  
+      
+  
     - join
-
+  
       ```
       PUT my-index-000001
       {
@@ -281,14 +377,31 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
-      ```
-
       
-
+      PUT my-index1
+      {
+        "mappings": {
+          "properties": {
+            "my_id": {
+              "type": "keyword"
+            },
+            "my_join": { 
+              "type": "join",
+              "relations": {
+                "question": "answer" 
+              }
+            }
+          }
+        }
+      }
+      ```
+      
+      
+  
   - Structured data types
-
+  
     - range
-
+  
       ```
       PUT range_index
       {
@@ -319,12 +432,30 @@ elasticsearch 的Mapping，是以metadata fields組成的
           "lte" : "2015-11-01"
         }
       }
-      ```
-
       
-
+      PUT range_index1
+      {
+        "settings": {
+          "number_of_shards": 2
+        },
+        "mappings": {
+          "properties": {
+            "expected_attendees": {
+              "type": "integer_range"
+            },
+            "time_frame": {
+              "type": "date_range", 
+              "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+            }
+          }
+        }
+      }
+      ```
+  
+      
+  
     - ip
-
+  
       ```
       PUT my-index-000001
       {
@@ -351,12 +482,28 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       
-      ```
-
       
-
+      PUT my-index1
+      {
+        "mappings": {
+          "properties": {
+            "ip_addr": {
+              "type": "ip"
+            }
+          }
+        }
+      }
+      
+      PUT my-index1/_doc/1
+      {
+        "ip_addr": "127.0.0.1"
+      }
+      ```
+  
+      
+  
     - version
-
+  
       ```
       PUT my-index-000001
       {
@@ -368,22 +515,33 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
-      ```
-
       
-
+      PUT my-index1
+      {
+        "mappings": {
+          "properties": {
+            "my_version": {
+              "type": "version"
+            }
+          }
+        }
+      }
+      ```
+  
+      
+  
     - murmur3
-
+  
       ```
       sudo bin/elasticsearch-plugin install mapper-murmur3
       ```
-
+  
       
-
+  
   - Aggregate data types
-
+  
     - aggregate_metric_double
-
+  
       ```
       PUT my-index
       {
@@ -398,11 +556,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - historgram
-
+  
       - [min](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-min-aggregation.html#search-aggregations-metrics-min-aggregation-histogram-fields) aggregation
       - [max](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-max-aggregation.html#search-aggregations-metrics-max-aggregation-histogram-fields) aggregation
       - [sum](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-sum-aggregation.html#search-aggregations-metrics-sum-aggregation-histogram-fields) aggregation
@@ -414,7 +572,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
       - [histogram](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html#search-aggregations-bucket-histogram-aggregation-histogram-fields) aggregation
       - [range](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-range-aggregation.html#search-aggregations-bucket-range-aggregation-histogram-fields) aggregation
       - [exists](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html) query
-
+  
       ```
       PUT my-index-000001/_doc/1
       {
@@ -438,7 +596,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
   - Text search types
 
     - text fields
-
+  
       - analyzer
       - boost
       - eager_global_ordinals
@@ -457,7 +615,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
       - similarity
       - term_vector
       - meta
-
+  
       ```
       PUT my-index-000001
       {
@@ -470,19 +628,19 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - annotated-text
-
+  
       ```
       sudo bin/elasticsearch-plugin install mapper-annotated-text
       ```
-
+  
       
-
+  
     - completion
-
+  
       ```
       UT place
       {
@@ -532,7 +690,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
 
     - search_as_you_type
@@ -548,12 +706,23 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
-      ```
-
       
-
+      PUT my-index1
+      {
+        "mappings": {
+          "properties": {
+            "create_date": {
+              "type": "date"
+            }
+          }
+        }
+      }
+      ```
+  
+      
+  
     - token_count
-
+  
       ```
       UT my-index-000001
       {
@@ -588,13 +757,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
       
       ```
-
+  
       
-
+  
   - Document ranking types
-
+  
     - dense_vector
-
+  
       ```
       PUT my-index-000001
       {
@@ -623,11 +792,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         "my_vector" : [-0.5, 10, 10]
       }
       ```
-
+  
       
-
+  
     - sparse_vector
-
+  
       ```
       PUT my-index-000001
       {
@@ -656,11 +825,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
       }
       
       ```
-
+  
       
-
+  
     - rank_features
-
+  
       ```
       PUT my-index-000001
       {
@@ -692,13 +861,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
   - Spatial data types
-
+  
     - geo_point
-
+  
       ```
       PUT my-index-000001
       {
@@ -762,22 +931,22 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
     - geo_shape
-
+  
       - `distance_error_pct`
       - `points_only`
       - `precision`
       - `strategy`
       - `tree_levels`
       - `tree`
-
+  
       
-
+  
     - point
-
+  
       ```
       PUT my-index-000001
       {
@@ -818,11 +987,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
         "location" : "POINT (41.12 -71.34)" 
       }
       ```
-
+  
       
-
+  
     - shape
-
+  
       ```
       PUT /example
       {
@@ -835,12 +1004,12 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       ```
-
+  
       
-
+  
   - Other type
     - percolator
-
+  
       由官方的Query DSL介紹
 
 [metadata fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html),
