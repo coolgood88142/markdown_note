@@ -591,10 +591,19 @@ elasticsearch 的Mapping，是以metadata fields組成的
             "counts" : [8, 17, 8, 7, 6, 2] 
          }
       }
+      
+      PUT my-index1/_doc/
+      {
+        "my_text" : "histogram_1",
+        "my_histogram" : {
+            "values" : [0.1, 0.25, 0.35, 0.4, 0.45, 0.5], 
+            "counts" : [8, 17, 8, 7, 6, 2] 
+         }
+      }
       ```
-
+  
   - Text search types
-
+  
     - text fields
   
       - analyzer
@@ -618,6 +627,17 @@ elasticsearch 的Mapping，是以metadata fields組成的
   
       ```
       PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "full_name": {
+              "type":  "text"
+            }
+          }
+        }
+      }
+      
+      PUT my-index1
       {
         "mappings": {
           "properties": {
@@ -692,9 +712,9 @@ elasticsearch 的Mapping，是以metadata fields組成的
       ```
   
       
-
+  
     - search_as_you_type
-
+  
       ```
       PUT my-index-000001
       {
@@ -791,6 +811,33 @@ elasticsearch 的Mapping，是以metadata fields組成的
         "my_text" : "text2",
         "my_vector" : [-0.5, 10, 10]
       }
+      
+      PUT my-index-000001/_doc/1
+      {
+        "my_text" : "text1",
+        "my_vector" : [0.5, 10, 6]
+      }
+      
+      PUT my-index-000001/_doc/2
+      {
+        "my_text" : "text2",
+        "my_vector" : [-0.5, 10, 10]
+      }
+      
+      PUT my-index1
+      {
+        "mappings": {
+          "properties": {
+            "my_vector": {
+              "type": "dense_vector",
+              "dims": 3  
+            },
+            "my_text" : {
+              "type" : "keyword"
+            }
+          }
+        }
+      }
       ```
   
       
@@ -824,6 +871,31 @@ elasticsearch 的Mapping，是以metadata fields組成的
         "my_vector" : {"103": 0.5, "4": -0.5,  "5": 1, "11" : 1.2}
       }
       
+      PUT my-index1/_doc/1
+      {
+        "my_text" : "text1",
+        "my_vector" : {"1": 0.5, "5": -0.5,  "100": 1}
+      }
+      
+      PUT my-index2/_doc/2
+      {
+        "my_text" : "text2",
+        "my_vector" : {"103": 0.5, "4": -0.5,  "5": 1, "11" : 1.2}
+      }
+      
+      PUT my-index1
+      {
+        "mappings": {
+          "properties": {
+            "my_vector": {
+              "type": "sparse_vector"
+            },
+            "my_text" : {
+              "type" : "keyword"
+            }
+          }
+        }
+      }
       ```
   
       
@@ -860,8 +932,23 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
+      
+      PUT my-index1/_doc/1
+      {
+        "pagerank": 8,
+        "url_length": 22
+      }
+      
+      GET my-index1/_search
+      {
+        "query": {
+          "rank_feature": {
+            "field": "pagerank"
+          }
+        }
+      }
       ```
-  
+      
       
   
   - Spatial data types
