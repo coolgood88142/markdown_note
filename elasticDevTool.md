@@ -79,54 +79,116 @@ elasticsearch 的Mapping，是以metadata fields組成的
 
     - binary
 
-      設定某個字串不可搜尋，但是字串要符合`Base64` 編碼
+      設定欄位為字符編碼，但是要符合`Base64` 編碼
 
       ```json
-      //更新my-index-00000的doc，id為1的資料，不可以搜尋U29tZSBiaW5hcnkgYmxvYg
+      //設定blob欄位設定資料型態為binary
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "blob": {
+              "type": "binary"
+            }
+          }
+        }
+      }
+      
+      //更新my-index-000001，id為1的資料，將blob設定為U29tZSBiaW5hcnkgYmxvYg
       PUT my-index-000001/_doc/1
       {
-        "name": "Some binary blob",
         "blob": "U29tZSBiaW5hcnkgYmxvYg" 
       }
       
-      //
+      -----------------------------------------------
+      
+      //例如binary存放token
+      PUT my-index1
+      {
+        "mappings": {
+          "properties": {
+            "token": {
+              "type": "binary"
+            }
+          }
+        }
+      }
+      
       PUT my-index1/_doc/1
       {
-        "name": "new binary",
-        "blob": "test1234" 
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiYWNjb3VudCI6InVzZXIxIiwidXNlck5hbWUiOiLnjovkupQiLCJkZXB0bm8iOiI2MzExMDIiLCJhdXRod2F5IjoiMSIsImNyZWF0ZUF0IjoxNjE0OTM4MTE0OTc1LCJleHBpcmVBdCI6MTYxNDk0ODkxNDk3NSwiaWF0IjoxNjE0OTM4MTE0LCJleHAiOjE2MTQ5NDg5MTR9.uyy7NiUzM7TcKbt5hakF-b-foJpEvINQ0J2nDrqtpwI" 
       }
       ```
   
     - boolean
   
-      
+      設定欄位為布林值
   
       ```json
-      //更新my-index-00000的doc，id為1的資料，設定is_published為true
-      POST my-index-000001/_doc/1?refresh
+      //設定is_published欄位設定資料型態為boolean
+      PUT my-index-000001
+      {
+        "mappings": {
+          "properties": {
+            "is_published": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+      
+      //更新my-index-000001的doc，id為1的資料，將is_published設定為true
+      POST my-index-000001/_doc/1
       {
         "is_published": "true" 
       }
       
-      GET my-index-000001/_search
+      -----------------------------------------------
+      
+      //例如boolean來記錄是否成功
+      PUT my-index1
       {
-        "query": {
-          "term": {
-            "is_published": true 
+        "mappings": {
+          "properties": {
+            "is_success": {
+              "type": "boolean"
+            }
           }
         }
       }
       
       POST my-index1/_doc/1
       {
-        "is_published": "true" 
+        "is_success": "true" 
       }
       ```
   
     - keywords
   
+      設定欄位為關鍵字
+  
+      參數
+  
+      - boost
+      - doc_values
+      - eager_global_ordinals
+      - fields
+      - ignore_above
+      - index
+      - index_options
+      - norms
+      - null_value
+      - on_script_error
+      - script
+      - store
+      - similarity
+      - normalizer
+      - split_queries_on_whitespace
+      - meta
+      - dimension
+  
       ```json
-      //更新my-index-000001做關鍵字搜尋
+      //設定tags欄位設定資料型態為keywords
       PUT my-index-000001
       {
         "mappings": {
@@ -138,6 +200,8 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       
+      
+      //更新my-index-000001的doc，id為1的資料，將tags設定為true
       PUT my-index1
       {
         "mappings": {
@@ -161,9 +225,9 @@ elasticsearch 的Mapping，是以metadata fields組成的
       - half_float
       - scaled_float
       - unsigned_long
-
+  
       ```json
-      //更新my-index-000001的number_of_bytes欄位為nteger、time_in_seconds欄位為float、price欄位為long，但是用double資料型態表示
+      //設定number_of_bytes欄位設定資料型態為integer、time_in_seconds欄位設定資料型態為float、price欄位設定資料型態為scaled_float
       PUT my-index-000001
       {
         "mappings": {
@@ -182,19 +246,18 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       
+      -----------------------------------------------
+      
+      //例如設定學生姓名與成績
       PUT my-index1
       {
         "mappings": {
           "properties": {
-            "number_of_bytes": {
+            "student": {
+              "type": "text"
+            },
+            "score": {
               "type": "integer"
-            },
-            "time_in_seconds": {
-              "type": "float"
-            },
-            "price": {
-              "type": "scaled_float",
-              "scaling_factor": 100
             }
           }
         }
@@ -205,10 +268,11 @@ elasticsearch 的Mapping，是以metadata fields組成的
     - dates
   
       設定日期資料型態
-
+  
     - alias
-
+  
       ```
+      
       PUT trips
       {
         "mappings": {
@@ -226,6 +290,8 @@ elasticsearch 的Mapping，是以metadata fields組成的
           }
         }
       }
+      
+      -----------------------------------------------
       
       PUT my-index1
       {
@@ -252,6 +318,12 @@ elasticsearch 的Mapping，是以metadata fields組成的
   
     - Object
   
+      參數
+  
+      - dynamic
+      - enabled
+      - properties
+  
       ```
       PUT my-index-000001/_doc/1
       { 
@@ -265,7 +337,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
         }
       }
       
-      PUT my-index1
+      PUT my-index1/_doc/1
       { 
         "region": "TW",
         "manager": { 
@@ -280,6 +352,16 @@ elasticsearch 的Mapping，是以metadata fields組成的
       
   
     - flattened
+  
+      參數
+  
+      - boost
+      - depth_limit
+      - doc_values
+      - eager_global_ordinals
+      - ignore_above
+      - index
+      - index_options
   
       ```
       PUT bug_reports
@@ -327,6 +409,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
       
   
     - nested
+  
+      參數
+  
+      - dynamic
+      - properties
+      - include_in_parent
+      - include_in_root
   
       ```
       PUT my-index-000001/_doc/1
@@ -401,6 +490,13 @@ elasticsearch 的Mapping，是以metadata fields組成的
   - Structured data types
   
     - range
+  
+      - integer_range
+      - float_range
+      - long_range
+      - double_range
+      - date_range
+      - ip_range
   
       ```
       PUT range_index
@@ -503,6 +599,8 @@ elasticsearch 的Mapping，是以metadata fields組成的
       
   
     - version
+  
+      - meta
   
       ```
       PUT my-index-000001
@@ -1342,7 +1440,7 @@ elasticsearch 的Mapping，是以metadata fields組成的
 
 |      | Mapping | MySQL                                 |
 | ---- | ------- | ------------------------------------- |
-| 文字 | binary  | CHAR                                  |
+| 文字 | text    | CHAR、VARCHER、NVARCHER               |
 | 日期 | Dates   | DATE、TIME、YEAR、DATETIME、TIMESTAMP |
 | 數值 | Numbers | INTEGER、DOUBLE、FLOAT                |
 |      |         |                                       |
