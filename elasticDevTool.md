@@ -1,29 +1,31 @@
-## Elasticsearch
+# Elasticsearch
 
-### 大綱
+## 大綱
 
-- 介紹
-- Index
-- Mapping
-  - _index
-  - _type
-  - _id
-  - _version
-  - _scource
-  - _size
-  - _doc_count
-  - _field_names
-  - _ingnored
-  - _routing
-  - _meta
-  - _tier
-- Search
-- CURD
-- Query DSL
-  - 
-- Dev Tools
+1. Elasticsearch vs solr
+2. Elasticsearch  比對 MySQL
+3. Elasticsearch Index介紹
+   1. index組成
+   2. field-data type介紹、使用Mapping
+   3. analyzer
+      1. 原理
+      2. 如何使用TK分詞
+      3. 同義詞、分詞字點檔設定/使用
+4. Query DSL介紹
+   1. 查詢語法
+   2. 排序
+   3. 高量
+5. 用laravel 如何Query Elasticsearch 取得Data
 
-### 介紹
+### 1. Elasticsearch vs solr
+
+什麼是solr?
+
+- Solr是一個獨立的企業搜尋伺服器，具有類似REST的API。您通過JSON，XML，CSV或二進位制檔案將文件放入其中（稱為“索引”）。您可以通過HTTP GET查詢它並接收JSON，XML，CSV或二進位制結果。
+
+### 2. Elasticsearch  比對 MySQL
+
+### 3. Elasticsearch Index介紹
 
 elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數據做篩選，Elasticsearch 建立每一筆資料時，都以JSON document方式呈現
 
@@ -37,7 +39,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 - 但跟資料庫不一樣的是，JSON 格式靈活不受限，不須預先定義格式
 - 每個 Key/Value 的類型(string, number, boolean … etc) 可以自己指定或是由 Elasticsearch 幫忙推算
 
-### Index
+#### 3.1 Index組成
 
 在Kibnna裡，會看到每筆資料都會有index，每筆index都有記錄，可以存放哪些欄位以及搜尋設定，index有3個部分組成
 
@@ -63,1345 +65,1339 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
 ```
 
-1. _index
+#### 3.2 field Data Type
 
+##### metadata field
 
+- index
 
+  索引值，可以當我每筆資料的ID，如果索引值需要做多筆查詢時，有時需要添加索引相關的子查詢。
 
-
-### Mapping
-
-elasticsearch 的Mapping，是以metadata fields組成的
-
-- data type 
-
-  - common types
-
-    - binary
-
-      設定欄位為字符編碼，但是要符合`Base64` 編碼
-
-      ```json
-      //設定blob欄位設定資料型態為binary
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "blob": {
-              "type": "binary"
-            }
-          }
-        }
-      }
-      
-      //更新my-index-000001，id為1的資料，將blob設定為U29tZSBiaW5hcnkgYmxvYg
-      PUT my-index-000001/_doc/1
-      {
-        "blob": "U29tZSBiaW5hcnkgYmxvYg" 
-      }
-      
-      -----------------------------------------------
-      
-      //例如binary存放token
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "token": {
-              "type": "binary"
-            }
-          }
-        }
-      }
-      
-      PUT my-index1/_doc/1
-      {
-        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiYWNjb3VudCI6InVzZXIxIiwidXNlck5hbWUiOiLnjovkupQiLCJkZXB0bm8iOiI2MzExMDIiLCJhdXRod2F5IjoiMSIsImNyZWF0ZUF0IjoxNjE0OTM4MTE0OTc1LCJleHBpcmVBdCI6MTYxNDk0ODkxNDk3NSwiaWF0IjoxNjE0OTM4MTE0LCJleHAiOjE2MTQ5NDg5MTR9.uyy7NiUzM7TcKbt5hakF-b-foJpEvINQ0J2nDrqtpwI" 
-      }
-      ```
-  
-    - boolean
-  
-      設定欄位為布林值
-  
-      ```json
-      //設定is_published欄位設定資料型態為boolean
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "is_published": {
-              "type": "boolean"
-            }
-          }
-        }
-      }
-      
-      //更新my-index-000001的doc，id為1的資料，將is_published設定為true
-      POST my-index-000001/_doc/1
-      {
-        "is_published": "true" 
-      }
-      
-      -----------------------------------------------
-      
-      //例如boolean來記錄是否成功
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "is_success": {
-              "type": "boolean"
-            }
-          }
-        }
-      }
-      
-      POST my-index1/_doc/1
-      {
-        "is_success": "true" 
-      }
-      ```
-  
-    - keywords
-  
-      設定欄位為關鍵字
-  
-      參數
-  
-      - boost
-      - doc_values
-      - eager_global_ordinals
-      - fields
-      - ignore_above
-      - index
-      - index_options
-      - norms
-      - null_value
-      - on_script_error
-      - script
-      - store
-      - similarity
-      - normalizer
-      - split_queries_on_whitespace
-      - meta
-      - dimension
-  
-      ```json
-      //設定tags欄位設定資料型態為keywords
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "tags": {
-              "type":  "keyword"
-            }
-          }
-        }
-      }
-      
-      
-      //更新my-index-000001的doc，id為1的資料，將tags設定為true
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "tags": {
-              "type":  "keyword"
-            }
-          }
-        }
-      }
-      ```
-  
-    - numbers
-  
-      - long
-      - integer
-      - short
-      - byte
-      - double
-      - float
-      - half_float
-      - scaled_float
-      - unsigned_long
-  
-      ```json
-      //設定number_of_bytes欄位設定資料型態為integer、time_in_seconds欄位設定資料型態為float、price欄位設定資料型態為scaled_float
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "number_of_bytes": {
-              "type": "integer"
-            },
-            "time_in_seconds": {
-              "type": "float"
-            },
-            "price": {
-              "type": "scaled_float",
-              "scaling_factor": 100
-            }
-          }
-        }
-      }
-      
-      -----------------------------------------------
-      
-      //例如設定學生姓名與成績
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "student": {
-              "type": "text"
-            },
-            "score": {
-              "type": "integer"
-            }
-          }
-        }
-      }
-      
-      ```
-  
-    - dates
-  
-      設定日期資料型態
-  
-    - alias
-  
-      ```
-      
-      PUT trips
-      {
-        "mappings": {
-          "properties": {
-            "distance": {
-              "type": "long"
-            },
-            "route_length_miles": {
-              "type": "alias",
-              "path": "distance" 
-            },
-            "transit_mode": {
-              "type": "keyword"
-            }
-          }
-        }
-      }
-      
-      -----------------------------------------------
-      
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "distance": {
-              "type": "long"
-            },
-            "route_length_miles": {
-              "type": "alias",
-              "path": "distance" 
-            },
-            "transit_mode": {
-              "type": "keyword"
-            }
-          }
-        }
-      }
-      ```
-      
-      
-  
-  - Obeject  and relational types
-  
-    - Object
-  
-      參數
-  
-      - dynamic
-      - enabled
-      - properties
-  
-      ```
-      PUT my-index-000001/_doc/1
-      { 
-        "region": "US",
-        "manager": { 
-          "age":     30,
-          "name": { 
-            "first": "John",
-            "last":  "Smith"
-          }
-        }
-      }
-      
-      PUT my-index1/_doc/1
-      { 
-        "region": "TW",
-        "manager": { 
-          "name": { 
-            "first": "Lin",
-            "last":  "Kai"
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - flattened
-  
-      參數
-  
-      - boost
-      - depth_limit
-      - doc_values
-      - eager_global_ordinals
-      - ignore_above
-      - index
-      - index_options
-  
-      ```
-      PUT bug_reports
-      {
-        "mappings": {
-          "properties": {
-            "title": {
-              "type": "text"
-            },
-            "labels": {
-              "type": "flattened"
-            }
-          }
-        }
-      }
-      
-      POST bug_reports/_doc/1
-      {
-        "title": "Results are not sorted correctly.",
-        "labels": {
-          "priority": "urgent",
-          "release": ["v1.2.5", "v1.3.0"],
-          "timestamp": {
-            "created": 1541458026,
-            "closed": 1541457010
-          }
-        }
-      }
-      
-      PUT my-report1
-      {
-        "mappings": {
-          "properties": {
-            "title": {
-              "type": "text"
-            },
-            "labels": {
-              "type": "flattened"
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - nested
-  
-      參數
-  
-      - dynamic
-      - properties
-      - include_in_parent
-      - include_in_root
-  
-      ```
-      PUT my-index-000001/_doc/1
-      {
-        "group" : "fans",
-        "user" : [ 
-          {
-            "first" : "John",
-            "last" :  "Smith"
-          },
-          {
-            "first" : "Alice",
-            "last" :  "White"
-          }
-        ]
-      }
-      
-      PUT my-index1/_doc/1
-      {
-        "group" : "fans",
-        "user" : [ 
-          {
-            "first" : "Lin",
-            "last" :  "Kai"
-          }
-        ]
-      }
-      ```
-  
-      
-  
-    - join
-  
-      ```
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "my_id": {
-              "type": "keyword"
-            },
-            "my_join_field": { 
-              "type": "join",
-              "relations": {
-                "question": "answer" 
-              }
-            }
-          }
-        }
-      }
-      
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "my_id": {
-              "type": "keyword"
-            },
-            "my_join": { 
-              "type": "join",
-              "relations": {
-                "question": "answer" 
-              }
-            }
-          }
-        }
-      }
-      ```
-      
-      
-  
-  - Structured data types
-  
-    - range
-  
-      - integer_range
-      - float_range
-      - long_range
-      - double_range
-      - date_range
-      - ip_range
-  
-      ```
-      PUT range_index
-      {
-        "settings": {
-          "number_of_shards": 2
-        },
-        "mappings": {
-          "properties": {
-            "expected_attendees": {
-              "type": "integer_range"
-            },
-            "time_frame": {
-              "type": "date_range", 
-              "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
-            }
-          }
-        }
-      }
-      
-      PUT range_index/_doc/1?refresh
-      {
-        "expected_attendees" : { 
-          "gte" : 10,
-          "lt" : 20
-        },
-        "time_frame" : {
-          "gte" : "2015-10-31 12:00:00", 
-          "lte" : "2015-11-01"
-        }
-      }
-      
-      PUT range_index1
-      {
-        "settings": {
-          "number_of_shards": 2
-        },
-        "mappings": {
-          "properties": {
-            "expected_attendees": {
-              "type": "integer_range"
-            },
-            "time_frame": {
-              "type": "date_range", 
-              "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - ip
-  
-      ```
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "ip_addr": {
-              "type": "ip"
-            }
-          }
-        }
-      }
-      
-      PUT my-index-000001/_doc/1
-      {
-        "ip_addr": "192.168.1.1"
-      }
-      
-      GET my-index-000001/_search
-      {
-        "query": {
-          "term": {
-            "ip_addr": "192.168.0.0/16"
-          }
-        }
-      }
-      
-      
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "ip_addr": {
-              "type": "ip"
-            }
-          }
-        }
-      }
-      
-      PUT my-index1/_doc/1
-      {
-        "ip_addr": "127.0.0.1"
-      }
-      ```
-  
-      
-  
-    - version
-  
-      - meta
-  
-      ```
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "my_version": {
-              "type": "version"
-            }
-          }
-        }
-      }
-      
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "my_version": {
-              "type": "version"
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - murmur3
-  
-      ```
-      sudo bin/elasticsearch-plugin install mapper-murmur3
-      ```
-  
-      
-  
-  - Aggregate data types
-  
-    - aggregate_metric_double
-  
-      ```
-      PUT my-index
-      {
-        "mappings": {
-          "properties": {
-            "my-agg-metric-field": {
-              "type": "aggregate_metric_double",
-              "metrics": [ "min", "max", "sum", "value_count" ],
-              "default_metric": "max"
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - historgram
-  
-      - [min](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-min-aggregation.html#search-aggregations-metrics-min-aggregation-histogram-fields) aggregation
-      - [max](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-max-aggregation.html#search-aggregations-metrics-max-aggregation-histogram-fields) aggregation
-      - [sum](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-sum-aggregation.html#search-aggregations-metrics-sum-aggregation-histogram-fields) aggregation
-      - [value_count](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-valuecount-aggregation.html#search-aggregations-metrics-valuecount-aggregation-histogram-fields) aggregation
-      - [avg](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-avg-aggregation.html#search-aggregations-metrics-avg-aggregation-histogram-fields) aggregation
-      - [percentiles](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-percentile-aggregation.html) aggregation
-      - [percentile ranks](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-percentile-rank-aggregation.html) aggregation
-      - [boxplot](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-boxplot-aggregation.html) aggregation
-      - [histogram](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html#search-aggregations-bucket-histogram-aggregation-histogram-fields) aggregation
-      - [range](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-range-aggregation.html#search-aggregations-bucket-range-aggregation-histogram-fields) aggregation
-      - [exists](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html) query
-  
-      ```
-      PUT my-index-000001/_doc/1
-      {
-        "my_text" : "histogram_1",
-        "my_histogram" : {
-            "values" : [0.1, 0.2, 0.3, 0.4, 0.5], 
-            "counts" : [3, 7, 23, 12, 6] 
-         }
-      }
-      
-      PUT my-index-000001/_doc/2
-      {
-        "my_text" : "histogram_2",
-        "my_histogram" : {
-            "values" : [0.1, 0.25, 0.35, 0.4, 0.45, 0.5], 
-            "counts" : [8, 17, 8, 7, 6, 2] 
-         }
-      }
-      
-      PUT my-index1/_doc/
-      {
-        "my_text" : "histogram_1",
-        "my_histogram" : {
-            "values" : [0.1, 0.25, 0.35, 0.4, 0.45, 0.5], 
-            "counts" : [8, 17, 8, 7, 6, 2] 
-         }
-      }
-      ```
-  
-  - Text search types
-  
-    - text fields
-  
-      - analyzer
-      - boost
-      - eager_global_ordinals
-      - fielddata
-      - fielddata_frequency_filter
-      - fields
-      - index
-      - index_options
-      - index_prefixes
-      - index_phrases
-      - norms
-      - position_increment_gap
-      - store
-      - search_analyzer
-      - search_quote_analyzer
-      - similarity
-      - term_vector
-      - meta
-  
-      ```
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "full_name": {
-              "type":  "text"
-            }
-          }
-        }
-      }
-      
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "full_name": {
-              "type":  "text"
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - annotated-text
-  
-      ```
-      sudo bin/elasticsearch-plugin install mapper-annotated-text
-      ```
-  
-      
-  
-    - completion
-  
-      ```
-      UT place
-      {
-        "mappings": {
-          "properties": {
-            "suggest": {
-              "type": "completion",
-              "contexts": [
-                {                                 
-                  "name": "place_type",
-                  "type": "category"
-                },
-                {                                 
-                  "name": "location",
-                  "type": "geo",
-                  "precision": 4
-                }
-              ]
-            }
-          }
-        }
-      }
-      PUT place_path_category
-      {
-        "mappings": {
-          "properties": {
-            "suggest": {
-              "type": "completion",
-              "contexts": [
-                {                           
-                  "name": "place_type",
-                  "type": "category",
-                  "path": "cat"
-                },
-                {                           
-                  "name": "location",
-                  "type": "geo",
-                  "precision": 4,
-                  "path": "loc"
-                }
-              ]
-            },
-            "loc": {
-              "type": "geo_point"
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - search_as_you_type
-  
-      ```
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "my_field": {
-              "type": "search_as_you_type"
-            }
-          }
-        }
-      }
-      
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "create_date": {
-              "type": "date"
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - token_count
-  
-      ```
-      UT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "name": { 
-              "type": "text",
-              "fields": {
-                "length": { 
-                  "type":     "token_count",
-                  "analyzer": "standard"
-                }
-              }
-            }
-          }
-        }
-      }
-      
-      PUT my-index-000001/_doc/1
-      { "name": "John Smith" }
-      
-      PUT my-index-000001/_doc/2
-      { "name": "Rachel Alice Williams" }
-      
-      GET my-index-000001/_search
-      {
-        "query": {
-          "term": {
-            "name.length": 3 
-          }
-        }
-      }
-      
-      ```
-  
-      
-  
-  - Document ranking types
-  
-    - dense_vector
-  
-      ```
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "my_vector": {
-              "type": "dense_vector",
-              "dims": 3  
-            },
-            "my_text" : {
-              "type" : "keyword"
-            }
-          }
-        }
-      }
-      
-      PUT my-index-000001/_doc/1
-      {
-        "my_text" : "text1",
-        "my_vector" : [0.5, 10, 6]
-      }
-      
-      PUT my-index-000001/_doc/2
-      {
-        "my_text" : "text2",
-        "my_vector" : [-0.5, 10, 10]
-      }
-      
-      PUT my-index-000001/_doc/1
-      {
-        "my_text" : "text1",
-        "my_vector" : [0.5, 10, 6]
-      }
-      
-      PUT my-index-000001/_doc/2
-      {
-        "my_text" : "text2",
-        "my_vector" : [-0.5, 10, 10]
-      }
-      
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "my_vector": {
-              "type": "dense_vector",
-              "dims": 3  
-            },
-            "my_text" : {
-              "type" : "keyword"
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - sparse_vector
-  
-      ```
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "my_vector": {
-              "type": "sparse_vector"
-            },
-            "my_text" : {
-              "type" : "keyword"
-            }
-          }
-        }
-      }
-      
-      PUT my-index-000001/_doc/1
-      {
-        "my_text" : "text1",
-        "my_vector" : {"1": 0.5, "5": -0.5,  "100": 1}
-      }
-      
-      PUT my-index-000001/_doc/2
-      {
-        "my_text" : "text2",
-        "my_vector" : {"103": 0.5, "4": -0.5,  "5": 1, "11" : 1.2}
-      }
-      
-      PUT my-index1/_doc/1
-      {
-        "my_text" : "text1",
-        "my_vector" : {"1": 0.5, "5": -0.5,  "100": 1}
-      }
-      
-      PUT my-index2/_doc/2
-      {
-        "my_text" : "text2",
-        "my_vector" : {"103": 0.5, "4": -0.5,  "5": 1, "11" : 1.2}
-      }
-      
-      PUT my-index1
-      {
-        "mappings": {
-          "properties": {
-            "my_vector": {
-              "type": "sparse_vector"
-            },
-            "my_text" : {
-              "type" : "keyword"
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - rank_features
-  
-      ```
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "pagerank": {
-              "type": "rank_feature" 
-            },
-            "url_length": {
-              "type": "rank_feature",
-              "positive_score_impact": false 
-            }
-          }
-        }
-      }
-      
-      PUT my-index-000001/_doc/1
-      {
-        "pagerank": 8,
-        "url_length": 22
-      }
-      
-      GET my-index-000001/_search
-      {
-        "query": {
-          "rank_feature": {
-            "field": "pagerank"
-          }
-        }
-      }
-      
-      PUT my-index1/_doc/1
-      {
-        "pagerank": 8,
-        "url_length": 22
-      }
-      
-      GET my-index1/_search
-      {
-        "query": {
-          "rank_feature": {
-            "field": "pagerank"
-          }
-        }
-      }
-      ```
-      
-      
-  
-  - Spatial data types
-  
-    - geo_point
-  
-      ```
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "location": {
-              "type": "geo_point"
-            }
-          }
-        }
-      }
-      
-      PUT my-index-000001/_doc/1
-      {
-        "text": "Geopoint as an object",
-        "location": { 
-          "lat": 41.12,
-          "lon": -71.34
-        }
-      }
-      
-      PUT my-index-000001/_doc/2
-      {
-        "text": "Geopoint as a string",
-        "location": "41.12,-71.34" 
-      }
-      
-      PUT my-index-000001/_doc/3
-      {
-        "text": "Geopoint as a geohash",
-        "location": "drm3btev3e86" 
-      }
-      
-      PUT my-index-000001/_doc/4
-      {
-        "text": "Geopoint as an array",
-        "location": [ -71.34, 41.12 ] 
-      }
-      
-      PUT my-index-000001/_doc/5
-      {
-        "text": "Geopoint as a WKT POINT primitive",
-        "location" : "POINT (-71.34 41.12)" 
-      }
-      
-      GET my-index-000001/_search
-      {
-        "query": {
-          "geo_bounding_box": { 
-            "location": {
-              "top_left": {
-                "lat": 42,
-                "lon": -72
-              },
-              "bottom_right": {
-                "lat": 40,
-                "lon": -74
-              }
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-    - geo_shape
-  
-      - `distance_error_pct`
-      - `points_only`
-      - `precision`
-      - `strategy`
-      - `tree_levels`
-      - `tree`
-  
-      
-  
-    - point
-  
-      ```
-      PUT my-index-000001
-      {
-        "mappings": {
-          "properties": {
-            "location": {
-              "type": "point"
-            }
-          }
-        }
-      }
-      
-      PUT my-index-000001/_doc/1
-      {
-        "text": "Point as an object",
-        "location": { 
-          "x": 41.12,
-          "y": -71.34
-        }
-      }
-      
-      PUT my-index-000001/_doc/2
-      {
-        "text": "Point as a string",
-        "location": "41.12,-71.34" 
-      }
-      
-      
-      PUT my-index-000001/_doc/4
-      {
-        "text": "Point as an array",
-        "location": [41.12, -71.34] 
-      }
-      
-      PUT my-index-000001/_doc/5
-      {
-        "text": "Point as a WKT POINT primitive",
-        "location" : "POINT (41.12 -71.34)" 
-      }
-      ```
-  
-      
-  
-    - shape
-  
-      ```
-      PUT /example
-      {
-        "mappings": {
-          "properties": {
-            "geometry": {
-              "type": "shape"
-            }
-          }
-        }
-      }
-      ```
-  
-      
-  
-  - Other type
-    - percolator
-  
-      由官方的Query DSL介紹
-
-[metadata fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html),
-
-- _index
-
-  - 索引值，可以當我每筆資料的ID
-
-  - 如果索引值需要做多筆查詢時，有時需要添加索引相關的子查詢。
-
-    ```json
-    //更新id為1，index_1的text資料
-    PUT index_1/_doc/1
-    {
-      "text": "Document in index 1"
-    }
-    
-    //更新id為2，index_2的text資料後，做重新整理
-    PUT index_2/_doc/2?refresh=true
-    {
-      "text": "Document in index 2"
-    }
-    
-    //查詢index_1和index_2的資料，並且加上篩選條件
-    GET index_1,index_2/_search
-    {
-      "query": {
+  ```json
+  //更新id為1，index_1的text資料
+  PUT index_1/_doc/1
+  {
+    "text": "Document in index 1"
+  }
+  
+  //更新id為2，index_2的text資料後，做重新整理
+  PUT index_2/_doc/2?refresh=true
+  {
+    "text": "Document in index 2"
+  }
+  
+  //查詢index_1和index_2的資料，並且加上篩選條件
+  GET index_1,index_2/_search
+  {
+    "query": {
+      "terms": {
+        "_index": ["index_1", "index_2"] //查詢索引值有index_1或index_2的字段
+      }
+    },
+    "aggs": {
+      "indices": {
         "terms": {
-          "_index": ["index_1", "index_2"] //查詢索引值有index_1或index_2的字段
+          "field": "_index", //取得索引值10筆資料
+          "size": 10
         }
-      },
-      "aggs": {
-        "indices": {
-          "terms": {
-            "field": "_index", //取得索引值10筆資料
-            "size": 10
-          }
+      }
+    },
+    "sort": [
+      {
+        "_index": { 
+          "order": "asc" //用索引值當排序，由小至大
         }
-      },
-      "sort": [
-        {
-          "_index": { 
-            "order": "asc" //用索引值當排序，由小至大
-          }
-        }
-      ],
-      "script_fields": {
-        "index_name": {
-          "script": {
-            "lang": "painless",
-            "source": "doc['_index']" //擷取索引值的ld中doc，這個文字資料
-          }
+      }
+    ],
+    "script_fields": {
+      "index_name": {
+        "script": {
+          "lang": "painless",
+          "source": "doc['_index']" //擷取索引值的ld中doc，這個文字資料
         }
       }
     }
-    ```
+  }
+  ```
 
 - _type
 
-  - 存放資料型態
+  存放資料型態，**這裡要注意6.0以上就棄用了**
 
-  - **這裡要注意6.0以上就棄用了**
-
-    ```json
-    //更新my-index-000001的doc，id為1的資料，做完後重新整理
-    PUT my-index-000001/_doc/1?refresh=true
-    {
-      "text": "Document with type 'doc'"
-    }
-    
-    //查詢my-index-000001的資料，並且加上篩選條件
-    GET my-index-000001/_search
-    {
-      "query": {
-        "term": {
-          "_type": "_doc"  //查詢type為_doc的資料
-        }
-      },
-      "aggs": {
-        "types": {
-          "terms": {
-            "field": "_type", //取得type10筆資料
-            "size": 10
-          }
-        }
-      },
-      "sort": [
-        {
-          "_type": { 
-            "order": "desc" //用type當排序，由小至大
-          }
-        }
-      ],
-      "script_fields": {
-        "type": {
-          "script": {
-            "lang": "painless",
-            "source": "doc['_type']"//擷取索引值的type中doc，這個文字資料
-          }
+  ```json
+  //更新my-index-000001的doc，id為1的資料，做完後重新整理
+  PUT my-index-000001/_doc/1?refresh=true
+  {
+    "text": "Document with type 'doc'"
+  }
+  
+  //查詢my-index-000001的資料，並且加上篩選條件
+  GET my-index-000001/_search
+  {
+    "query": {
+      "term": {
+        "_type": "_doc"  //查詢type為_doc的資料
+      }
+    },
+    "aggs": {
+      "types": {
+        "terms": {
+          "field": "_type", //取得type10筆資料
+          "size": 10
         }
       }
-    
-    ```
+    },
+    "sort": [
+      {
+        "_type": { 
+          "order": "desc" //用type當排序，由小至大
+        }
+      }
+    ],
+    "script_fields": {
+      "type": {
+        "script": {
+          "lang": "painless",
+          "source": "doc['_type']"//擷取索引值的type中doc，這個文字資料
+        }
+      }
+    }
+  
+  ```
 
 - _id
 
-  - 唯一值
+  唯一值
+
+  ```json
+  // 更新my-index-000001的doc，id為1的資料
+  PUT my-index-000001/_doc/1
+  {
+    "text": "Document with ID 1"
+  }
+  
+  // 更新my-index-000001的doc，id為2的資料，做完後重新整理
+  PUT my-index-000001/_doc/2?refresh=true
+  {
+    "text": "Document with ID 2"
+  }
+  // 查詢my-index-000001的資料，id為1和2篩選條件
+  GET my-index-000001/_search
+  {
+    "query": {
+      "terms": {
+        "_id": [ "1", "2" ] 
+      }
+    }
+  }
+  ```
+
+- _scource
+
+  存放資料
+
+  ```json
+  // 更新my-index-000001的禁止資料存取
+  PUT my-index-000001
+  {
+    "mappings": {
+      "_source": {
+        "enabled": false
+      }
+    }
+  }
+  
+  PUT logs
+  {
+    "mappings": {
+      "_source": {
+        "includes": [
+          "*.count",
+          "meta.*"
+        ],
+        "excludes": [
+          "meta.description",
+          "meta.other.*"
+        ]
+      }
+    }
+  }
+  
+  PUT logs/_doc/1
+  {
+    "requests": {
+      "count": 10,
+      "foo": "bar" 
+    },
+    "meta": {
+      "name": "Some metric",
+      "description": "Some metric description", 
+      "other": {
+        "foo": "one", 
+        "baz": "two" 
+      }
+    }
+  }
+  
+  GET logs/_search
+  {
+    "query": {
+      "match": {
+        "meta.other.foo": "one" 
+      }
+    }
+  }
+  ```
+
+- _size
+
+  檔案大小
+
+- _doc_count
+
+  doc有多少筆資料
+
+##### 	data type
+
+- common types(常見類型)
+
+  - binary
+
+    設定欄位為字符編碼，但是要符合`Base64` 編碼
 
     ```json
-    // 更新my-index-000001的doc，id為1的資料
-    PUT my-index-000001/_doc/1
+    //設定blob欄位設定資料型態為binary
+    PUT my-index-000001
     {
-      "text": "Document with ID 1"
+      "mappings": {
+        "properties": {
+          "blob": {
+            "type": "binary"
+          }
+        }
+      }
     }
     
-    // 更新my-index-000001的doc，id為2的資料，做完後重新整理
-    PUT my-index-000001/_doc/2?refresh=true
+    //更新my-index-000001，id為1的資料，將blob設定為U29tZSBiaW5hcnkgYmxvYg
+    PUT my-index-000001/_doc/1
     {
-      "text": "Document with ID 2"
+      "blob": "U29tZSBiaW5hcnkgYmxvYg" 
     }
-    // 查詢my-index-000001的資料，id為1和2篩選條件
-    GET my-index-000001/_search
+    
+    -----------------------------------------------
+    
+    //例如：binary存放token
+    PUT my-index1
     {
-      "query": {
-        "terms": {
-          "_id": [ "1", "2" ] 
+      "mappings": {
+        "properties": {
+          "token": {
+            "type": "binary"
+          }
+        }
+      }
+    }
+    
+    PUT my-index1/_doc/1
+    {
+      "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiYWNjb3VudCI6InVzZXIxIiwidXNlck5hbWUiOiLnjovkupQiLCJkZXB0bm8iOiI2MzExMDIiLCJhdXRod2F5IjoiMSIsImNyZWF0ZUF0IjoxNjE0OTM4MTE0OTc1LCJleHBpcmVBdCI6MTYxNDk0ODkxNDk3NSwiaWF0IjoxNjE0OTM4MTE0LCJleHAiOjE2MTQ5NDg5MTR9.uyy7NiUzM7TcKbt5hakF-b-foJpEvINQ0J2nDrqtpwI" 
+    }
+    ```
+
+  - boolean
+
+    設定欄位為布林值
+
+    ```json
+    //設定is_published欄位設定資料型態為boolean
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "is_published": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+    
+    //更新my-index-000001的doc，id為1的資料，將is_published設定為true
+    POST my-index-000001/_doc/1
+    {
+      "is_published": "true" 
+    }
+    
+    -----------------------------------------------
+    
+    //例如：boolean來記錄是否成功
+    PUT my-index1
+    {
+      "mappings": {
+        "properties": {
+          "is_success": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+    
+    POST my-index1/_doc/1
+    {
+      "is_success": "true" 
+    }
+    ```
+
+  - keywords
+
+    設定欄位為關鍵字，使用keyword有分三種
+
+    1. 設定關鍵字資料型態
+
+       ```json
+       //設定tags欄位設定資料型態為keyword
+       PUT my-index-000001
+       {
+         "mappings": {
+           "properties": {
+             "tags": {
+               "type":  "keyword"
+             }
+           }
+         }
+       }
+       ```
+
+    2. 設定常用的關鍵字資料
+
+       這裡要注意的是，一旦用constant_keyword，就無法將constant_keyword設定別的value，因為已經被constant_keyword當作是索引的關鍵字搜尋
+
+       ```json
+       //設定timestam欄位為date，message欄位為text，level欄位為constant_keyword，常用關鍵字，value為debug
+       //level已經被設定為關鍵字搜尋
+       PUT logs-debug
+       {
+         "mappings": {
+           "properties": {
+             "@timestamp": {
+               "type": "date"
+             },
+             "message": {
+               "type": "text"
+             },
+             "level": {
+               "type": "constant_keyword",
+               "value": "debug"
+             }
+           }
+         }
+       }
+       
+       //兩種POST都可以設定
+       POST logs-debug/_doc
+       {
+         "date": "2019-12-12",
+         "message": "Starting up Elasticsearch",
+         "level": "debug"
+       }
+       
+       POST logs-debug/_doc
+       {
+         "date": "2019-12-12",
+         "message": "Starting up Elasticsearch"
+       }
+       
+       //用level欄位找value為debug,所有的doc資料，這時上面兩種資料都會查的到
+       GET logs-debug/_search
+       {
+         "query": {
+           "match": {
+             "level": "debug"
+           }
+         }
+       }
+       
+       -----------------------------------------------
+       
+       //例如：用article當作關鍵字搜尋，去找已經出版的文章
+       PUT published-articles
+       {
+         "mappings": {
+           "properties": {
+             "title": {
+               "type": "text"
+             },
+             "content": {
+               "type": "text"
+             },
+             "published": {
+               "type": "constant_keyword",
+               "value": "article"
+             }
+           }
+         }
+       }
+       
+       //新增兩篇已出版的文章
+       POST published-articles/_doc
+       {
+         "title": "我的第一篇文章",
+         "message": "xasd12323fsdf"
+       }
+       
+       POST published-articles/_doc
+       {
+         "title": "我的第二篇文章",
+         "message": "aaabbbcccddd"
+       }
+       
+       //這時用索引值published-articles，去找全部已出版文章資料
+       GET published-articles/_search
+       {
+         "query": {
+           "match": {
+             "published": "article"
+           }
+         }
+       }
+       ```
+
+    3. 設定萬用字元的資料型態
+
+       做法有點像正規化表示法，在搜尋時可以指定某個欄位做正規化查詢，但前提是要先欄位的type設定為wildcard
+
+       ```json
+       //設定my_wildcard做萬用字元
+       PUT my-index-000001
+       {
+         "mappings": {
+           "properties": {
+             "my_wildcard": {
+               "type": "wildcard"
+             }
+           }
+         }
+       }
+       
+       //更新my-index-000001的doc，id為1的資料，將my_wildcard設定文字
+       PUT my-index-000001/_doc/1
+       {
+         "my_wildcard" : "This string can be quite lengthy"
+       }
+       
+       //查詢索引值my-index-000001的萬用字元欄位my_wildcard，去找有包含quite和lengthy的文字
+       GET my-index-000001/_search
+       {
+         "query": {
+           "wildcard": {
+             "my_wildcard": {
+               "value": "*quite*lengthy"
+             }
+           }
+         }
+       }
+       
+       -----------------------------------------------
+       
+       //例如：索引值my-index1，找出Apple相關的文字資料
+       GET my-index1/_search
+       {
+         "query": {
+           "wildcard": {
+             "my_wildcard": {
+               "value": "Apple*"
+             }
+           }
+         }
+       }
+       ```
+
+  - numbers
+
+    以下皆為數值的資料型態
+
+    - long
+    - integer
+    - short
+    - byte
+    - double
+    - float
+    - half_float：16進位的浮點數
+    - scaled_float：16進位的浮點數
+    - unsigned_long
+
+    ```json
+    //設定number_of_bytes欄位設定資料型態為integer、time_in_seconds欄位設定資料型態為float、price欄位設定資料型態為scaled_float
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "number_of_bytes": {
+            "type": "integer"
+          },
+          "time_in_seconds": {
+            "type": "float"
+          },
+          "price": {
+            "type": "scaled_float",
+            "scaling_factor": 100
+          }
+        }
+      }
+    }
+    
+    -----------------------------------------------
+    
+    //例如：設定學生姓名與成績
+    PUT my-index1
+    {
+      "mappings": {
+        "properties": {
+          "student": {
+            "type": "text"
+          },
+          "score": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+    
+    ```
+
+  - dates
+
+    設定日期資料型態
+
+  - alias
+
+    設定別的欄位做子查詢，將索引值的doc用別的欄位來當查詢條件，這要注意的是查詢時要用_field_caps，在設定子查詢欄位名稱去搜尋，欄位名稱可以用正規化表示法
+
+    ```json
+    //設定route_length_miles的距離當作查詢條件，
+    PUT trips
+    {
+      "mappings": {
+        "properties": {
+          "distance": {
+            "type": "long"
+          },
+          "route_length_miles": {
+            "type": "alias",
+            "path": "distance" 
+          },
+          "transit_mode": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+    
+    //在索引值trips，去找欄位有包含route_或transit_mode的資料
+    GET trips/_field_caps?fields=route_*,transit_mode
+    
+    -----------------------------------------------
+    
+    //例如：索引值及格分數，去找跟學生相關的欄位資料
+    GET pass-grades/_field_caps?fields=student*
+    
+    ```
+
+- Obejct  and relational types(物件與關係類型)
+
+  - Object
+
+    設定索引的資料型態或value
+
+    參數
+
+    - dynamic：禁止動態查詢，如果不想被查詢到就寫false
+    - enabled：設定欄位資料被禁止使用，但是要寫false
+    - properties：設定索引值mapping的內容
+
+    ```json
+    //設定Josh Smith的個人資料，年齡30，住在美國
+    PUT my-index-000001/_doc/1
+    { 
+      "region": "US",
+      "manager": { 
+        "age":     30,
+        "name": { 
+          "first": "John",
+          "last":  "Smith"
+        }
+      }
+    }
+    ----------------------------
+    
+    //例如：設定Kai Lin的個人資料，住在台灣
+    PUT my-index1/_doc/1
+    { 
+      "region": "TW",
+      "manager": { 
+        "name": { 
+          "first": "Lin",
+          "last":  "Kai"
         }
       }
     }
     ```
 
-  
+    
 
-- _scource
+  - flattened
 
-  - 存在放資料
+    如果欄位有包含很多層資料時，一般的做法是針對欄位用動態查詢，但是可以用flattened，這種做法好處是如果不知道資料型別，可以用欄位的某個部份資料做搜尋
+
+    參數
+
+    - boost
+    - depth_limit
+    - doc_values
+    - eager_global_ordinals
+    - ignore_above
+    - index
+    - index_options
+    - null_value
+    - similarity
+    - split_queries_on_whitespace
 
     ```json
-    // 更新my-index-000001的禁止資料存取
-    PUT my-index-000001
+    //設定title為text，labels為flattened
+    PUT bug_reports
     {
       "mappings": {
-        "_source": {
-          "enabled": false
+        "properties": {
+          "title": {
+            "type": "text"
+          },
+          "labels": {
+            "type": "flattened"
+          }
         }
       }
     }
     
-    PUT logs
+    //設定title與labels資料
+    POST bug_reports/_doc/1
+    {
+      "title": "Results are not sorted correctly.",
+      "labels": {
+        "priority": "urgent",
+        "release": ["v1.2.5", "v1.3.0"],
+        "timestamp": {
+          "created": 1541458026,
+          "closed": 1541457010
+        }
+      }
+    }
+    
+    //查詢labels的資料，兩種方式都可以查的到
+    POST bug_reports/_search
+    {
+      "query": {
+        "term": {"labels": "urgent"}
+      }
+    }
+    
+    POST bug_reports/_search
+    {
+      "query": {
+        "term": {"labels.release": "v1.3.0"}
+      }
+    }
+    
+    ----------------------------
+    
+    //例如：查詢文章的標題為我的第一篇文章
+    POST my_article/_search
+    {
+      "query": {
+        "term": {"article.title": "我的第一篇文章"}
+      }
+    }
+    
+    ```
+
+    
+
+  - nested
+
+    設定巢狀資料型態，可以在欄位設定很多層資料
+
+    參數
+
+    - dynamic
+    - properties
+    - include_in_parent
+    - include_in_root
+
+    ```json
+    //設定user使用巢狀資料
+    PUT my-index-000001
     {
       "mappings": {
-        "_source": {
-          "includes": [
-            "*.count",
-            "meta.*"
-          ],
-          "excludes": [
-            "meta.description",
-            "meta.other.*"
+        "properties": {
+          "user": {
+            "type": "nested" 
+          }
+        }
+      }
+    }
+    
+    //設定user多層資料
+    PUT my-index-000001/_doc/1
+    {
+      "user" : [ 
+        {
+          "first" : "John",
+          "last" :  "Smith"
+        },
+        {
+          "first" : "Alice",
+          "last" :  "White"
+        }
+      ]
+    }
+    
+    //查詢索引值my-index-000001，找出user first欄位為Alice，user last欄位為Smith
+    GET my-index-000001/_search
+    {
+      "query": {
+        "bool": {
+          "must": [
+            { "match": { "user.first": "Alice" }},
+            { "match": { "user.last":  "Smith" }}
           ]
         }
       }
     }
     
-    PUT logs/_doc/1
-    {
-      "requests": {
-        "count": 10,
-        "foo": "bar" 
-      },
-      "meta": {
-        "name": "Some metric",
-        "description": "Some metric description", 
-        "other": {
-          "foo": "one", 
-          "baz": "two" 
-        }
-      }
-    }
+    ----------------------------
     
-    GET logs/_search
+    //例如：查詢會員資料，姓名為王小明，帳號為test123434
+    GET member-data/_search
     {
       "query": {
-        "match": {
-          "meta.other.foo": "one" 
+        "bool": {
+          "must": [
+            { "match": { "member.name": "王小明" }},
+            { "match": { "member.account":  "test123434" }}
+          ]
         }
       }
     }
     ```
+
     
-    
 
-- _size
+  - join
 
-  - 檔案大小
-
-- _doc_count
-
-  - doc有多少筆資料
+    設定欄位做父子類別
 
     ```json
-    PUT my_index
+    //設定my_id為keyword，my_join_field設定question與answer為父子類別
+    PUT my-index-000001
     {
-      "mappings" : {
-        "properties" : {
-          "my_histogram" : {
-            "type" : "histogram"
+      "mappings": {
+        "properties": {
+          "my_id": {
+            "type": "keyword"
+          },
+          "my_join_field": { 
+            "type": "join",
+            "relations": {
+              "question": "answer" 
+            }
+          }
+        }
+      }
+    }
+    
+    //更新my-index-000001的doc，id為1的資料，將my_id設定為1，text設定文字內容，my_join_field設定父類別名稱question
+    PUT my-index-000001/_doc/1
+    {
+      "my_id": "1",
+      "text": "This is a question",
+      "my_join_field": {
+        "name": "question" 
+      }
+    }
+    
+    //查詢子類別answer，id為1的資料
+    GET my-index-000001/_search
+    {
+      "query": {
+        "parent_id": { 
+          "type": "answer",
+          "id": "1"
+        }
+      }
+    }
+    
+    ----------------------------
+    
+    GET my-index1/_search
+    {
+        
+    }
+    ```
+
+    
+
+- Structured data types(結構話資料類型)
+
+  - range
+
+    設定資料型態範圍，每一個資料型態可以設定，如果要查詢資料範圍，有另一種寫法
+
+    - query
+
+      查詢時可以大於、小於當條件，用時間的話，可以加時區
+
+      - gt：大於
+      - gte：大於等於
+      - lt：小於
+      - lte：小於等於
+      - time_zone：加上時間
+
+      ```json
+      //查詢現在至一小時內的資料，並且加上時區8小時
+      GET range_index/_search
+      {
+        "query" : {
+          "range" : {
+            "date": {
+              "time_zone": "+08:00",        
+              "gte":"now-1h/h,
+              "lt":"now/h"                  
+            }
+          }
+        }
+      }
+      ```
+
+    - integer_range：搜尋integer資料範圍
+
+    - float_range：搜尋float資料範圍
+
+    - long_range：搜尋long資料範圍
+
+    - double_range：搜尋double資料範圍
+
+    - date_range：搜尋date資料範圍，可以用format來設定日期格式
+
+    - ip_range：搜尋ip範圍
+
+      每種可加參數，來設定更詳細的範圍資料
+
+      - coerce
+      - boost
+      - index
+      - store
+
+    ```json
+    //設定expected_attendees搜尋integer資料範圍，time_frame搜尋date資料範圍，日期格式為日期加時間或只有日期
+    PUT range_index
+    {
+      "settings": {
+        "number_of_shards": 2
+      },
+      "mappings": {
+        "properties": {
+          "expected_attendees": {
+            "type": "integer_range"
+          },
+          "time_frame": {
+            "type": "date_range", 
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd"
+          }
+        }
+      }
+    }
+    
+    //更新my-index-000001的doc，id為1的資料，將expected_attendees資料範圍設定為10-20，time_frame資料範圍設定為2015-10-31 12:00:00至2015-11-01
+    PUT range_index/_doc/1?refresh
+    {
+      "expected_attendees" : { 
+        "gte" : 10,
+        "lt" : 20
+      },
+      "time_frame" : {
+        "gte" : "2015-10-31 12:00:00", 
+        "lte" : "2015-11-01"
+      }
+    }
+    
+    //查詢索引值range_index的expected_attendees資料，是否有包含12
+    GET range_index/_search
+    {
+      "query" : {
+        "term" : {
+          "expected_attendees" : {
+            "value": 12
+          }
+        }
+      }
+    }
+    
+    //查詢索引值range_index的time_frame資料，是否在2015-10-31至2015-11-01範圍內
+    GET range_index/_search
+    {
+      "query" : {
+        "range" : {
+          "time_frame" : { 
+            "gte" : "2015-10-31",
+            "lte" : "2015-11-01",
+            "relation" : "within" 
+          }
+        }
+      }
+    }
+    
+    ----------------------------
+    
+    //例如：查詢成績合格的資料
+    GET range-grades/_search
+    {
+      "query" : {
+        "range" : {
+          "grades" : {
+              "get" : 60,
+              "lte" : 100,
+          }
+        }
+      }
+    }
+    
+    
+    //range_index的ip_allowlist設定為ip_range
+    PUT range_index/_mapping
+    {
+      "properties": {
+        "ip_allowlist": {
+          "type": "ip_range"
+        }
+      }
+    }
+    
+    //更新range_index，id為2的資料，ip_allowlist設定為192.168.0.0/16
+    PUT range_index/_doc/2
+    {
+      "ip_allowlist" : "192.168.0.0/16"
+    }
+    
+    ----------------------------
+    
+    
+    
+    ```
+
+    
+
+  - ip
+
+    設定IP欄位，可加參數來查詢，縮小範圍
+
+    - boost
+    - dimension
+    - doc_values
+    - ignore_malformed
+    - index
+    - null_value
+    - on_script_error
+    - script
+    - store
+
+    ```json
+    //設定ip_addr為IP
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "ip_addr": {
+            "type": "ip"
+          }
+        }
+      }
+    }
+    
+    //更新my-index-000001，id為1的資料，將ip_addr設定為192.168.1.1
+    PUT my-index-000001/_doc/1
+    {
+      "ip_addr": "192.168.1.1"
+    }
+    
+    //查詢my-index-000001的ip_addr，有192.168.0.0/16的資料
+    GET my-index-000001/_search
+    {
+      "query": {
+        "term": {
+          "ip_addr": "192.168.0.0/16"
+        }
+      }
+    }
+    
+    ----------------------------
+    
+    //例如：索引值my-index查詢本機的IP資料
+    GET my-index/_search
+    {
+        "query": {
+         "term": {
+           "ip_addr": "127.0.0.1"  
+         }   
+        }
+    }
+    ```
+
+    
+
+  - version
+
+    設定版本欄位，多個mapping做版本區分，如果沒使用range、fuzzy做查詢的話，可以用version來做查詢
+
+    ```
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "my_version": {
+            "type": "version"
+          }
+        }
+      }
+    }
+    
+    PUT my-index1
+    {
+      "mappings": {
+        "properties": {
+          "my_version": {
+            "type": "version"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - murmur3
+
+    mapper-murmur3套件，可以協助查詢
+
+    ```
+    sudo bin/elasticsearch-plugin install mapper-murmur3
+    ```
+
+    
+
+- Aggregate data types(聚合資料類型)
+
+  - aggregate_metric_double
+
+    設定聚合數值欄位，可以針對欄位做分析
+
+    - min：最小值
+    - max：最大值
+    - sum：總和
+    - value_count：件數
+    - avg：平均
+    - exists：
+    - range
+    - term
+    - terms
+
+    ```json
+    //設定
+    PUT my-index
+    {
+      "mappings": {
+        "properties": {
+          "my-agg-metric-field": {
+            "type": "aggregate_metric_double",
+            "metrics": [ "min", "max", "sum", "value_count" ],
+            "default_metric": "max"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - historgram
+
+    - [min](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-min-aggregation.html#search-aggregations-metrics-min-aggregation-histogram-fields) aggregation
+    - [max](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-max-aggregation.html#search-aggregations-metrics-max-aggregation-histogram-fields) aggregation
+    - [sum](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-sum-aggregation.html#search-aggregations-metrics-sum-aggregation-histogram-fields) aggregation
+    - [value_count](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-valuecount-aggregation.html#search-aggregations-metrics-valuecount-aggregation-histogram-fields) aggregation
+    - [avg](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-avg-aggregation.html#search-aggregations-metrics-avg-aggregation-histogram-fields) aggregation
+    - [percentiles](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-percentile-aggregation.html) aggregation
+    - [percentile ranks](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-percentile-rank-aggregation.html) aggregation
+    - [boxplot](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-boxplot-aggregation.html) aggregation
+    - [histogram](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html#search-aggregations-bucket-histogram-aggregation-histogram-fields) aggregation
+    - [range](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-range-aggregation.html#search-aggregations-bucket-range-aggregation-histogram-fields) aggregation
+    - [exists](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html) query
+
+    ```
+    PUT my-index-000001/_doc/1
+    {
+      "my_text" : "histogram_1",
+      "my_histogram" : {
+          "values" : [0.1, 0.2, 0.3, 0.4, 0.5], 
+          "counts" : [3, 7, 23, 12, 6] 
+       }
+    }
+    
+    PUT my-index-000001/_doc/2
+    {
+      "my_text" : "histogram_2",
+      "my_histogram" : {
+          "values" : [0.1, 0.25, 0.35, 0.4, 0.45, 0.5], 
+          "counts" : [8, 17, 8, 7, 6, 2] 
+       }
+    }
+    
+    PUT my-index1/_doc/
+    {
+      "my_text" : "histogram_1",
+      "my_histogram" : {
+          "values" : [0.1, 0.25, 0.35, 0.4, 0.45, 0.5], 
+          "counts" : [8, 17, 8, 7, 6, 2] 
+       }
+    }
+    ```
+
+- Text search types(文字搜尋)
+
+  - text fields
+
+    - analyzer
+    - boost
+    - eager_global_ordinals
+    - fielddata
+    - fielddata_frequency_filter
+    - fields
+    - index
+    - index_options
+    - index_prefixes
+    - index_phrases
+    - norms
+    - position_increment_gap
+    - store
+    - search_analyzer
+    - search_quote_analyzer
+    - similarity
+    - term_vector
+    - meta
+
+    ```
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "full_name": {
+            "type":  "text"
+          }
+        }
+      }
+    }
+    
+    PUT my-index1
+    {
+      "mappings": {
+        "properties": {
+          "full_name": {
+            "type":  "text"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - annotated-text
+
+    ```
+    sudo bin/elasticsearch-plugin install mapper-annotated-text
+    ```
+
+    
+
+  - completion
+
+    ```
+    UT place
+    {
+      "mappings": {
+        "properties": {
+          "suggest": {
+            "type": "completion",
+            "contexts": [
+              {                                 
+                "name": "place_type",
+                "type": "category"
+              },
+              {                                 
+                "name": "location",
+                "type": "geo",
+                "precision": 4
+              }
+            ]
+          }
+        }
+      }
+    }
+    PUT place_path_category
+    {
+      "mappings": {
+        "properties": {
+          "suggest": {
+            "type": "completion",
+            "contexts": [
+              {                           
+                "name": "place_type",
+                "type": "category",
+                "path": "cat"
+              },
+              {                           
+                "name": "location",
+                "type": "geo",
+                "precision": 4,
+                "path": "loc"
+              }
+            ]
+          },
+          "loc": {
+            "type": "geo_point"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - search_as_you_type
+
+    ```
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "my_field": {
+            "type": "search_as_you_type"
+          }
+        }
+      }
+    }
+    
+    PUT my-index1
+    {
+      "mappings": {
+        "properties": {
+          "create_date": {
+            "type": "date"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - token_count
+
+    ```
+    UT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "name": { 
+            "type": "text",
+            "fields": {
+              "length": { 
+                "type":     "token_count",
+                "analyzer": "standard"
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    PUT my-index-000001/_doc/1
+    { "name": "John Smith" }
+    
+    PUT my-index-000001/_doc/2
+    { "name": "Rachel Alice Williams" }
+    
+    GET my-index-000001/_search
+    {
+      "query": {
+        "term": {
+          "name.length": 3 
+        }
+      }
+    }
+    
+    ```
+
+    
+
+- Document ranking types(文件排名)
+
+  - dense_vector
+
+    ```
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "my_vector": {
+            "type": "dense_vector",
+            "dims": 3  
+          },
+          "my_text" : {
+            "type" : "keyword"
+          }
+        }
+      }
+    }
+    
+    PUT my-index-000001/_doc/1
+    {
+      "my_text" : "text1",
+      "my_vector" : [0.5, 10, 6]
+    }
+    
+    PUT my-index-000001/_doc/2
+    {
+      "my_text" : "text2",
+      "my_vector" : [-0.5, 10, 10]
+    }
+    
+    PUT my-index-000001/_doc/1
+    {
+      "my_text" : "text1",
+      "my_vector" : [0.5, 10, 6]
+    }
+    
+    PUT my-index-000001/_doc/2
+    {
+      "my_text" : "text2",
+      "my_vector" : [-0.5, 10, 10]
+    }
+    
+    PUT my-index1
+    {
+      "mappings": {
+        "properties": {
+          "my_vector": {
+            "type": "dense_vector",
+            "dims": 3  
           },
           "my_text" : {
             "type" : "keyword"
@@ -1411,32 +1407,277 @@ elasticsearch 的Mapping，是以metadata fields組成的
     }
     ```
 
-    ```
-    PUT my_index/_doc/1
+    
+
+  - sparse_vector
+
+    ```json
+    PUT my-index-000001
     {
-      "my_text" : "histogram_1",
-      "my_histogram" : {
-          "values" : [0.1, 0.2, 0.3, 0.4, 0.5],
-          "counts" : [3, 7, 23, 12, 6]
-       },
-      "_doc_count": 45 
+      "mappings": {
+        "properties": {
+          "my_vector": {
+            "type": "sparse_vector"
+          },
+          "my_text" : {
+            "type" : "keyword"
+          }
+        }
+      }
     }
     
-    PUT my_index/_doc/2
+    PUT my-index-000001/_doc/1
     {
-      "my_text" : "histogram_2",
-      "my_histogram" : {
-          "values" : [0.1, 0.25, 0.35, 0.4, 0.45, 0.5],
-          "counts" : [8, 17, 8, 7, 6, 2]
-       },
-      "_doc_count": 62 
+      "my_text" : "text1",
+      "my_vector" : {"1": 0.5, "5": -0.5,  "100": 1}
+    }
+    
+    PUT my-index-000001/_doc/2
+    {
+      "my_text" : "text2",
+      "my_vector" : {"103": 0.5, "4": -0.5,  "5": 1, "11" : 1.2}
+    }
+    
+    PUT my-index1/_doc/1
+    {
+      "my_text" : "text1",
+      "my_vector" : {"1": 0.5, "5": -0.5,  "100": 1}
+    }
+    
+    PUT my-index2/_doc/2
+    {
+      "my_text" : "text2",
+      "my_vector" : {"103": 0.5, "4": -0.5,  "5": 1, "11" : 1.2}
+    }
+    
+    PUT my-index1
+    {
+      "mappings": {
+        "properties": {
+          "my_vector": {
+            "type": "sparse_vector"
+          },
+          "my_text" : {
+            "type" : "keyword"
+          }
+        }
+      }
     }
     ```
 
+    
 
-- 
+  - rank_features
 
-### Mapping與MySQL的Data Type差別
+    ```
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "pagerank": {
+            "type": "rank_feature" 
+          },
+          "url_length": {
+            "type": "rank_feature",
+            "positive_score_impact": false 
+          }
+        }
+      }
+    }
+    
+    PUT my-index-000001/_doc/1
+    {
+      "pagerank": 8,
+      "url_length": 22
+    }
+    
+    GET my-index-000001/_search
+    {
+      "query": {
+        "rank_feature": {
+          "field": "pagerank"
+        }
+      }
+    }
+    
+    PUT my-index1/_doc/1
+    {
+      "pagerank": 8,
+      "url_length": 22
+    }
+    
+    GET my-index1/_search
+    {
+      "query": {
+        "rank_feature": {
+          "field": "pagerank"
+        }
+      }
+    }
+    ```
+
+    
+
+- Spatial data types(空間資料類型)
+
+  - geo_point
+
+    ```
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "location": {
+            "type": "geo_point"
+          }
+        }
+      }
+    }
+    
+    PUT my-index-000001/_doc/1
+    {
+      "text": "Geopoint as an object",
+      "location": { 
+        "lat": 41.12,
+        "lon": -71.34
+      }
+    }
+    
+    PUT my-index-000001/_doc/2
+    {
+      "text": "Geopoint as a string",
+      "location": "41.12,-71.34" 
+    }
+    
+    PUT my-index-000001/_doc/3
+    {
+      "text": "Geopoint as a geohash",
+      "location": "drm3btev3e86" 
+    }
+    
+    PUT my-index-000001/_doc/4
+    {
+      "text": "Geopoint as an array",
+      "location": [ -71.34, 41.12 ] 
+    }
+    
+    PUT my-index-000001/_doc/5
+    {
+      "text": "Geopoint as a WKT POINT primitive",
+      "location" : "POINT (-71.34 41.12)" 
+    }
+    
+    GET my-index-000001/_search
+    {
+      "query": {
+        "geo_bounding_box": { 
+          "location": {
+            "top_left": {
+              "lat": 42,
+              "lon": -72
+            },
+            "bottom_right": {
+              "lat": 40,
+              "lon": -74
+            }
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+  - geo_shape
+
+    - `distance_error_pct`
+    - `points_only`
+    - `precision`
+    - `strategy`
+    - `tree_levels`
+    - `tree`
+
+    
+
+  - point
+
+    ```
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "location": {
+            "type": "point"
+          }
+        }
+      }
+    }
+    
+    PUT my-index-000001/_doc/1
+    {
+      "text": "Point as an object",
+      "location": { 
+        "x": 41.12,
+        "y": -71.34
+      }
+    }
+    
+    PUT my-index-000001/_doc/2
+    {
+      "text": "Point as a string",
+      "location": "41.12,-71.34" 
+    }
+    
+    
+    PUT my-index-000001/_doc/4
+    {
+      "text": "Point as an array",
+      "location": [41.12, -71.34] 
+    }
+    
+    PUT my-index-000001/_doc/5
+    {
+      "text": "Point as a WKT POINT primitive",
+      "location" : "POINT (41.12 -71.34)" 
+    }
+    ```
+
+    
+
+  - shape
+
+    ```
+    PUT /example
+    {
+      "mappings": {
+        "properties": {
+          "geometry": {
+            "type": "shape"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+- Other type
+
+  - percolator
+
+    由官方的Query DSL介紹
+
+#### 3.3 analyzer
+
+##### 	原理
+
+##### 	如何使用TK分詞器
+
+##### 	同義詞、分詞字典檔設定/使用
+
+
+
+**Mapping與MySQL的Data Type差別**
 
 |      | Mapping | MySQL                                 |
 | ---- | ------- | ------------------------------------- |
@@ -1458,7 +1699,7 @@ https://www.runoob.com/mysql/mysql-data-types.html
 https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html
 
 
-### Query DSL
+### 4. Query DSL
 
 - Query and filter context
 
@@ -2904,7 +3145,17 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
   - regexp
   - query_string
 
-### CURD
+**Dev Tools**
+
+Elasticsearch中的Kibana有個DevTool可以做設定，今天要介紹如何在Kibana上操作DevTool
+
+![elasticDevTool1](C:\xampp\htdocs\markdown_note\assets\images\elasticDevTool1.png)
+
+在左側寫好資料後，點選三角形圖示，會對應顯示Mapping的資料，可以用GET、POST、PUT、DELETE做CURD
+
+### 5.用laravel 如何Query Elasticsearch 取得Data
+
+CURD
 
 Elastic 也可以用url+get參數來查看資料，對應SQL的CURD，改用寫法
 
@@ -2971,16 +3222,6 @@ POST /customer/doc/1/_update?pretty
   "doc":{"yeat": 2018}
 }
 ```
-
-
-
-### Dev Tools
-
-Elasticsearch中的Kibana有個DevTool可以做設定，今天要介紹如何在Kibana上操作DevTool
-
-![elasticDevTool1](C:\xampp\htdocs\markdown_note\assets\images\elasticDevTool1.png)
-
-在左側寫好資料後，點選三角形圖示，會對應顯示Mapping的資料，可以用GET、POST、PUT、DELETE做CURD
 
 
 
