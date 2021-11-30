@@ -21,7 +21,27 @@
 
 什麼是solr?
 
-- Solr是一個獨立的企業搜尋伺服器，具有類似REST的API。您通過JSON，XML，CSV或二進位制檔案將文件放入其中（稱為“索引”）。您可以通過HTTP GET查詢它並接收JSON，XML，CSV或二進位制結果。
+- Solr是Apache Solr基於業界大名鼎鼎的java開源搜尋引擎Lucene，Lucene更多的是一個軟體包，還不能稱之為搜尋引擎，而solr則完成對lucene的封裝，是一個真正意義上的搜尋引擎框架。
+
+- 具有類似REST的API。您通過JSON，XML，CSV或二進位制檔案將文件放入其中（稱為“索引”）。您可以通過HTTP GET查詢它並接收JSON，XML，CSV或二進位制結果。
+
+- solr特點
+
+  - 全文索引
+
+  - 高亮
+
+  - 分面搜索
+
+  - 實時索引
+
+  - 動態聚類
+
+  - 資料庫集成
+
+  - NoSQL特性和豐富的文檔處理（例如Word和PDF文件）
+
+    
 
 ### 2. Elasticsearch  比對 MySQL
 
@@ -1140,7 +1160,8 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
     - [range](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-range-aggregation.html#search-aggregations-bucket-range-aggregation-histogram-fields) aggregation
     - [exists](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html) query
 
-    ```
+    ```json
+    //更新my-index-000001，id為1的資料，將my_text設定為histigram_1，my_histogram有多個value與counts
     PUT my-index-000001/_doc/1
     {
       "my_text" : "histogram_1",
@@ -1150,6 +1171,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
        }
     }
     
+    //更新my-index-000001，id為2的資料，將my_text設定為histigram_2，my_histogram有多個value與counts
     PUT my-index-000001/_doc/2
     {
       "my_text" : "histogram_2",
@@ -1158,6 +1180,62 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
           "counts" : [8, 17, 8, 7, 6, 2] 
        }
     }
+    
+    //查詢my-index-000001的my_histogram.values的最小值
+    POST /my-index-000001/_search?size=0
+    {
+      "aggs" : {
+        "min_histogram" : { "min" : { "field" : "my_histogram.values" } }
+      }
+    }
+    
+    //查詢my-index-000001的my_histogram.values的最大值
+    POST /my-index-000001/_search?size=0
+    {
+      "aggs" : {
+        "max_histogram" : { "max" : { "field" : "my_histogram.values" } }
+      }
+    }
+    
+    //查詢my-index-000001的my_histogram.values的加總值
+    POST /my-index-000001/_search?size=0
+    {
+      "aggs" : {
+        "total_histogram" : { "sum" : { "field" : "my_histogram.values" } }
+      }
+    }
+    
+    POST /my-index-000001/_search?size=0
+    {
+      "aggs" : {
+        "total_histogram" : { "value_count" : { "field" : "my_histogram.values" } }
+      }
+    }
+    
+    POST /my-index-000001/_search?size=0
+    {
+      "aggs" : {
+        "avg_histogram" : { "avg" : { "field" : "my_histogram.values" } }
+      }
+    }
+    
+    GET my-index-000001/_search?size=0&filter_path=aggregations
+    {
+      "aggs": {
+        "latency_ranges": {
+          "range": {
+            "field": "my_histogram.values",
+            "ranges": [
+              {"to": 2},
+              {"from": 2, "to": 3},
+              {"from": 3, "to": 10},
+              {"from": 10}
+            ]
+          }
+        }
+      }
+    }
+    
     
     PUT my-index1/_doc/
     {
@@ -1192,7 +1270,8 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
     - term_vector
     - meta
 
-    ```
+    ```json
+    //索引值my-index-000001設定full_name的type為text
     PUT my-index-000001
     {
       "mappings": {
@@ -1203,6 +1282,19 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
         }
       }
     }
+    
+    //索引值my-index-000001設定my_field的type為text，fielddata參數為true
+    PUT my-index-000001/_mapping
+    {
+      "properties": {
+        "my_field": { 
+          "type":     "text",
+          "fielddata": true
+        }
+      }
+    }
+    
+    
     
     PUT my-index1
     {
@@ -1220,6 +1312,8 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
   - annotated-text
 
+    使用mapper-annotated-text套件
+
     ```
     sudo bin/elasticsearch-plugin install mapper-annotated-text
     ```
@@ -1228,8 +1322,47 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
   - completion
 
-    ```
-    UT place
+    ```json
+    //索引值music，將suggest設定為completion，title為keyword
+    PUT music
+    {
+      "mappings": {
+        "properties": {
+          "suggest": {
+            "type": "completion"
+          },
+          "title": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+    
+    //更新索引值music，id為1的資料，將suggest設定input為Nevermind、Nirvana，weight為34
+    PUT music/_doc/1?refresh
+    {
+      "suggest" : {
+        "input": [ "Nevermind", "Nirvana" ],
+        "weight" : 34
+      }
+    }
+    
+    //查詢索引值music的suggest欄位
+    POST music/_search
+    {
+      "_source": "suggest",     
+      "suggest": {
+        "song-suggest": {
+          "prefix": "nir",
+          "completion": {
+            "field": "suggest", 
+            "size": 5           
+          }
+        }
+      }
+    }
+    
+    PUT place
     {
       "mappings": {
         "properties": {
@@ -1250,6 +1383,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
         }
       }
     }
+    
     PUT place_path_category
     {
       "mappings": {
@@ -1282,7 +1416,8 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
   - search_as_you_type
 
-    ```
+    ```json
+    //索引值my-index-000001，將my_field的類型設定為search_as_you_type
     PUT my-index-000001
     {
       "mappings": {
@@ -1310,8 +1445,9 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
   - token_count
 
-    ```
-    UT my-index-000001
+    ```json
+    //更新my-index-000001，將name設定為text，fields.length設定為token_count，analyzer為standard
+    PUT my-index-000001
     {
       "mappings": {
         "properties": {
@@ -1328,12 +1464,15 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
       }
     }
     
+    //更新my-index-000001，id為1的資料，將name設定為John Smith
     PUT my-index-000001/_doc/1
     { "name": "John Smith" }
     
+    //更新my-index-000001，id為2的資料，將name設定為Rachel Alice Williams
     PUT my-index-000001/_doc/2
     { "name": "Rachel Alice Williams" }
     
+    //查詢my-index-000001，所有資料的name欄位，找出有3個字段的資料
     GET my-index-000001/_search
     {
       "query": {
@@ -1343,15 +1482,31 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
       }
     }
     
+    ----------------------------
+    
+    //例如查詢my-index-000001，所有資料的name欄位，找出有2個字段的資料
+    //這時會查到John Smith的資料
+    GET my-index-000001/_search
+    {
+      "query": {
+        "term": {
+          "name.length": 2 
+        }
+      }
+    }
+    
+    
+    
     ```
-
+    
     
 
 - Document ranking types(文件排名)
 
   - dense_vector
 
-    ```
+    ```json
+    //索引值my-index-000001，將my_vector設定為dense_vector，並且只能放3個資料，my_text設定為text
     PUT my-index-000001
     {
       "mappings": {
@@ -1367,44 +1522,20 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
       }
     }
     
+    //更新my-index-000001，id為1的資料，將my_text設定為text1，my_vector設定為0.5、10、6
     PUT my-index-000001/_doc/1
     {
       "my_text" : "text1",
       "my_vector" : [0.5, 10, 6]
     }
     
+    //更新my-index-000001，id為2的資料，將my_text設定為text2，my_vector設定為-0.5、10、10
     PUT my-index-000001/_doc/2
     {
       "my_text" : "text2",
       "my_vector" : [-0.5, 10, 10]
     }
     
-    PUT my-index-000001/_doc/1
-    {
-      "my_text" : "text1",
-      "my_vector" : [0.5, 10, 6]
-    }
-    
-    PUT my-index-000001/_doc/2
-    {
-      "my_text" : "text2",
-      "my_vector" : [-0.5, 10, 10]
-    }
-    
-    PUT my-index1
-    {
-      "mappings": {
-        "properties": {
-          "my_vector": {
-            "type": "dense_vector",
-            "dims": 3  
-          },
-          "my_text" : {
-            "type" : "keyword"
-          }
-        }
-      }
-    }
     ```
 
     
@@ -1412,6 +1543,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
   - sparse_vector
 
     ```json
+    //索引值my-index-000001，將my_vector設定為sparse_vector，my_text設定為keyword
     PUT my-index-000001
     {
       "mappings": {
@@ -1426,50 +1558,38 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
       }
     }
     
+    //更新my-index-000001，id為1的資料，將my_text設定為text1，my_vector設定一組陣列
     PUT my-index-000001/_doc/1
     {
       "my_text" : "text1",
       "my_vector" : {"1": 0.5, "5": -0.5,  "100": 1}
     }
     
+    //更新my-index-000001，id為2的資料，將my_text設定為text2，my_vector設定一組陣列
     PUT my-index-000001/_doc/2
     {
       "my_text" : "text2",
       "my_vector" : {"103": 0.5, "4": -0.5,  "5": 1, "11" : 1.2}
     }
     
-    PUT my-index1/_doc/1
+    GET my-index-000001/_search
     {
-      "my_text" : "text1",
-      "my_vector" : {"1": 0.5, "5": -0.5,  "100": 1}
-    }
-    
-    PUT my-index2/_doc/2
-    {
-      "my_text" : "text2",
-      "my_vector" : {"103": 0.5, "4": -0.5,  "5": 1, "11" : 1.2}
-    }
-    
-    PUT my-index1
-    {
-      "mappings": {
-        "properties": {
-          "my_vector": {
-            "type": "sparse_vector"
-          },
-          "my_text" : {
-            "type" : "keyword"
-          }
+        "query" : {
+            "sparse_vector" : {
+                "field" : "sparse_vector"
+            }
         }
-      }
     }
+    
+    
     ```
 
     
 
   - rank_features
 
-    ```
+    ```json
+    //索引值my-index-000001，設定pagerank的類型為rank_feature，url_length的類型為rank_feature，資料為負數也可以做排名
     PUT my-index-000001
     {
       "mappings": {
@@ -1485,12 +1605,14 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
       }
     }
     
+    //更新my-index-000001，id為1的資料，pagerank設定為8，url_length設定為22
     PUT my-index-000001/_doc/1
     {
       "pagerank": 8,
       "url_length": 22
     }
     
+    //查詢my-index-000001，找rank_feature欄位名稱為pagerank的所有資料
     GET my-index-000001/_search
     {
       "query": {
@@ -1500,17 +1622,14 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
       }
     }
     
-    PUT my-index1/_doc/1
-    {
-      "pagerank": 8,
-      "url_length": 22
-    }
+    ----------------------------
     
+    //例如查詢成績排名的資料
     GET my-index1/_search
     {
       "query": {
         "rank_feature": {
-          "field": "pagerank"
+          "field": "scoreRank"
         }
       }
     }
@@ -1522,7 +1641,8 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
   - geo_point
 
-    ```
+    ```json
+    //索引值my-index-000001，location的類型為geo_point
     PUT my-index-000001
     {
       "mappings": {
@@ -1534,6 +1654,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
       }
     }
     
+    //更新my-index-000001，id為1的資料，location.lat為41.12，location.lon為-71.34
     PUT my-index-000001/_doc/1
     {
       "text": "Geopoint as an object",
@@ -1543,30 +1664,35 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
       }
     }
     
+    //更新my-index-000001，id為2的資料，text為Geopoint as a string，location為41.12,-71.34
     PUT my-index-000001/_doc/2
     {
       "text": "Geopoint as a string",
       "location": "41.12,-71.34" 
     }
     
+    //更新my-index-000001，id為3的資料，text為Geopoint as a geohash，location為drm3btev3e86
     PUT my-index-000001/_doc/3
     {
       "text": "Geopoint as a geohash",
       "location": "drm3btev3e86" 
     }
     
+    //更新my-index-000001，id為4的資料，text為Geopoint as an array，location為[ -71.34, 41.12 ]
     PUT my-index-000001/_doc/4
     {
       "text": "Geopoint as an array",
       "location": [ -71.34, 41.12 ] 
     }
     
+    //更新my-index-000001，id為5的資料，text為Geopoint as a WKT POINT primitive，location為POINT (-71.34 41.12)
     PUT my-index-000001/_doc/5
     {
       "text": "Geopoint as a WKT POINT primitive",
       "location" : "POINT (-71.34 41.12)" 
     }
     
+    //查詢my-index-000001
     GET my-index-000001/_search
     {
       "query": {
@@ -1590,18 +1716,99 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
   - geo_shape
 
-    - `distance_error_pct`
-    - `points_only`
-    - `precision`
-    - `strategy`
-    - `tree_levels`
-    - `tree`
+    ```json
+    //索引值my-index-000001，設定location的類型為geo_shape
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "location": {
+            "type": "geo_shape"
+          }
+        }
+      }
+    }
+    ```
 
-    
+    - point
+
+      ```json
+      //更新my-index-000001，id為1的資料，location的類型為point，coordinates為[-77.03653, 38.897676]
+      POST my-index-000001/_doc/1
+      {
+        "location" : {
+          "type" : "point",
+          "coordinates" : [-77.03653, 38.897676]
+        }
+      }
+      
+      //更新my-index-000001，id為2的資料，location為POINT (-77.03653 38.897676)
+      POST my-index-000001/_doc/2
+      {
+        "location" : "POINT (-77.03653 38.897676)"
+      }
+      
+      //更新my-index-000001，id為3的資料，location的類型為linestring
+      POST my-index-000001/_doc/3
+      {
+        "location" : {
+          "type" : "linestring",
+          "coordinates" : [[-77.03653, 38.897676], [-77.009051, 38.889939]]
+        }
+      }
+      
+      //更新my-index-000001，id為4的資料，location為LINESTRING (-77.03653 38.897676, -77.009051 38.889939)
+      POST my-index-000001/_doc/4
+      {
+        "location" : "LINESTRING (-77.03653 38.897676, -77.009051 38.889939)"
+      }
+      ```
+
+    - polygon
+
+      ```json
+      //更新my-index-000001，id為5的資料，location的類型為polygon，coordinates為[ [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ] ]
+      POST my-index-000001/_doc/5
+      {
+        "location" : {
+          "type" : "polygon",
+          "coordinates" : [
+            [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ]
+          ]
+        }
+      }
+      
+      //更新my-index-000001，id為6的資料，location為POLYGON ((100.0 0.0, 101.0 0.0, 101.0 1.0, 100.0 1.0, 100.0 0.0))
+      POST my-index-000001/_doc/6
+      {
+        "location" : "POLYGON ((100.0 0.0, 101.0 0.0, 101.0 1.0, 100.0 1.0, 100.0 0.0))"
+      }
+      
+      //更新my-index-000001，id為7的資料，location的類型為polygon，coordinates為[ [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ], [ [100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2] ] ]
+      POST my-index-000001/_doc/7
+      {
+        "location" : {
+          "type" : "polygon",
+          "coordinates" : [
+            [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ],
+            [ [100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2] ]
+          ]
+        }
+      }
+      
+      //更新my-index-000001，id為8的資料，location為POLYGON ((100.0 0.0, 101.0 0.0, 101.0 1.0, 100.0 1.0, 100.0 0.0))
+      POST my-index-000001/_doc/8
+      {
+        "location" : "POLYGON ((100.0 0.0, 101.0 0.0, 101.0 1.0, 100.0 1.0, 100.0 0.0), (100.2 0.2, 100.8 0.2, 100.8 0.8, 100.2 0.8, 100.2 0.2))"
+      }
+      ```
+
+      
 
   - point
 
-    ```
+    ```json
+    //索引值my-index-000001，設定location的類型為point
     PUT my-index-000001
     {
       "mappings": {
@@ -1613,6 +1820,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
       }
     }
     
+    //更新my-index-000001，id為1的資料，text為Point as an object，location.x為41.12，location.y為-71.34
     PUT my-index-000001/_doc/1
     {
       "text": "Point as an object",
@@ -1622,19 +1830,21 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
       }
     }
     
+    //更新my-index-000001，id為2的資料，text為Point as a string，location為41.12,-71.34
     PUT my-index-000001/_doc/2
     {
       "text": "Point as a string",
       "location": "41.12,-71.34" 
     }
     
-    
+    //更新my-index-000001，id為4的資料，text為Point as array，location為[41.12, -71.34]
     PUT my-index-000001/_doc/4
     {
       "text": "Point as an array",
       "location": [41.12, -71.34] 
     }
     
+    //更新my-index-000001，id為5的資料，text為Point as a WKT POINT primitive，location為POINT (41.12 -71.34)
     PUT my-index-000001/_doc/5
     {
       "text": "Point as a WKT POINT primitive",
@@ -1647,7 +1857,8 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
   - shape
 
     ```
-    PUT /example
+    //索引值my-index-000001，設定location的類型為shape
+    PUT my-index-000001
     {
       "mappings": {
         "properties": {
@@ -1659,7 +1870,106 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
     }
     ```
 
-    
+    - Point
+
+      ```
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "point",
+          "coordinates" : [-377.03653, 389.897676]
+        }
+      }
+      
+      POST /example/_doc
+      {
+        "location" : "POINT (-377.03653 389.897676)"
+      }
+      ```
+
+    - LineString
+
+      ```
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "linestring",
+          "coordinates" : [[-377.03653, 389.897676], [-377.009051, 389.889939]]
+        }
+      }
+      
+      POST /example/_doc
+      {
+        "location" : "LINESTRING (-377.03653 389.897676, -377.009051 389.889939)"
+      }
+      ```
+
+    - polygon
+
+      ```
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "polygon",
+          "coordinates" : [
+            [ [1000.0, -1001.0], [1001.0, -1001.0], [1001.0, -1000.0], [1000.0, -1000.0], [1000.0, -1001.0] ]
+          ]
+        }
+      }
+      
+      POST /example/_doc
+      {
+        "location" : "POLYGON ((1000.0 -1001.0, 1001.0 -1001.0, 1001.0 -1000.0, 1000.0 -1000.0, 1000.0 -1001.0))"
+      }
+      
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "polygon",
+          "coordinates" : [
+            [ [1000.0, -1001.0], [1001.0, -1001.0], [1001.0, -1000.0], [1000.0, -1000.0], [1000.0, -1001.0] ],
+            [ [1000.2, -1001.2], [1000.8, -1001.2], [1000.8, -1001.8], [1000.2, -1001.8], [1000.2, -1001.2] ]
+          ]
+        }
+      }
+      
+      POST /example/_doc
+      {
+        "location" : "POLYGON ((1000.0 1000.0, 1001.0 1000.0, 1001.0 1001.0, 1000.0 1001.0, 1000.0 1000.0), (1000.2 1000.2, 1000.8 1000.2, 1000.8 1000.8, 1000.2 1000.8, 1000.2 1000.2))"
+      }
+      
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "polygon",
+          "orientation" : "clockwise",
+          "coordinates" : [
+            [ [1000.0, 1000.0], [1000.0, 1001.0], [1001.0, 1001.0], [1001.0, 1000.0], [1000.0, 1000.0] ]
+          ]
+        }
+      }
+      ```
+
+    - MultPoint
+
+      ```
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "multipoint",
+          "coordinates" : [
+            [1002.0, 1002.0], [1003.0, 2000.0]
+          ]
+        }
+      }
+      
+      POST /example/_doc
+      {
+        "location" : "MULTIPOINT (1002.0 2000.0, 1003.0 2000.0)"
+      }
+      ```
+
+      
 
 - Other type
 
