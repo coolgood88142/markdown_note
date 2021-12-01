@@ -45,6 +45,16 @@
 
 ### 2. Elasticsearch  比對 MySQL
 
+| Elasticsearch | MySQL               |
+| ------------- | ------------------- |
+| Index         | DB                  |
+| Type          | Table               |
+| Document      | Row                 |
+| Field         | Column              |
+| Mapping       | Schema              |
+| GET..         | Select * From table |
+| POST          | Update table Set    |
+
 ### 3. Elasticsearch Index介紹
 
 elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數據做篩選，Elasticsearch 建立每一筆資料時，都以JSON document方式呈現
@@ -63,27 +73,165 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
 在Kibnna裡，會看到每筆資料都會有index，每筆index都有記錄，可以存放哪些欄位以及搜尋設定，index有3個部分組成
 
-- data：由document 組成
+- data：由document 組成，使用index、get、post、update等等指令，實現CURD
+
+  - 單個document 
+    - index
+    - get
+    - post
+    - update
+  - 多個document 
+    - Multi get
+    - Bulk
+    - Delete by query
+    - Update by query
+    - Reindex
+
+  每個document，都會存放index、type、id、 version等等資訊，來定義index的資訊。
+
+  ```json
+  {
+    "_index" : "elsatic",
+    "_type" : "_doc",
+    "_id" : "1",
+    "_version" : 1,
+    "result" : "created",
+    "_shards" : {
+      "total" : 2,
+      "successful" : 1,
+      "failed" : 0
+    },
+    "_seq_no" : 0,
+    "_primary_term" : 1
+  }
+  ```
+
+  
+
 - mapping：設定欄位與搜尋範圍
+
+  每個index的資料都用放在mapping，記錄欄位的類型
+
+  ```json
+  {
+    "mappings": {
+      "_doc": {
+        "properties": {
+          "my_id": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "my_join_field": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "pass-grades": {
+            "type": "boolean"
+          },
+          "student": {
+            "type": "alias",
+            "path": "pass-grades"
+          },
+          "text": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ```
+
 - setting：設定篩選
 
-```php
-{
-  "_index" : "elsatic",
-  "_type" : "_doc",
-  "_id" : "1",
-  "_version" : 1,
-  "result" : "created",
-  "_shards" : {
-    "total" : 2,
-    "successful" : 1,
-    "failed" : 0
-  },
-  "_seq_no" : 0,
-  "_primary_term" : 1
-}
+  定義inedx的欄位要存放多少資料，做篩選
 
-```
+  ```json
+  {
+    "settings": {
+      "index": {
+        "routing": {
+          "allocation": {
+            "include": {
+              "_tier_preference": "data_content"
+            }
+          }
+        },
+        "number_of_shards": "1",
+        "provided_name": "my-index1",
+        "creation_date": "1638069278307",
+        "number_of_replicas": "1",
+        "uuid": "GIgVgQpxT2CCdcUSP1H6QA",
+        "version": {
+          "created": "7150199"
+        }
+      }
+    },
+    "defaults": {
+      "index": {
+        "flush_after_merge": "512mb",
+        "final_pipeline": "_none",
+        "max_inner_result_window": "100",
+        "unassigned": {
+          "node_left": {
+            "delayed_timeout": "1m"
+          }
+        },
+        "max_terms_count": "65536",
+        "rollup": {
+          "source": {
+            "name": "",
+            "uuid": ""
+          }
+        },
+        "lifecycle": {
+          "name": "",
+          "parse_origination_date": "false",
+          "step": {
+            "wait_time_threshold": "12h"
+          },
+          "indexing_complete": "false",
+          "rollover_alias": "",
+          "origination_date": "-1"
+        },
+        "routing_partition_size": "1",
+        "force_memory_term_dictionary": "false",
+        "max_docvalue_fields_search": "100",
+        "merge": {
+          "scheduler": {
+            "max_thread_count": "2",
+            "auto_throttle": "true",
+            "max_merge_count": "7"
+          },
+          "policy": {
+            "floor_segment": "2mb",
+            "max_merge_at_once_explicit": "30",
+            "max_merge_at_once": "10",
+            "max_merged_segment": "5gb",
+            "expunge_deletes_allowed": "10.0",
+            "segments_per_tier": "10.0",
+            "deletes_pct_allowed": "33.0"
+          }
+        },
+        "max_refresh_listeners": "1000",
+        "max_regex_length": "1000",
+        ....
+  ```
 
 #### 3.2 field Data Type
 
@@ -1980,6 +2128,12 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 #### 3.3 analyzer
 
 ##### 	原理
+
+analyzer是專門處理分詞的組件，由三個部份組成
+
+- `Character Filter`：針對原始文件進行處理，例如：去除 HTML tag
+- `Tokenizer`：根據規則切分 term
+- oken Filter：將分割後的 term 進行加工，例如：轉小寫、刪除 stopwords、增加同義詞、stemming(例如將 box, boxed, boxing … 等字轉換成 box)
 
 ##### 	如何使用TK分詞器
 
