@@ -2,58 +2,132 @@
 
 ## 大綱
 
+**大綱上要跟每個標題、項目符號的文字相同**
+
 1. Elasticsearch vs solr
+
 2. Elasticsearch  比對 MySQL
+
 3. Elasticsearch Index介紹
-   1. index組成
-   2. field-data type介紹、使用Mapping
-   3. analyzer
-      1. 原理
-      2. 如何使用TK分詞
-      3. 同義詞、分詞字點檔設定/使用
+
+   3.1index組成
+
+   - data
+     - 單個document 
+       - index
+       - get
+       - post
+       - update
+     - 多個document 
+       - Multi get
+       - Bulk
+       - Delete by query
+       - Update by query
+       - Reindex
+   - mapping
+   - setting
+
+   3.2 field-data Type
+
+   - metadata field
+     - _index
+     - _type
+     - _id
+     - _scource
+     - _size
+     - _doc_count
+   - data type
+     - common types
+       - binary
+       - boolean
+       - Keywords
+       - Numbers
+       - Dates
+       - alias
+     - Objects and relational types
+       - Object
+       - flattened
+       - nested
+       - join
+     - Structured data types
+       - Range
+       - ip
+       - version
+       - murmur3
+     - Aggregate data types
+       - aggregate_metric_double
+       - histogram
+     - Text search types
+       - text fields
+       - annotated-text
+       - completion
+       - search_as_you_type
+       - token_count
+     - Document ranking types
+       - dense_vector
+       - sparse_vector
+       - rank_feature
+       - rank_features
+     - Spatial data types
+       - geo_point
+       - geo_shape
+       - point
+       - shape
+     - 
+
+   3.3.analyzer
+
+   - 原理
+   - 如何使用iK分詞
+   - 同義詞、分詞字點檔設定/使用
+
 4. Query DSL介紹
-   1. 查詢語法
-   2. 排序
-   3. 高量
+
+   4.1 查詢語法
+
+   4.2 排序
+
+   4.3 高量
+
 5. 用laravel 如何Query Elasticsearch 取得Data
 
 ### 1. Elasticsearch vs solr
 
 什麼是solr?
 
-- Solr是Apache Solr基於業界大名鼎鼎的java開源搜尋引擎Lucene，Lucene更多的是一個軟體包，還不能稱之為搜尋引擎，而solr則完成對lucene的封裝，是一個真正意義上的搜尋引擎框架。
+- Solr是Apache Solr基於java開源搜尋引擎Lucene，Lucene更多的是一個軟體包，還不能稱之為搜尋引擎，而solr則完成對lucene的封裝，是一個真正意義上的搜尋引擎框架。
 
 - 具有類似REST的API。您通過JSON，XML，CSV或二進位制檔案將文件放入其中（稱為“索引”）。您可以通過HTTP GET查詢它並接收JSON，XML，CSV或二進位制結果。
 
 - solr特點
 
   - 全文索引
-
   - 高亮
-
   - 分面搜索
-
   - 實時索引
-
   - 動態聚類
-
   - 資料庫集成
-
   - NoSQL特性和豐富的文檔處理（例如Word和PDF文件）
 
-    
+| 項目 | Elasticsearch  | solr |
+| ---- | -------------- | ---- |
+| 格式 | xml、csv、json | json |
+|      |                |      |
+|      |                |      |
+
+
 
 ### 2. Elasticsearch  比對 MySQL
 
-| Elasticsearch | MySQL               |
-| ------------- | ------------------- |
-| Index         | DB                  |
-| Type          | Table               |
-| Document      | Row                 |
-| Field         | Column              |
-| Mapping       | Schema              |
-| GET..         | Select * From table |
-| POST          | Update table Set    |
+| 項目     | Elasticsearch | MySQL               |
+| -------- | ------------- | ------------------- |
+| 數據庫   | Index         | DB                  |
+| 表格     | Type          | Table               |
+| 列       | Document      | Row                 |
+| 欄位     | Field         | Column              |
+| 資料架構 | Mapping       | Schema              |
+| 查詢     | GET..         | Select * From table |
+| 更新     | POST          | Update table Set    |
 
 ### 3. Elasticsearch Index介紹
 
@@ -61,13 +135,15 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
 - 定義 index 中每個 term 的名稱
 
-- 定義每個 term 的資料型態，例如：string, Interger, boolean
+- 定義每個 term 的資料型態，例如：string、Interger、boolean
 
 - term & inverted index 的相關配置 (要使用哪個 Analyzer，或是不被索引)
 
 - 包含多個 Key/Value 組合，就像是資料庫中的一筆資料
 - 但跟資料庫不一樣的是，JSON 格式靈活不受限，不須預先定義格式
 - 每個 Key/Value 的類型(string, number, boolean … etc) 可以自己指定或是由 Elasticsearch 幫忙推算
+
+term是指field的單位，跟match的用意是一樣，兩種都是做Query用的，差別在於match可以對field做分詞查詢，但是term不行
 
 #### 3.1 Index組成
 
@@ -89,6 +165,8 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
   每個document，都會存放index、type、id、 version等等資訊，來定義index的資訊。
 
+  去找官方文件找index怎麼組成的，裡面會有index、body、mapping等等，會跟程式碼建立index內容差不多
+  
   ```json
   {
     "_index" : "elsatic",
@@ -103,14 +181,14 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
     },
     "_seq_no" : 0,
     "_primary_term" : 1
-  }
+}
   ```
-
-  
 
 - mapping：設定欄位與搜尋範圍
 
   每個index的資料都用放在mapping，記錄欄位的類型
+
+  補上中文說明，要解釋mapping內容中每層在做什麼?
 
   ```json
   {
@@ -161,6 +239,8 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
   定義inedx的欄位要存放多少資料，做篩選
 
+  補上中文說明，要解釋setting內容中每層在做什麼?
+  
   ```json
   {
     "settings": {
@@ -237,7 +317,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
 ##### metadata field
 
-- index
+- _index
 
   索引值，可以當我每筆資料的ID，如果索引值需要做多筆查詢時，有時需要添加索引相關的子查詢。
 
@@ -2004,7 +2084,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
   - shape
 
-    ```
+    ```json
     //索引值my-index-000001，設定location的類型為shape
     PUT my-index-000001
     {
@@ -2020,7 +2100,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
     - Point
 
-      ```
+      ```json
       POST /example/_doc
       {
         "location" : {
@@ -2037,7 +2117,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
     - LineString
 
-      ```
+      ```json
       POST /example/_doc
       {
         "location" : {
@@ -2054,7 +2134,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
     - polygon
 
-      ```
+      ```json
       POST /example/_doc
       {
         "location" : {
@@ -2100,7 +2180,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
     - MultPoint
 
-      ```
+      ```json
       POST /example/_doc
       {
         "location" : {
@@ -2131,27 +2211,391 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 
 analyzer是專門處理分詞的組件，由三個部份組成
 
-- `Character Filter`：針對原始文件進行處理，例如：去除 HTML tag
-- `Tokenizer`：根據規則切分 term
-- oken Filter：將分割後的 term 進行加工，例如：轉小寫、刪除 stopwords、增加同義詞、stemming(例如將 box, boxed, boxing … 等字轉換成 box)
+- Character Filter：針對原始文件進行處理，例如：去除 HTML tag
+- Tokenizer：按照規則進行分詞處理
+- Token Filter：將分詞進行加工，例如：過濾分詞、大寫轉小寫、增加同義詞、合併同義詞等等
 
-ik 分詞原理
+Elasticsearch 內建了 3 種字元過濾器、10 種分詞器和 31 種詞元過濾器。此外，還可以通過外掛機制獲取第三方實現的相應元件。開發者可以按照自身需求客製化 Analyzer 的組成部分。
+
+ElasticSearch 預設的分詞器並不是處理中文分詞的最優選擇，目前業界主要使用 ik 進行中文分詞。
+
+##### 	如何使用iK分詞器
 
 ik是目前較為主流的 ElasticSearch 開源中文分詞元件，它內建了基礎的中文詞庫和分詞演演算法幫忙開發者快速構建中文分詞和搜尋功能，它還提供了擴充套件詞庫字典和遠端字典等功能，方便開發者擴充網路新詞或流行語。
 
+ElasticSearch 官網有提供ik分詞器的[下載點](https://github.com/medcl/elasticsearch-analysis-ik)，這裡要注意下載前，**ik的版本要跟ElasticSearch一樣**，下載完之後，在ElasticSearch 目錄的plugins，建立ik資料夾，解壓縮後放在ik資料夾裡面
+
+另一種方法是使用指令下載，開cmd到ElasticSearch/bin目錄底下，/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.15.1/elasticsearch-analysis-ik-7.15.1.zip
+
+解壓縮之後，重新啟動ElasticSearch 會看到analysis-ik
+
+![elasticDevTool4](C:\xampp\htdocs\markdown_note\assets\images\elasticDevTool4.png)
+
+ik有提供3種內建詞典分別是：
+
 - main.dic：主詞典，包括日常的通用詞語，比如程式設計師和程式設計等；
-- quantifier.dic：量詞詞典，包括日常的量詞，比如米、公頃和小時等；
-- stopword.dic：停用詞，主要指英語的停用詞，比如 a、such、that 等。
+- quantifier.dic：量詞詞典，包括日常的量詞，比如公分、公尺和小時等；
+- stopword.dic：停用詞，主要指英語的停用詞，比如 a、what、that 等。
 
-##### 	如何使用TK分詞器
+另外，使用者可以在ik/config/IKAnalyzer.cfg.xml做修改，自行更換自訂的dic
 
-- 使用字元過濾器（Character filters），對原始的文字進行一些處理，例如去掉空白字元等；
-- 使用分詞器（Tokenizer），對原始的文字進行分詞處理，得到一些詞元（tokens）；
-- 使用詞元過濾器（Token filters），對上一步得到的詞元繼續進行處理，例如改變詞元（小寫化），刪除詞元（刪除量詞）或增加詞元（增加同義詞），合併同義詞等。
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>IK Analyzer 擴充套件設定</comment>
+  <!--使用者可以在這裡設定自己的擴充套件字典 -->
+  <entry key="ext_dict">custom/mydict.dic</entry>
+   <!--使用者可以在這裡設定自己的擴充套件停止詞字典-->
+  <entry key="ext_stopwords">custom/ext_stopword.dic</entry>
+   <!--使用者可以在這裡設定遠端擴充套件字典 -->
+  <entry key="remote_ext_dict">location</entry>
+   <!--使用者可以在這裡設定遠端擴充套件停止詞字典-->
+  <entry key="remote_ext_stopwords">http://xxx.com/xxx.dic</entry>
+</properties>
+```
 
-##### 	同義詞、分詞字典檔設定/使用
+##### 	分詞、同義詞字典檔設定/使用
 
+- 分詞
 
+  在ElasticSearch目錄的`plugins\ik\config\IKAnalyzer.cfg.xml`，將`key="ext_dict"`套用的dic檔案設定分詞，雖然ik的my.dic有設定分詞，但是全都是簡體字，如果要設定繁體字，要自行建立
+
+  例如：蘋果、手機、蘋果手機
+
+  ```txt
+  蘋果
+  手機
+  蘋果手機
+  ```
+
+  ```json
+  //可以用兩種查詢查中文分詞，一種是找出蘋果手機這個分詞，另一種找出蘋果手機的全部分詞
+  POST _analyze
+  {
+    "text": "蘋果手機",
+    "analyzer": "ik_smart"
+  }
+  
+  {
+    "tokens" : [
+      {
+        "token" : "蘋果手機",
+        "start_offset" : 0,
+        "end_offset" : 4,
+        "type" : "CN_WORD",
+        "position" : 0
+      }
+    ]
+  }
+  
+  ----------------------------
+  
+  POST _analyze
+  {
+    "text": "蘋果手機",
+    "analyzer": "ik_max_word"
+  }
+  
+  {
+    "tokens" : [
+      {
+        "token" : "蘋果手機",
+        "start_offset" : 0,
+        "end_offset" : 4,
+        "type" : "CN_WORD",
+        "position" : 0
+      },
+      {
+        "token" : "蘋果",
+        "start_offset" : 0,
+        "end_offset" : 2,
+        "type" : "CN_WORD",
+        "position" : 1
+      },
+      {
+        "token" : "手機",
+        "start_offset" : 2,
+        "end_offset" : 4,
+        "type" : "CN_WORD",
+        "position" : 2
+      }
+    ]
+  }
+  
+  ----------------------------
+  
+  //如果沒設定的分詞的話，系統會把中文字一個一個拆開，每個都是視為分詞
+  POST _analyze
+  {
+    "text": "安卓手雞",
+    "analyzer": "ik_smart"
+  }
+  
+  {
+    "tokens" : [
+      {
+        "token" : "安",
+        "start_offset" : 0,
+        "end_offset" : 1,
+        "type" : "CN_CHAR",
+        "position" : 0
+      },
+      {
+        "token" : "卓",
+        "start_offset" : 1,
+        "end_offset" : 2,
+        "type" : "CN_CHAR",
+        "position" : 1
+      },
+      {
+        "token" : "手",
+        "start_offset" : 2,
+        "end_offset" : 3,
+        "type" : "CN_CHAR",
+        "position" : 2
+      },
+      {
+        "token" : "雞",
+        "start_offset" : 3,
+        "end_offset" : 4,
+        "type" : "CN_CHAR",
+        "position" : 3
+      }
+    ]
+  }
+  ```
+
+- 同義詞
+
+  使用同義詞有兩種方法，一種是用ElasticSearch 的Synonym建立，另一種是自訂同義詞
+
+  - Synonym
+
+    在建立索引值時，用synonym設定好同義詞，官網有介紹到synonym_graph
+
+    例如：iPhone與蘋果手機為同義詞
+
+    這裡要注意，範例中使用蘋果手機，必須要先建立好，蘋果手機這個分詞後，在設定同義詞。
+
+    ```json
+    //建立索引值test_synonym1
+    PUT test_synonym1
+    {
+      "settings": {
+        "analysis": {
+          "filter": {
+            "my_synonyms": {
+              "type": "synonym",
+              "synonyms": [
+                "iPhone, 蘋果手機"
+              ]
+            }
+          },
+          "analyzer": {
+            "my_analyzer": {
+              "tokenizer": "standard",
+              "filter": [
+                "my_synonyms"
+              ]
+            }
+          }
+        },
+        "number_of_shards": 1
+      },
+      "mappings": {
+        "properties": {
+          "content": {
+            "type": "text",
+            "analyzer": "my_analyzer"
+          }
+        }
+      }
+    
+    //索引值test_synonym的my_analyzer，查詢iPhone
+    POST test_synonym1/_analyze
+    {
+      "text": "iPhone",
+      "analyzer": "my_analyzer"
+    }
+    
+    //查詢結果，iPhone與蘋果手機都會顯示
+    {
+      "tokens" : [
+        {
+          "token" : "iphone",
+          "start_offset" : 4,
+          "end_offset" : 10,
+          "type" : "<ALPHANUM>",
+          "position" : 4
+        },
+        {
+          "token" : "蘋",
+          "start_offset" : 4,
+          "end_offset" : 10,
+          "type" : "SYNONYM",
+          "position" : 4
+        },
+        {
+          "token" : "果",
+          "start_offset" : 4,
+          "end_offset" : 10,
+          "type" : "SYNONYM",
+          "position" : 5
+        },
+        {
+          "token" : "手",
+          "start_offset" : 4,
+          "end_offset" : 10,
+          "type" : "SYNONYM",
+          "position" : 6
+        },
+        {
+          "token" : "機",
+          "start_offset" : 4,
+          "end_offset" : 10,
+          "type" : "SYNONYM",
+          "position" : 7
+        }
+      ...
+    ```
+
+    ```json
+    //test_synonym1建立一筆資料
+    PUT test_synonym1/_doc/1
+    {
+      "content": "我有一隻蘋果手機"
+    }
+    
+    //查詢索引值test_synonym1，來驗證蘋果手機，這個名詞否為同義詞
+    GET test_synonym1/_validate/query?rewrite=true
+    {
+      "query": {
+        "match": {
+          "content": "蘋果手機"
+        }
+      }
+    }
+    
+    //查詢結果，搜尋蘋果手機時，也會搜尋到iphone
+    {
+      "_shards" : {
+        "total" : 1,
+        "successful" : 1,
+        "failed" : 0
+      },
+      "valid" : true,
+      "explanations" : [
+        {
+          "index" : "myindex4",
+          "valid" : true,
+          "explanation" : """content:"蘋 果 手 機" content:iphone"""
+        }
+      ]
+    }
+    
+    ----------------------------
+    //查詢我有一隻iPhone
+    GET test_synonym1/_search
+    {
+      "query": {
+        "match": {
+          "content": "我有一隻iPhone"
+        }
+      }
+    }
+    
+    //這時系統會找到，剛建立的我有一隻蘋果手機
+    {
+        ...
+        "hits" : {
+        "total" : {
+          "value" : 2,
+          "relation" : "eq"
+        },
+        "max_score" : 1.6215926,
+        "hits" : [
+          {
+            "_index" : "myindex4",
+            "_type" : "_doc",
+            "_id" : "1",
+            "_score" : 1.6215926,
+            "_source" : {
+              "content" : "我有一隻蘋果手機"
+            }
+          },
+         ...
+    }
+    
+    ```
+
+  - 自訂同義詞
+
+    在ElasticSearch 目錄的config/analysis，建立synonym.txt
+
+    例如：iPhone與蘋果手機為同義詞
+
+    ```txt
+    iPhone,蘋果手機
+    ```
+
+    ```json
+    //建立索引值test_synonym2
+    PUT test_synonym2
+    {
+        "settings": {
+    		"index" : {
+                "analysis" : {
+                    "analyzer" : {
+                        "synonym" : {
+                            "tokenizer" : "whitespace",
+                            "filter" : ["my_synonyms"]
+                        }
+                    },
+                    "filter" : {
+                        "my_synonyms" : {
+                            "type" : "synonym",
+                            "synonyms_path" : "analysis/synonym.txt"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    //test_synonym2建立一筆資料
+    PUT test_synonym2/_doc/1
+    {
+      "content": "我有一隻蘋果手機"
+    }
+    
+    //查詢我有一隻iPhone，這筆資料
+    GET test_synonym2/_search
+    {
+      "query": {
+        "match": {
+          "content": "我有一隻iPhone"
+        }
+      }
+    }
+    
+    //這時系統會找到，剛建立的我有一隻蘋果手機
+    {
+        ...
+        "hits" : [
+          {
+            "_index" : "test_synonym2",
+            "_type" : "_doc",
+            "_id" : "1",
+            "_score" : 1.1507283,
+            "_source" : {
+              "content" : "我有一隻蘋果手機"
+            }
+          }
+        ]
+        ...
+    }
+    ```
 
 **Mapping與MySQL的Data Type差別**
 
@@ -2162,20 +2606,11 @@ ik是目前較為主流的 ElasticSearch 開源中文分詞元件，它內建了
 | 數值 | Numbers | INTEGER、DOUBLE、FLOAT                |
 |      |         |                                       |
 
-https://ithelp.ithome.com.tw/articles/10241212
-
-https://www.itread01.com/content/1564456805.html
-
-https://www.itread01.com/content/1549391948.html
-
-https://blog.tienyulin.com/elasticsearch-kibana-command-dsl-docker-compose/
-
-https://www.runoob.com/mysql/mysql-data-types.html
-
-https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html
 
 
 ### 4. Query DSL
+
+#### 	4.1 查詢語法
 
 - Query and filter context
 
@@ -2217,38 +2652,37 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
   使用多種條件，去搜尋欄位中的資料
 
   - bool(布林值)
-
     - must：有符合的字段
     - filter：過濾欄位查詢
     - should：有包含的字段
     - must_not：不包含的字段
 
-    ```json
-    POST _search
-    {
-      "query": {
-        "bool" : {
-          "must" : {
-            "term" : { "user.id" : "kimchy" }
-          },
-          "filter": {
-            "term" : { "tags" : "production" }
-          },
-          "must_not" : {
-            "range" : {
-              "age" : { "gte" : 10, "lte" : 20 }
-            }
-          },
-          "should" : [
-            { "term" : { "tags" : "env1" } },
-            { "term" : { "tags" : "deployed" } }
-          ],
-          "minimum_should_match" : 1,
-          "boost" : 1.0
-        }
+  ```json
+  POST _search
+  {
+    "query": {
+      "bool" : {
+        "must" : {
+          "term" : { "user.id" : "kimchy" }
+        },
+        "filter": {
+          "term" : { "tags" : "production" }
+        },
+        "must_not" : {
+          "range" : {
+            "age" : { "gte" : 10, "lte" : 20 }
+          }
+        },
+        "should" : [
+          { "term" : { "tags" : "env1" } },
+          { "term" : { "tags" : "deployed" } }
+        ],
+        "minimum_should_match" : 1,
+        "boost" : 1.0
       }
     }
-    ```
+  }
+  ```
 
   - boosting(提升方法)
 
@@ -2348,6 +2782,8 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Intervals(間隔查詢)
 
+    可以一個或多個條件，針對某一個欄位做查詢
+
     - match(取得相同的文字)
 
       - query：必填，查詢文字
@@ -2405,6 +2841,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
       - script：設定腳本
 
     ```json
+    //查詢my favorite food這段文字，後面要接上hot water或cold porridge，有符合條件才會找的到
     POST _search
     {
       "query": {
@@ -2436,8 +2873,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     }
     ```
 
-    
-
   - Match
 
     - query：必填，查詢文字
@@ -2452,12 +2887,13 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     - operator：設定query的值，修改查詢條件
       - or：query的值是capital of Hungary，查詢條件變成capital或of或Hungary，查詢文字有符合3個條件任1個的資料
       - and：query的值是capital of Hungary，查詢條件變成capital和of和Hungary，查詢文字有符合3個條件的資料
-    - minimum_should_match
+    - minimum_should_match：這裡用到minimum_should_match參數
     - zero_terms_query：
       - none：刪除analyzer所有的標記資料
       - all：回傳analyzer所有的標記資料
 
     ```json
+    //查詢message中，找出this is a test這段文字的資料
     GET /_search
     {
       "query": {
@@ -2470,13 +2906,10 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     }
     ```
 
-    
-
   - Match boolean prefix
 
-    
-
     ```json
+    //查詢欄位中有
     GET /_search
     {
       "query": {
@@ -2488,8 +2921,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
       }
     }
     ```
-
-    
 
   - Match phrase
 
@@ -2508,8 +2939,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
       }
     }
     ```
-
-    
 
   - Match phrase prefix
 
@@ -2531,8 +2960,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
       }
     }
     ```
-
-    
 
   - Combined fields
 
@@ -2571,7 +2998,8 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     - phrase_prefix
     - bool_prefix
 
-    ```
+    ```json
+    //查詢subject、message兩個欄位，找出this is a test這段文字
     GET /_search
     {
       "query": {
@@ -2583,11 +3011,10 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     }
     ```
 
-    
-
   - Common Terms Query
 
-    ```
+    ```json
+    //查詢this is bonsai cool設定為常用名詞
     GET /_search
     {
       "query": {
@@ -2600,8 +3027,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
       }
     }
     ```
-
-    
 
   - Query string
 
@@ -2630,7 +3055,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     - rewrite
     - time_zone
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -2641,8 +3066,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
       }
     }
     ```
-
-    
 
   - Simple query string
 
@@ -2675,8 +3098,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
       }
     }
     ```
-
-    
 
 - Geo queries(地理查詢)
 
@@ -2849,8 +3270,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
       }
     }
     ```
-
-    
 
 - Shape queries(形狀查詢)
 
@@ -3213,7 +3632,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Span multi-term
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3230,7 +3649,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Span near
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3251,7 +3670,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Span not
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3278,7 +3697,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Span or
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3297,7 +3716,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Span term
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3310,7 +3729,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Span within
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3339,7 +3758,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Distance feature
 
-    ```
+    ```json
     
     PUT /items
     {
@@ -3360,7 +3779,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     
     ```
 
-    ```
+    ```json
     PUT /items/_doc/1?refresh
     {
       "name" : "chocolate",
@@ -3374,7 +3793,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - More like this
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3402,7 +3821,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Percolate
 
-    ```
+    ```json
     PUT /my-index-00001
     {
       "mappings": {
@@ -3429,7 +3848,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     - sigmoid
     - linear
 
-    ```
+    ```json
     PUT /test
     {
       "mappings": {
@@ -3453,7 +3872,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Script
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3483,7 +3902,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     - min_score
     - boost
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3503,7 +3922,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - Wrapper
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3522,7 +3941,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     - docs
     - organic
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3566,7 +3985,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
     - transpositions
     - rewrite
 
-    ```
+    ```json
     GET /_search
     {
       "query": {
@@ -3583,21 +4002,166 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
   - IDs
     
+    ```json
+    GET /_search
+    {
+      "query": {
+        "ids" : {
+          "values" : ["1", "4", "100"]
+        }
+      }
+    }
+    ```
+    
+    
+    
   - Prefix
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "prefix": {
+          "user.id": {
+            "value": "ki"
+          }
+        }
+      }
+    }
+    ```
+
+    
 
   - Range
 
+    ```
+    GET /_search
+    {
+      "query": {
+        "range": {
+          "age": {
+            "gte": 10,
+            "lte": 20,
+            "boost": 2.0
+          }
+        }
+      }
+    }
+    ```
+
+    
+
   - Regexp
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "regexp": {
+          "user.id": {
+            "value": "k.*y",
+            "flags": "ALL",
+            "case_insensitive": true,
+            "max_determinized_states": 10000,
+            "rewrite": "constant_score"
+          }
+        }
+      }
+    }
+    ```
+
+    
 
   - Term
 
+    ```
+    GET /_search
+    {
+      "query": {
+        "term": {
+          "user.id": {
+            "value": "kimchy",
+            "boost": 1.0
+          }
+        }
+      }
+    }
+    ```
+
+    
+
   - Terms
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "terms": {
+          "user.id": [ "kimchy", "elkbee" ],
+          "boost": 1.0
+        }
+      }
+    }
+    ```
+
+    
 
   - Terms set
 
+    ```
+    PUT /job-candidates
+    {
+      "mappings": {
+        "properties": {
+          "name": {
+            "type": "keyword"
+          },
+          "programming_languages": {
+            "type": "keyword"
+          },
+          "required_matches": {
+            "type": "long"
+          }
+        }
+      }
+    }
+    ```
+
+    
+
   - Type Query
 
+    ```
+    GET /_search
+    {
+      "query": {
+        "type": {
+          "value": "_doc"
+        }
+      }
+    }
+    ```
+
+    
+
   - Wildcard
+
+    ```
+    GET /_search
+    {
+      "query": {
+        "wildcard": {
+          "user.id": {
+            "value": "ki*y",
+            "boost": 1.0,
+            "rewrite": "constant_score"
+          }
+        }
+      }
+    }
+    ```
+
+    
 
 - minimum_should_match parameter
 
@@ -3623,11 +4187,284 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.ht
 
 **Dev Tools**
 
-Elasticsearch中的Kibana有個DevTool可以做設定，今天要介紹如何在Kibana上操作DevTool
+Elasticsearch中的Kibana有個DevTool可以做設定，可以在這裡進行查詢，在左側寫好資料後，點選三角形圖示，會對應顯示Mapping的資料
 
 ![elasticDevTool1](C:\xampp\htdocs\markdown_note\assets\images\elasticDevTool1.png)
 
-在左側寫好資料後，點選三角形圖示，會對應顯示Mapping的資料，可以用GET、POST、PUT、DELETE做CURD
+#### 4.2 sort排序
+
+- 排序方式
+  - asc
+  - desc
+
+- 排序模式
+
+  - min
+  - max
+  - sum
+  - avg
+  - median
+
+  **排序查詢結果**
+
+  需要用type只能某個欄位做排序
+
+  ```json
+  //設定post_date、user、name、age
+  PUT /my-index-000001
+  {
+    "mappings": {
+      "properties": {
+        "post_date": { "type": "date" },
+        "user": {
+          "type": "keyword"
+        },
+        "name": {
+          "type": "keyword"
+        },
+        "age": { "type": "integer" }
+      }
+    }
+  }
+  
+  //查詢泡菜資料，並且用post_date、user、name、age做排序，post_date設定strict_date_optional_time_nanos參數做由小至大，user沒設定會用預設由小至大做排序，name、age設定由大至小做排序
+  GET /my-index-000001/_search
+  {
+    "sort" : [
+      { "post_date" : {"order" : "asc", "format": "strict_date_optional_time_nanos"}},
+      "user",
+      { "name" : "desc" },
+      { "age" : "desc" },
+      "_score"
+    ],
+    "query" : {
+      "term" : { "user" : "kimchy" }
+    }
+  
+  ```
+
+  **排序某欄位的值**
+
+  ```json
+  //設定巧克力的價錢有20、4
+  PUT /my-index-000001/_doc/1?refresh
+  {
+     "product": "chocolate",
+     "price": [20, 4]
+  }
+  
+  //查詢巧克力全部的價錢做平均，在對應價錢與平均值做排序
+  POST /_search
+  {
+     "query" : {
+        "term" : { "product" : "chocolate" }
+     },
+     "sort" : [
+        {"price" : {"order" : "asc", "mode" : "avg"}}
+     ]
+  }
+  ```
+
+  **用數值做排序**
+
+  ```json
+  //查詢泡菜的發布日期，並且strict_date_optional_time_nanos參數做排序
+  GET /my-index-000001/_search
+  {
+    "sort" : [
+      { "post_date" : {"format": "strict_date_optional_time_nanos"}}
+    ],
+    "query" : {
+      "term" : { "user" : "kimchy" }
+    }
+  }
+  ```
+
+  **嵌入排序**
+
+  ```json
+  //查詢產品巧克力，價錢與平均值做排序，並且包裝顏色是藍色的
+  POST /_search
+  {
+     "query" : {
+        "term" : { "product" : "chocolate" }
+     },
+     "sort" : [
+         {
+            "offer.price" : {
+               "mode" :  "avg",
+               "order" : "asc",
+               "nested": {
+                  "path": "offer",
+                  "filter": {
+                     "term" : { "offer.color" : "blue" }
+                  }
+               }
+            }
+         }
+      ]
+  }
+  ```
+
+  無法比較的資料做排序
+
+  ```json
+  //查詢無法比較巧克力的價錢的資料，並且做排序
+  GET /_search
+  {
+    "sort" : [
+      { "price" : {"missing" : "_last"} }
+    ],
+    "query" : {
+      "term" : { "product" : "chocolate" }
+    }
+  }
+  ```
+
+  距離做排序
+
+  ```json
+  //使用者jhon的資料有多個距離，針對距離做排序
+  GET /_search
+  {
+    "sort" : [
+      {
+        "_geo_distance" : {
+            "pin.location" : [-70, 40],
+            "order" : "asc",
+            "unit" : "km",
+            "mode" : "min",
+            "distance_type" : "arc",
+            "ignore_unmapped": true
+        }
+      }
+    ],
+    "query" : {
+      "term" : { "user" : "jhon" }
+    }
+  }
+  ```
+
+#### 4.3 Highlight高亮
+
+高亮在搜尋指令的資料中，會用顏色來標記查詢到的資料，設定高亮搜尋，只要加上highlight指定某個欄位即可
+
+高亮查詢分為3種，unified、plain、fvh
+
+- unified：通用查詢，例如：fuzzy、regex等等
+
+- plain：高亮的預設值，用顏色來標記查詢到的資料
+
+  ```json
+  //例如設定一筆資料
+  PUT blog_website/_doc/1
+  {
+    "title": "我的第一篇博客",
+    "content": "大家好，這是我寫的第一篇博客！"
+  }
+  
+  //查詢索引值blog_website，找出title資料為博客，並且做高亮
+  GET blog_website/_search
+  {
+    "query": {
+      "match": {
+        "title": "博客"
+      }
+    },
+    "highlight": {
+      "fields": {
+        "title": {
+            //可以不寫，plain為預設值
+            "type": "plain"
+        }
+      }
+    }
+  }
+  
+  //查詢結果看到title的博客，兩個字用<em>標記起來
+  {
+     ...
+     "hits" : [
+        {
+          "_index" : "blog_website",
+          "_type" : "blogs",
+          "_id" : "1",
+          "_score" : 0.26706278,
+          "_source" : {
+            "title" : "我的第一篇博客",
+            "content" : "大家好，這是我寫的第一篇博客！"
+          },
+          "highlight" : {
+            "title" : [
+              "我的第一篇<em>博</em><em>客</em>"
+            ]
+          }
+        }
+      ]
+     ...
+  }
+  ```
+
+- fast vector highlight(fvh)：快速做高亮查詢
+
+  - 適用於欄位有大量資料，可以快速查詢
+  - 建立索引值mapping的時候，查詢欄位必須要寫`"term_vector" : "with_positions_offsets"`
+  - 可以用matched_fields、Boosting Query做設定
+
+  ```json
+  GET /blog_website/blogs/_search
+  {
+    "query": {
+      "match": {
+        "title": "博客"
+      }
+    },
+    "highlight": {
+      "fields": {
+        "title": {
+            "type": "fvh"
+        }
+      }
+    }
+  }
+  ```
+
+- highlight可以做設定
+
+  - boundary_chars：設定邊界字符號，例如：空白(/t)、換行(/n)等等
+  - boundary_max_scan：設定文字距離，預設值為20
+  - boundary_scanner：設定文字的樣式，支援chars、sentence、word
+    - chars
+    - sentence
+    - word
+  - boundary_scanner_locale：設定語言
+  - encoder：設定編碼
+  - fields
+  - force_source
+  - fragmenter
+    - simple
+    - span
+  - fragment_offset
+  - fragment_size
+  - highlight_query
+  - matched_fields
+  - no_match_size
+  - number_of_fragments
+  - order
+  - phrase_limit
+  - pre_tags
+  - post_tags
+  - require_field_match
+  - max_analyzed_offset
+  - tags_schema
+  - type
+
+- 常用的範例
+  - S
+
+
+
+
 
 ### 5.用laravel 如何Query Elasticsearch 取得Data
 
@@ -3648,14 +4485,14 @@ Elastic 也可以用url+get參數來查看資料，對應SQL的CURD，改用寫�
   - 語法為 `POST _index/_doc`
 - `Index`(**PUT**)：
   - 如果 ID 不存在，則建立新的 document；若 ID 已經存在，則刪除現存的 document 再建立新的，**version** 的部份會增加
-  - 語法為 [`PUT _index/_doc/[ID\]`](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html)，例如：**PUT /users/_doc/1**
+  - 語法為 `PUT _index/_doc/[ID\]`，例如：**PUT /users/_doc/1**
 - `Update`(**PUT**)：
   - PUT 其實也可以作為更新 document 用，但更新的範圍是整個 document
   - 實際上，Elasticsearch document 是無法修改的；而更新這個操作其實是新增一個新的 document，將原有的 **_version** 加 1 後，舊的 document 被標示為 **deletion**
 - `Partially Update`(**POST**)：
   - document 必須已經存在，更新時只會對 document 中相對應的欄位作增量更新 or 對應欄位的修改
   - json payload 需要包含在 `doc` 欄位中 (可參考[官網文件](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html))
-  - 語法為 [`POST _index/_update/[ID\]`](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html)，例如：**POST /users/_update/1**
+  - 語法為 `POST _index/_update/[ID\]`，例如：**POST /users/_update/1**
   - POST 也可以拿來作為新增 document 用
 
 **查詢資料**
@@ -3678,7 +4515,7 @@ GET /_search
 }
 ```
 
-要補充POST、DELETE 、PUT說明
+
 
 ```
 PUT /customer?pretty
@@ -3703,14 +4540,28 @@ POST /customer/doc/1/_update?pretty
 
 參考資料:
 
-https://kknews.cc/zh-tw/code/qljaxbb.html、
+- https://kknews.cc/zh-tw/code/qljaxbb.html
 
-https://www.google.com.tw/url?sa=i&url=https%3A%2F%2Fwww.awoo.com.tw%2Fblog%2Fgoogle-analytics%2F&psig=AOvVaw12rVYYZ7uRBFN3uDo7SZrK&ust=1596390215197000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLia7v3I-uoCFQAAAAAdAAAAABAD、
 
-https://github.com/cviebrock/laravel-elasticsearch、
+- https://www.google.com.tw/url?sa=i&url=https%3A%2F%2Fwww.awoo.com.tw%2Fblog%2Fgoogle-analytics%2F&psig=AOvVaw12rVYYZ7uRBFN3uDo7SZrK&ust=1596390215197000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLia7v3I-uoCFQAAAAAdAAAAABAD
 
-https://www.elastic.co/guide/cn/elasticsearch/php/current/_configuration.html
+- https://github.com/cviebrock/laravel-elasticsearch
 
-https://dotblogs.com.tw/supershowwei/2016/05/17/142101
+- https://www.elastic.co/guide/cn/elasticsearch/php/current/_configuration.html
 
-https://kknews.cc/zh-tw/code/pb3rvpp.html
+- https://dotblogs.com.tw/supershowwei/2016/05/17/142101
+
+- https://kknews.cc/zh-tw/code/pb3rvpp.html
+- https://ithelp.ithome.com.tw/articles/10241212
+
+- https://www.itread01.com/content/1564456805.html
+
+- https://www.itread01.com/content/1549391948.html
+
+- https://blog.tienyulin.com/elasticsearch-kibana-command-dsl-docker-compose/
+
+- https://www.runoob.com/mysql/mysql-data-types.html
+
+- https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html
+- https://tw511.com/a/01/30925.html
+- https://iter01.com/636347.html

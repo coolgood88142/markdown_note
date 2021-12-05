@@ -293,9 +293,7 @@ class Articles extends Model
 
 利用laravel Scout，將Articles做文章搜尋
 
-### 5.建立匯入的類別
-
-### .程式撰寫
+### 5.建立匯入的程式
 
 ```php
 class ArticlesController extends Controller
