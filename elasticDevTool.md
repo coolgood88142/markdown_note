@@ -2618,7 +2618,7 @@ ik有提供3種內建詞典分別是：
 
     用search API在query參數，來查詢mapping裡有符合_score欄位的資料
 
-  - filter context
+  - filter context(過濾文字)
 
     在查詢條件裡，指定某幾個欄位做篩選條件
 
@@ -2830,10 +2830,10 @@ ik有提供3種內建詞典分別是：
 
     - filter
 
-      - after：設定篩選欄位的
-      - before
-      - contained_by
-      - containing
+      - after：設定篩選欄位的後面
+      - before：設定篩選欄位的前面
+      - contained_by：設定篩選欄位的間格
+      - containing：設定篩選欄位的間格中的順序
       - not_contained_by：設定不包含篩選欄位的間隔資料
       - not_containing：設定不包含篩選的欄位資料
       - not_overlapping
@@ -2909,7 +2909,7 @@ ik有提供3種內建詞典分別是：
   - Match boolean prefix
 
     ```json
-    //查詢欄位中有
+    //查詢欄位中是否有quick、brown、f，這3種文字
     GET /_search
     {
       "query": {
@@ -2924,9 +2924,8 @@ ik有提供3種內建詞典分別是：
 
   - Match phrase
 
-    搜尋資料中有符合文字的全部資料
-
     ```json
+    //查詢欄位中是否有this is a test，並且確認this is a test文字中是否包含自訂分詞
     GET /_search
     {
       "query": {
@@ -2942,13 +2941,14 @@ ik有提供3種內建詞典分別是：
 
   - Match phrase prefix
 
-    - query
-    - analyzer
-    - max_expansions
-    - slop
+    - query：設定查詢欄位
+    - analyzer：設定分詞
+    - max_expansions：設定查詢件數，預設50筆
+    - slop：
     - zero_terms_query
 
     ```json
+    //查詢欄位中是否有包含quick brown f
     GET /_search
     {
       "query": {
@@ -2991,12 +2991,12 @@ ik有提供3種內建詞典分別是：
 
     type：
 
-    - best_fields
-    - most_fields
-    - cross_fields
-    - phrase
-    - phrase_prefix
-    - bool_prefix
+    - best_fields：可查詢任一種欄位
+    - most_fields：可以跟多個欄位做查詢
+    - cross_fields：查詢欄位資料中，全部的分詞
+    - phrase：使用match_phrase時，查詢符合的資料
+    - phrase_prefix：使用match_phrase_prefix時，查詢符合的資料
+    - bool_prefix：使用match_bool_prefix時，查詢符合的資料
 
     ```json
     //查詢subject、message兩個欄位，找出this is a test這段文字
@@ -3030,8 +3030,8 @@ ik有提供3種內建詞典分別是：
 
   - Query string
 
-    - query
-    - default_field
+    - query：搜尋欄位
+    - default_field：
     - allow_leading_wildcard
     - analyze_wildcard
     - analyzer
@@ -4467,6 +4467,203 @@ Elasticsearch中的Kibana有個DevTool可以做設定，可以在這裡進行查
 
 
 ### 5.用laravel 如何Query Elasticsearch 取得Data
+
+
+
+
+
+建立好之後，修改`handle()`的內容
+
+```
+public function handle()
+{
+    //從config/scout.php有個hosts的值
+    $host = config('scout.elasticsearch.hosts');
+    
+    //從config/scout.php有個index的值
+    $index = config('scout.elasticsearch.index');
+    
+    //建立ElasticService物件
+    $elasticService = new ElasticService();
+    
+    //產生ElasticSearch物件
+    $client = $elasticService->connElastic();
+
+    //如果有找到相同的索引值，會執行刪除
+    if ($client->indices()->exists(['index' => $index])) {
+        $client->indices()->delete(['index' => $index]);
+    }
+
+    //建立索引值資料
+    return $client->indices()->create([
+        'index' => $index, //索引值名稱
+        'body' => [
+            'settings' => [
+                'number_of_shards' => 1,
+                'number_of_replicas' => 0
+            ],
+            'mappings' => [
+                    '_source' => [
+                        'enabled' => true
+                    ],
+                    'properties' => [
+                        'title' => [
+                            'type' => 'text',
+                            'analyzer' => 'ik_max_word',
+                            'search_analyzer' => 'ik_smart'
+                        ],
+                        'author' => [
+                            'type' => 'text',
+                            'analyzer' => 'ik_max_word',
+                            'search_analyzer' => 'ik_smart'
+                        ],
+                        'content' => [
+                            'type' => 'text',
+                            'analyzer' => 'ik_max_word',
+                            'search_analyzer' => 'ik_smart'
+                        ],
+                        'create_date' => [
+                            'type' => 'date'
+                        ],
+                    ],
+                ]
+            ]
+        ]);
+    }
+```
+
+
+
+建立model
+
+```
+class Articles extends Model
+{
+    use Searchable;
+    protected  $table = 'articles';
+
+    protected $dates = ['cearteDate'];
+
+    protected $fillable = [
+        'title',
+        'author',
+        'create_date',
+        'content',
+    ];
+
+    //設定索引值
+    public function searchableAs()
+    {
+        return 'elastic';
+    }
+
+    public function toSearchableArray()
+    {
+        $data = [
+            'id' => $this->id,
+            'title' => $this->title,
+            'author' => $this->author,
+            'content' => $this->content,
+            'createDate' => $this->create_date,
+        ];
+
+        return $data;
+    }
+
+}
+
+```
+
+
+
+```
+class ArticlesController extends Controller
+{
+	public function searchArticles(Request $request)
+    {
+        //取得關鍵字資料
+        $keyword = $request->keyword;
+        
+        //執行模糊查詢
+        $articles = $this->elasticService->fuzzySearch($keyword);
+        
+        //將查詢到的資料與關鍵字，丟到articles頁面上
+        return view('articles', ['articles' => $articles, 'keyword' => $keyword]);
+    }
+    
+    public function importArticles()
+    {
+        //用laravel excel套件，建立ArticlesImport類別，去找storage資料夾裡的articles.xls檔做匯入
+        Excel::import(new ArticlesImport, storage_path('articles.xls'));
+		
+        //執行完之後，導頁到查詢畫面
+        return redirect('/showArticles');
+    }
+}
+```
+
+
+
+```
+class ElasticService
+{
+    //建立ElasticSearch物件
+    public function connElastic()
+    {
+        $elastic = Config::get('elastic');
+
+        $client = ClientBuilder::create()->setHosts($elastic['hosts'])->build();
+
+        return $client;
+    }
+
+   //帶關鍵字做模糊查詢
+    public function fuzzySearch($search)
+    {
+        $params = [
+            //從config/scout.php有個elasticsearch.index取得索引值
+            'index' => config('scout.elasticsearch.index'),
+            'body' => [
+                //用createDate欄位做排序，由大至小
+                'sort' => [
+                    'createDate' => [
+                        "order" => "desc"
+                    ]
+                ]
+            ]
+        ];
+
+        //判斷關鍵字不等於空值和null
+        if($search != '' && $search != null){
+			
+            //建立模糊查詢條件
+            $params['body'] = [
+                //設定模糊查詢，針對title、author、content，這3個欄位找資料
+                'query' => [
+                    'multi_match' => [
+                        'query' => $search,
+                        'fuzziness' => 'AUTO',
+                        'fields' => ['title', 'author', 'content'],
+                    ],
+                ]
+            ];
+        }
+        
+        //建立ElasticSearch物件
+        $client = $this->connElastic();
+        
+        //執行查詢
+        $response = $client->search($params);
+        
+        //取得ElasticSearch的Index中，有符合模糊查詢條件的資料
+        $data = $response['hits']['hits'];
+        
+        return $data;
+    }
+}
+```
+
+
 
 CURD
 
