@@ -4468,13 +4468,61 @@ Elasticsearch中的Kibana有個DevTool可以做設定，可以在這裡進行查
 
 ### 5.用laravel 如何Query Elasticsearch 取得Data
 
+#### 5.1 安裝套件
 
+```bash
+composer require elasticsearch/elasticsearch
+composer require tamayo/laravel-scout-elastic
+composer require laravel/scout 
+```
 
+安裝好之後，在`config/app.php`新增這一行
 
+```
+'providers' =  [ 
+    Laravel\Scout\ScoutServiceProvider::class, 
+]
+```
+
+在執行這個指令產生`config/scout.php`檔案
+
+```bash
+php artisan vendor:publish --provider="Laravel\Scout\ScoutServiceProvider"
+```
+
+修改`config/scout.php`檔案內容，`Index`自己取，例如我設定`elastic`
+
+```php
+'driver' =  env('SCOUT_DRIVER', 'elasticsearch'),
+
+  'elasticsearch' =  [
+    'index' =  env('ELASTICSEARCH_INDEX', 'Index自己取'),
+    'hosts' =  [
+      env('ELASTICSEARCH_HOST', 'http://localhost:9200'),
+    ],
+  ],
+```
+
+在`config/app.php`的`aliases`，新增`excel`的類別，可以方便做匯入
+
+```bash
+'aliases' => [
+	'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+	...
+]
+```
+
+#### 5.2 建立Commend檔案
+
+執行下面指令產生`ESOpenCommend`
+
+```bash
+php artisan make:command ESOpenCommand
+```
 
 建立好之後，修改`handle()`的內容
 
-```
+```php
 public function handle()
 {
     //從config/scout.php有個hosts的值
@@ -4532,11 +4580,19 @@ public function handle()
     }
 ```
 
+我們要套過這個檔案告訴`elasticsearch`，建立索引值時有哪些欄位，做分詞設定
 
+#### 5.3 建立model檔案
 
 建立model
 
+```bash
+php artisan make:model Articles
 ```
+
+建立好之後，修改內容
+
+```php
 class Articles extends Model
 {
     use Searchable;
@@ -4574,9 +4630,11 @@ class Articles extends Model
 
 ```
 
+利用laravel Scout，將Articles做文章搜尋
 
+#### 5.4 建立匯入的程式
 
-```
+```php
 class ArticlesController extends Controller
 {
 	public function searchArticles(Request $request)
@@ -4602,9 +4660,7 @@ class ArticlesController extends Controller
 }
 ```
 
-
-
-```
+```php
 class ElasticService
 {
     //建立ElasticSearch物件
@@ -4663,9 +4719,21 @@ class ElasticService
 }
 ```
 
+#### 5.5.新增索引值
 
+**在產生索引值之前，請先在自己的DB，建立幾筆資料，我們會把DB資料連同索引值，一起新增到elasticsearch**
 
-CURD
+執行這個指令，產生elasticsearch的資料，用laravel scout
+
+```bash
+php artisan scout:import "App\Articles"
+```
+
+![elasticArticle7](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elasticArticle7.png>)
+
+### 
+
+#### 5.6 CURD
 
 Elastic 也可以用url+get參數來查看資料，對應SQL的CURD，改用寫法
 
