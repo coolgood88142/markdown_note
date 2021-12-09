@@ -184,13 +184,18 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
 }
   ```
 
-- mapping：設定欄位與搜尋範圍
+- mapping：設定索引的類型與搜尋範圍
 
   每個index的資料都用放在mapping，記錄欄位的類型
 
-  補上中文說明，要解釋mapping內容中每層在做什麼?
+  - _doc：索引值每個文檔
+  - properties：設定文檔的配置
+  - type：設定文檔的欄位是什麼類型
+  - fields：設定欄位要用什麼屬性
+  - ignore_above：限制欄位長度
 
   ```json
+  //索引值的mapping中有my_id、my_join_field、pass-grades、student、text，每個欄位限制長度為256
   {
     "mappings": {
       "_doc": {
@@ -239,7 +244,11 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
 
   定義inedx的欄位要存放多少資料，做篩選
 
-  補上中文說明，要解釋setting內容中每層在做什麼?
+  - routing
+  - allocation
+  - include
+  - _tier_preference
+  - number_of_shards
   
   ```json
   {
@@ -4439,28 +4448,27 @@ Elasticsearch中的Kibana有個DevTool可以做設定，可以在這裡進行查
     - word
   - boundary_scanner_locale：設定語言
   - encoder：設定編碼
-  - fields
-  - force_source
-  - fragmenter
-    - simple
-    - span
-  - fragment_offset
-  - fragment_size
-  - highlight_query
-  - matched_fields
-  - no_match_size
+  - fields：設定關鍵字做標記
+  - force_source：設定標記文字做額外儲存
+  - fragmenter：設定標記文字做段落
+    - simple：將文字分成相同的大小
+    - span：將文字分成相同的大小，但每段文字會以名詞優先
+  - fragment_offset：調整標記文字顏色的邊界
+  - fragment_size：設定標記文字的字符大小，預設100
+  - highlight_query：高亮查詢
+  - matched_fields：組合分段文字，取得文字名詞
+  - no_match_size：設定匹配文字數量
   - number_of_fragments
-  - order
+  - order：設定文字排序
   - phrase_limit
   - pre_tags
   - post_tags
   - require_field_match
   - max_analyzed_offset
-  - tags_schema
+  - tags_schema：設定標籤模式
   - type
 
 - 常用的範例
-  - S
 
 
 
@@ -4731,9 +4739,9 @@ php artisan scout:import "App\Articles"
 
 ![elasticArticle7](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/elasticArticle7.png>)
 
-### 
 
-#### 5.6 CURD
+
+#### 5.6 CRUD
 
 Elastic 也可以用url+get參數來查看資料，對應SQL的CURD，改用寫法
 
@@ -4762,40 +4770,42 @@ Elastic 也可以用url+get參數來查看資料，對應SQL的CURD，改用寫�
 
 **查詢資料**
 
-```
-GET /_search
+```json
+//查詢my-index-000001全部的資料
+GET my-index-000001/_search
 {
-  "query": { 
-    "bool": {  //超過兩個條件的時候要用bool包
-      "must": [  //must:AND  should:OR
-        { "match": { "title":   "Search"        }}, 
-        { "match": { "content": "Elasticsearch" }}  
-      ],
-      "filter": [   //撈完顯示部分
-        { "term":  { "status": "published" }}, 
-        { "range": { "publish_date": { "gte": "2015-01-01" }}} //gte:greater-than-equal
-      ]
+
+}
+```
+
+更新資料
+
+```json
+//更新my-index-000001，將tags欄位設定資料型態為keyword
+PUT my-index-000001
+{
+  "mappings": {
+    "properties": {
+      "tags": {
+        "type":  "keyword"
+      }
     }
   }
 }
 ```
 
+刪除資料
 
-
-```
-PUT /customer?pretty
-```
-
-
-
-```
-DELETE /customer?pretty
+```json
+//刪除my-index-000001索引值
+DELETE /my-index-000001
 ```
 
-
+查詢資料
 
 ```
-POST /customer/doc/1/_update?pretty
+//查詢索引值my-index-000001的資料
+POST /my-index-000001/_doc/1
 {
   "doc":{"yeat": 2018}
 }
