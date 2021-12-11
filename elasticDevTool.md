@@ -4460,13 +4460,13 @@ Elasticsearch中的Kibana有個DevTool可以做設定，可以在這裡進行查
   - no_match_size：設定匹配文字數量
   - number_of_fragments
   - order：設定文字排序
-  - phrase_limit
-  - pre_tags
-  - post_tags
-  - require_field_match
+  - phrase_limit：設定控制標記文字的數量
+  - pre_tags：結合post_tags，來建立<em>標籤
+  - post_tags：結合pre_tags，來建立<em>標籤
+  - require_field_match：顯示查詢到的匹配文字
   - max_analyzed_offset
   - tags_schema：設定標籤模式
-  - type
+  - type：該熒光筆使用方法：`unified`，`plain`或`fvh`。默認為 `unified`.
 
 - 常用的範例
 
@@ -4750,23 +4750,16 @@ Elastic 也可以用url+get參數來查看資料，對應SQL的CURD，改用寫�
 
 
 - `Create`(**PUT**)：
-  - 建立新的 document，如果 ID 已經存在會發生錯誤
-  - 語法為 `PUT _index/_create/[ID]` or `PUT _index/_doc/[ID]?op_type=create`，例如：**PUT /users/_create/1** (也可以不帶 ID，就會自動生成)
-  - **較不建議指定 ID 的作法，可能會撞到效能不彰的問題**
+  - 
 - `Create`(**POST**)
   - 系統會自動產生 document ID (**這是比較建議的方式**)
   - 語法為 `POST _index/_doc`
 - `Index`(**PUT**)：
-  - 如果 ID 不存在，則建立新的 document；若 ID 已經存在，則刪除現存的 document 再建立新的，**version** 的部份會增加
-  - 語法為 `PUT _index/_doc/[ID\]`，例如：**PUT /users/_doc/1**
+  - 
 - `Update`(**PUT**)：
-  - PUT 其實也可以作為更新 document 用，但更新的範圍是整個 document
-  - 實際上，Elasticsearch document 是無法修改的；而更新這個操作其實是新增一個新的 document，將原有的 **_version** 加 1 後，舊的 document 被標示為 **deletion**
+  - 
 - `Partially Update`(**POST**)：
-  - document 必須已經存在，更新時只會對 document 中相對應的欄位作增量更新 or 對應欄位的修改
-  - json payload 需要包含在 `doc` 欄位中 (可參考[官網文件](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html))
-  - 語法為 `POST _index/_update/[ID\]`，例如：**POST /users/_update/1**
-  - POST 也可以拿來作為新增 document 用
+  - 
 
 **查詢資料**
 
