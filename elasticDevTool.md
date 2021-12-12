@@ -109,11 +109,17 @@
   - 資料庫集成
   - NoSQL特性和豐富的文檔處理（例如Word和PDF文件）
 
-| 項目 | Elasticsearch  | solr |
-| ---- | -------------- | ---- |
-| 格式 | xml、csv、json | json |
-|      |                |      |
-|      |                |      |
+| 項目      | Elasticsearch            | solr                           |
+| --------- | ------------------------ | ------------------------------ |
+| 格式      | xml、csv、json           | json                           |
+| 查詢方式  | 查詢文字、過濾、數據統計 | 文字                           |
+| 索引值    | 一個索引值可建立多種類型 | 一個索引值無法建立多種類型     |
+| 同義詞    | V                        | V                              |
+| 分詞      | V                        | V                              |
+| Query DSL | V                        | solr 7以上可以使用JSON API查詢 |
+|           |                          |                                |
+
+Elasticsearch在查詢方面比solr強的多，Elasticsearch有包含複雜的時間、排序等條件做查詢篩選，
 
 
 
@@ -169,7 +175,7 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
   
   ```json
   {
-    "_index" : "elsatic",
+    "_index" : "my-index",
     "_type" : "_doc",
     "_id" : "1",
     "_version" : 1,
@@ -184,21 +190,20 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
 }
   ```
 
-- mapping：設定索引的類型與搜尋範圍
+- mapping：設定index的類型與搜尋範圍
 
   每個index的資料都用放在mapping，記錄欄位的類型
 
-  - _doc：索引值每個文檔
-  - properties：設定文檔的配置
+  - properties：設定index的配置
   - type：設定文檔的欄位是什麼類型
   - fields：設定欄位要用什麼屬性
   - ignore_above：限制欄位長度
 
   ```json
-  //索引值的mapping中有my_id、my_join_field、pass-grades、student、text，每個欄位限制長度為256
+  //my-index有my_id、my_join_field、pass-grades、student、text，每個欄位限制長度為256
   {
-    "mappings": {
-      "_doc": {
+    "my-index": {
+      "mappings": {
         "properties": {
           "my_id": {
             "type": "text",
@@ -240,87 +245,49 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
   }
   ```
 
-- setting：設定篩選
+- setting：inedx的設定
 
-  定義inedx的欄位要存放多少資料，做篩選
+  定義inedx要設定存放什麼內容
 
-  - routing
-  - allocation
-  - include
-  - _tier_preference
-  - number_of_shards
-  
+  - _tier_preference：設定index的內容要分配到哪一層，例如：data_content
+  - number_of_shards：index能存放多少單位
+  - provided_name：設定index名稱
+  - creation_date：index建立日期
+  - number_of_replicas
+
   ```json
+  //my-index每個欄位可編輯
   {
-    "settings": {
-      "index": {
-        "routing": {
-          "allocation": {
-            "include": {
-              "_tier_preference": "data_content"
+    "my-index" : {
+      "settings" : {
+        "index" : {
+          "routing" : {
+            "allocation" : {
+              "include" : {
+                "_tier_preference" : "data_content"
+              }
             }
+          },
+          "number_of_shards" : "1",
+          "provided_name" : "my-index",
+          "creation_date" : "1637522135424",
+          "number_of_replicas" : "1",
+          "uuid" : "ykwYMxK7Q6SLwCHWlKEfTg",
+          "version" : {
+            "created" : "7150199"
           }
-        },
-        "number_of_shards": "1",
-        "provided_name": "my-index1",
-        "creation_date": "1638069278307",
-        "number_of_replicas": "1",
-        "uuid": "GIgVgQpxT2CCdcUSP1H6QA",
-        "version": {
-          "created": "7150199"
         }
       }
-    },
-    "defaults": {
-      "index": {
-        "flush_after_merge": "512mb",
-        "final_pipeline": "_none",
-        "max_inner_result_window": "100",
-        "unassigned": {
-          "node_left": {
-            "delayed_timeout": "1m"
-          }
-        },
-        "max_terms_count": "65536",
-        "rollup": {
-          "source": {
-            "name": "",
-            "uuid": ""
-          }
-        },
-        "lifecycle": {
-          "name": "",
-          "parse_origination_date": "false",
-          "step": {
-            "wait_time_threshold": "12h"
-          },
-          "indexing_complete": "false",
-          "rollover_alias": "",
-          "origination_date": "-1"
-        },
-        "routing_partition_size": "1",
-        "force_memory_term_dictionary": "false",
-        "max_docvalue_fields_search": "100",
-        "merge": {
-          "scheduler": {
-            "max_thread_count": "2",
-            "auto_throttle": "true",
-            "max_merge_count": "7"
-          },
-          "policy": {
-            "floor_segment": "2mb",
-            "max_merge_at_once_explicit": "30",
-            "max_merge_at_once": "10",
-            "max_merged_segment": "5gb",
-            "expunge_deletes_allowed": "10.0",
-            "segments_per_tier": "10.0",
-            "deletes_pct_allowed": "33.0"
-          }
-        },
-        "max_refresh_listeners": "1000",
-        "max_regex_length": "1000",
-        ....
+    }
+  }
+  
   ```
+
+  elasticsearch 需要3個檔案配置
+
+  - easticsearch.yml：設定elasticsearch的索引值內容與外掛或檔案儲存的路徑，以及設定對外http服務的port
+  - jvm.options：因為elasicsearch 主要是用java虛擬機在執行，主要是設定JAVA_HOME的路徑，一般是不會去設定
+  - log4j2.properties：設定elasticsearch的log內容，例如：檔案位置、屬性、大小等等
 
 #### 3.2 field Data Type
 
@@ -4203,16 +4170,16 @@ Elasticsearch中的Kibana有個DevTool可以做設定，可以在這裡進行查
 #### 4.2 sort排序
 
 - 排序方式
-  - asc
-  - desc
+  - asc：由小至大
+  - desc：由大至小
 
 - 排序模式
 
-  - min
-  - max
-  - sum
-  - avg
-  - median
+  - min：取最小的值
+  - max：取最大的值
+  - sum：取加總值
+  - avg：取平均值
+  - median：取中間值
 
   **排序查詢結果**
 
@@ -4750,16 +4717,23 @@ Elastic 也可以用url+get參數來查看資料，對應SQL的CURD，改用寫�
 
 
 - `Create`(**PUT**)：
-  - 
+  - 建立新的 document，如果 ID 已經存在會發生錯誤，不建議指定 ID 的作法
+  - 語法為 `PUT _index/_create/[ID]` ，例如：**PUT /users/_create/1** (也可以不帶 ID，就會自動生成)
+  - `PUT _index/_doc/[ID]?op_type=create`，
 - `Create`(**POST**)
   - 系統會自動產生 document ID (**這是比較建議的方式**)
   - 語法為 `POST _index/_doc`
 - `Index`(**PUT**)：
-  - 
+  - 如果 ID 不存在，則建立新的 document；若 ID 已經存在，則刪除現存的 document 再建立新的，**version** 的部份會增加
+  - 語法為 `PUT _index/_doc/[ID]`，例如：**PUT /users/_doc/1**
 - `Update`(**PUT**)：
-  - 
-- `Partially Update`(**POST**)：
-  - 
+  - PUT 其實也可以作為更新 document 用，但更新的範圍是整個 document
+  - 實際上，Elasticsearch document 是無法修改的；而更新這個操作其實是新增一個新的 document，將原有的 **_version** 加 1 後，舊的 document 被標示為 **deletion**
+- `Update`(**POST**)：
+  - document 必須已經存在，更新時只會對 document 中相對應的欄位作增量更新 or 對應欄位的修改
+  - json payload 需要包含在 `doc` 欄位中 (可參考[官網文件](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html))
+  - 語法為 `POST _index/_update/[ID\]`，例如：**POST /users/_update/1**
+  - POST 也可以拿來作為新增 document 用
 
 **查詢資料**
 
