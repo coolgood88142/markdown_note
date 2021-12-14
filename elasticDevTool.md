@@ -950,10 +950,10 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
 
     參數
 
-    - dynamic
-    - properties
-    - include_in_parent
-    - include_in_root
+    - dynamic：設定新的資料型態，是否套用到現在的properties
+    - properties：設定索引值的資料結構
+    - include_in_parent：設定是否將全部欄位，在父類別都使用巢狀資料
+    - include_in_root：設定是否將全部欄位都使用巢狀資料
 
     ```json
     //設定user使用巢狀資料
@@ -1060,12 +1060,18 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
     
     ----------------------------
     
+    //
     GET my-index1/_search
     {
-        
+    "query": {
+        "parent_id": { 
+          "type": "answer",
+          "id": "1"
+        }
+      }
     }
     ```
-
+    
     
 
 - Structured data types(結構話資料類型)
@@ -1280,7 +1286,8 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
 
     設定版本欄位，多個mapping做版本區分，如果沒使用range、fuzzy做查詢的話，可以用version來做查詢
 
-    ```
+    ```json
+    //設定索引值my-index-000001，my_version為version
     PUT my-index-000001
     {
       "mappings": {
@@ -1292,6 +1299,9 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
       }
     }
     
+    ----------------------------
+    
+    //例如：索引值my-index，my_version為version
     PUT my-index1
     {
       "mappings": {
@@ -1352,17 +1362,17 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
 
   - historgram
 
-    - [min](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-min-aggregation.html#search-aggregations-metrics-min-aggregation-histogram-fields) aggregation
-    - [max](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-max-aggregation.html#search-aggregations-metrics-max-aggregation-histogram-fields) aggregation
-    - [sum](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-sum-aggregation.html#search-aggregations-metrics-sum-aggregation-histogram-fields) aggregation
-    - [value_count](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-valuecount-aggregation.html#search-aggregations-metrics-valuecount-aggregation-histogram-fields) aggregation
-    - [avg](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-avg-aggregation.html#search-aggregations-metrics-avg-aggregation-histogram-fields) aggregation
-    - [percentiles](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-percentile-aggregation.html) aggregation
-    - [percentile ranks](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-percentile-rank-aggregation.html) aggregation
-    - [boxplot](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-boxplot-aggregation.html) aggregation
-    - [histogram](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-histogram-aggregation.html#search-aggregations-bucket-histogram-aggregation-histogram-fields) aggregation
-    - [range](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-range-aggregation.html#search-aggregations-bucket-range-aggregation-histogram-fields) aggregation
-    - [exists](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html) query
+    - min aggregation
+    - max aggregation
+    - sum aggregation
+    - value_count aggregation
+    - avg aggregation
+    - percentiles aggregation
+    - percentile ranks aggregation
+    - boxplot aggregation
+    - histogram aggregation
+    - range aggregation
+    - exists query
 
     ```json
     //更新my-index-000001，id為1的資料，將my_text設定為histigram_1，my_histogram有多個value與counts
@@ -1409,6 +1419,7 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
       }
     }
     
+    //查詢my-index-000001的my_histogram.values的件數
     POST /my-index-000001/_search?size=0
     {
       "aggs" : {
@@ -1416,6 +1427,7 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
       }
     }
     
+    //查詢my-index-000001的my_histogram.values的平均值
     POST /my-index-000001/_search?size=0
     {
       "aggs" : {
@@ -1423,6 +1435,7 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
       }
     }
     
+    //查詢my-index-000001的my_histogram.values欄位資料，並且做篩選
     GET my-index-000001/_search?size=0&filter_path=aggregations
     {
       "aggs": {
@@ -1440,10 +1453,9 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
       }
     }
     
-    
-    PUT my-index1/_doc/
+    //建立my-index1，id為1的資料，my_histogram設定value和counts資料
+    PUT my-index1/_doc/1
     {
-      "my_text" : "histogram_1",
       "my_histogram" : {
           "values" : [0.1, 0.25, 0.35, 0.4, 0.45, 0.5], 
           "counts" : [8, 17, 8, 7, 6, 2] 
@@ -1499,7 +1511,7 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
     }
     
     
-    
+    //索引值my-index1設定full_name的type為text
     PUT my-index1
     {
       "mappings": {
@@ -1510,6 +1522,18 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
         }
       }
     }
+    
+    //索引值my-index1設定my_field的type為text，fielddata參數為true
+    PUT my-index1/_mapping
+    {
+      "properties": {
+        "my_field": { 
+          "type":     "text",
+          "fielddata": true
+        }
+      }
+    }
+    
     ```
 
     
@@ -1566,6 +1590,7 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
       }
     }
     
+    //建立place的mapping，將suggest設定為completion，contexts包含name、type
     PUT place
     {
       "mappings": {
@@ -1588,6 +1613,7 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
       }
     }
     
+    //建立place_path_category的mapping，將suggest設定為completion，
     PUT place_path_category
     {
       "mappings": {
