@@ -293,6 +293,8 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
 
 ##### metadata field
 
+​	Identity
+
 - _index
 
   索引值，可以當我每筆資料的ID，如果索引值需要做多筆查詢時，有時需要添加索引相關的子查詢。
@@ -416,6 +418,8 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
   }
   ```
 
+Document Scource
+
 - _scource
 
   存放資料
@@ -477,9 +481,146 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
 
   檔案大小
 
+  ```
+  //安裝插件
+  sudo bin/elasticsearch-plugin install mapper-size
+  ```
+
+  
+
+Doc Count
+
 - _doc_count
 
   doc有多少筆資料
+  
+  ```json
+  //更新索引值my_index，id為1的資料，設定有45筆資料
+  PUT my_index/_doc/1
+  {
+    "my_text" : "histogram_1",
+    "my_histogram" : {
+        "values" : [0.1, 0.2, 0.3, 0.4, 0.5],
+        "counts" : [3, 7, 23, 12, 6]
+     },
+    "_doc_count": 45 
+  }
+  
+  //更新索引值my_index，id為2的資料，設定有62筆資料
+  PUT my_index/_doc/2
+  {
+    "my_text" : "histogram_2",
+    "my_histogram" : {
+        "values" : [0.1, 0.25, 0.35, 0.4, 0.45, 0.5],
+        "counts" : [8, 17, 8, 7, 6, 2]
+     },
+    "_doc_count": 62 
+  }
+  ```
+  
+  
+
+Indexing
+
+- _field_names
+
+  設定禁止使用的欄位
+
+  ```json
+  //建立tweets的mappings
+  PUT tweets
+  {
+    "mappings": {
+      "_field_names": {
+        "enabled": false
+      }
+    }
+  }
+  ```
+
+- _ignored
+
+  在查詢時，設定欄位被忽略
+
+  ```json
+  //在查詢時，設定欄位被忽略
+  GET _search
+  {
+    "query": {
+      "exists": {
+        "field": "_ignored"
+      }
+    }
+  }
+  ```
+
+Routing
+
+- _routing
+
+  `num_routing_shards`是`index.number_of_routing_shards`索引設置的值 。`num_primary_shards`是`index.number_of_shards`索引設置的值 。
+
+  ```json
+  //建立my-index-000001，id為1的資料，設定user1為route
+  PUT my-index-000001/_doc/1?routing=user1&refresh=true 
+  {
+    "title": "This is a document"
+  }
+  
+  //查詢my-index-000001，id為1的資料，去找user1這個route
+  GET my-index-000001/_doc/1?routing=user1 
+  ```
+
+  
+
+Other
+
+- _meta
+
+  索引值的數據，通常並不會拿來使用
+
+  ```json
+  //建立my-index-000001的mapping，設定使用什麼類別、version等等
+  PUT my-index-000001
+  {
+    "mappings": {
+      "_meta": { 
+        "class": "MyApp::User",
+        "version": {
+          "min": "1.0",
+          "max": "1.3"
+        }
+      }
+    }
+  }
+  ```
+
+- _tier
+
+  在跨多個索引執行查詢時，有時需要將保存在給定數據層 ( data_hot、data_warm、data_cold或data_frozen)節點上的索引作為目標。該_tier字段允許匹配tier_preference文檔被索引到的索引設置。
+
+  ```json
+  PUT index_1/_doc/1
+  {
+    "text": "Document in index 1"
+  }
+  
+  PUT index_2/_doc/2?refresh=true
+  {
+    "text": "Document in index 2"
+  }
+  
+  GET index_1,index_2/_search
+  {
+    "query": {
+      "terms": {
+        "_tier": ["data_hot", "data_warm"] 
+      }
+    }
+  }
+  ```
+
+  
 
 ##### 	data type
 
