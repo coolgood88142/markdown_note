@@ -1478,10 +1478,10 @@ Other
     - sum：總和
     - value_count：件數
     - avg：平均
-    - exists：
-    - range
-    - term
-    - terms
+    - exists：存在數值欄位
+    - range：範圍查詢
+    - term：是否包含特定的文字
+    - terms：是否包含特定的文字，多個條件
 
     ```json
     //設定
@@ -1503,17 +1503,17 @@ Other
 
   - historgram
 
-    - min aggregation
-    - max aggregation
-    - sum aggregation
-    - value_count aggregation
-    - avg aggregation
-    - percentiles aggregation
-    - percentile ranks aggregation
-    - boxplot aggregation
-    - histogram aggregation
-    - range aggregation
-    - exists query
+    - min aggregation：最小聚合
+    - max aggregation：最大聚合
+    - sum aggregation：總數聚合
+    - value_count aggregation：件數聚合
+    - avg aggregation：平均聚合
+    - percentiles aggregation：百分位聚合
+    - percentile ranks aggregation：百分等級聚合
+    - boxplot aggregation：箱線圖聚合
+    - histogram aggregation：直方圖聚合
+    - range aggregation：範圍聚合
+    - exists query：存在聚合
 
     ```json
     //更新my-index-000001，id為1的資料，將my_text設定為histigram_1，my_histogram有多個value與counts
@@ -2225,122 +2225,7 @@ Other
 
     
 
-  - shape
-
-    ```json
-    //索引值my-index-000001，設定location的類型為shape
-    PUT my-index-000001
-    {
-      "mappings": {
-        "properties": {
-          "geometry": {
-            "type": "shape"
-          }
-        }
-      }
-    }
-    ```
-
-    - Point
-
-      ```json
-      POST /example/_doc
-      {
-        "location" : {
-          "type" : "point",
-          "coordinates" : [-377.03653, 389.897676]
-        }
-      }
-      
-      POST /example/_doc
-      {
-        "location" : "POINT (-377.03653 389.897676)"
-      }
-      ```
-
-    - LineString
-
-      ```json
-      POST /example/_doc
-      {
-        "location" : {
-          "type" : "linestring",
-          "coordinates" : [[-377.03653, 389.897676], [-377.009051, 389.889939]]
-        }
-      }
-      
-      POST /example/_doc
-      {
-        "location" : "LINESTRING (-377.03653 389.897676, -377.009051 389.889939)"
-      }
-      ```
-
-    - polygon
-
-      ```json
-      POST /example/_doc
-      {
-        "location" : {
-          "type" : "polygon",
-          "coordinates" : [
-            [ [1000.0, -1001.0], [1001.0, -1001.0], [1001.0, -1000.0], [1000.0, -1000.0], [1000.0, -1001.0] ]
-          ]
-        }
-      }
-      
-      POST /example/_doc
-      {
-        "location" : "POLYGON ((1000.0 -1001.0, 1001.0 -1001.0, 1001.0 -1000.0, 1000.0 -1000.0, 1000.0 -1001.0))"
-      }
-      
-      POST /example/_doc
-      {
-        "location" : {
-          "type" : "polygon",
-          "coordinates" : [
-            [ [1000.0, -1001.0], [1001.0, -1001.0], [1001.0, -1000.0], [1000.0, -1000.0], [1000.0, -1001.0] ],
-            [ [1000.2, -1001.2], [1000.8, -1001.2], [1000.8, -1001.8], [1000.2, -1001.8], [1000.2, -1001.2] ]
-          ]
-        }
-      }
-      
-      POST /example/_doc
-      {
-        "location" : "POLYGON ((1000.0 1000.0, 1001.0 1000.0, 1001.0 1001.0, 1000.0 1001.0, 1000.0 1000.0), (1000.2 1000.2, 1000.8 1000.2, 1000.8 1000.8, 1000.2 1000.8, 1000.2 1000.2))"
-      }
-      
-      POST /example/_doc
-      {
-        "location" : {
-          "type" : "polygon",
-          "orientation" : "clockwise",
-          "coordinates" : [
-            [ [1000.0, 1000.0], [1000.0, 1001.0], [1001.0, 1001.0], [1001.0, 1000.0], [1000.0, 1000.0] ]
-          ]
-        }
-      }
-      ```
-
-    - MultPoint
-
-      ```json
-      POST /example/_doc
-      {
-        "location" : {
-          "type" : "multipoint",
-          "coordinates" : [
-            [1002.0, 1002.0], [1003.0, 2000.0]
-          ]
-        }
-      }
-      
-      POST /example/_doc
-      {
-        "location" : "MULTIPOINT (1002.0 2000.0, 1003.0 2000.0)"
-      }
-      ```
-
-      
+  - - 
 
 - Other type
 
