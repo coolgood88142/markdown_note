@@ -3156,29 +3156,29 @@ ik有提供3種內建詞典分別是：
   - Query string
 
     - query：搜尋欄位
-    - default_field：
-    - allow_leading_wildcard
-    - analyze_wildcard
-    - analyzer
-    - auto_generate_synonyms_phrase_query
-    - boost
-    - default_operator
+    - default_field：設定預設欄位
+    - allow_leading_wildcard：設定查詢第一個字元
+    - analyze_wildcard：設定查詢萬用字元
+    - analyzer：設定查詢使用分詞器
+    - auto_generate_synonyms_phrase_query：設定使用同義詞建立匹配字元
+    - boost：建立查詢相關方數
+    - default_operator：解釋查詢字元
       - or
       - and
-    - enable_position_increments
-    - fields
-    - fuzziness
-    - fuzzy_max_expansions
-    - fuzzy_prefix_length
-    - fuzzy_transpositions
-    - lenient
-    - max_determinized_states
-    - minimum_should_match
-    - quote_analyzer
-    - phrase_slop
-    - quote_field_suffix
-    - rewrite
-    - time_zone
+    - enable_position_increments：查詢中啟用位置增量
+    - fields：搜索的字段數組
+    - fuzziness：模糊匹配允許的最大編輯距離
+    - fuzzy_max_expansions：查詢擴展到模糊匹配的最大術語數，預設為60
+    - fuzzy_prefix_length：模糊匹配的起始字符數保持不變，預設為0
+    - fuzzy_transpositions：模糊匹配的編輯包括兩個相鄰字符的換位
+    - lenient：忽略`true`基於格式的錯誤
+    - max_determinized_states：查詢所需的最大自動機狀態數 。默認為`10000`
+    - minimum_should_match：必須與要返回的文檔匹配的最小子句數
+    - quote_analyzer：分析器用於將查詢字符串中的引用文本轉換為標記
+    - phrase_slop：短語的匹配標記之間允許的最大位置數。
+    - quote_field_suffix：附加到查詢字符串中引用文本的後綴。
+    - rewrite：用於重寫查詢的方法。
+    - time_zone：用於將查詢字符串中的值轉換為 UTC
 
     ```json
     GET /_search
@@ -3659,7 +3659,7 @@ ik有提供3種內建詞典分別是：
 
   
 
-- Match all
+- Match all(匹配所有查詢)
 
   ```json
   //查詢所有資料，找出_score欄位為1.2分的資料
@@ -3675,7 +3675,7 @@ ik有提供3種內建詞典分別是：
 
 - Span queries(跨越查詢)
 
-  - Span containing
+  - Span containing(包含查詢)
 
     ```json
     //查詢所有資料中，不限制欄位找出little的foo與big的bar跟baz的相同資料，但是有符合big的資料中，只抓前5筆
@@ -3703,7 +3703,7 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Span field masking
+  - Span field masking(跨域屏蔽查詢)
 
     ```json
     //查詢所有資料中，優先查詢quick brown，span 字段屏蔽查詢返回被屏蔽的字段，將使用提供的字段名稱的規范進行評分。
@@ -3737,7 +3737,7 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Span first
+  - Span first(跨度優先查詢)
 
     ```json
     //查詢所有資料中，優先查詢user.id包含kimchy的資料
@@ -3756,7 +3756,7 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Span multi-term
+  - Span multi-term(跨度多詞查詢)
 
     ```json
     //span_multi查詢允許您將 a multi term query
@@ -3774,7 +3774,7 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Span near
+  - Span near(跨度接近查詢)
 
     ```json
     //該clauses元素是一個或多個其他跨度類型查詢的列表，並slop控制允許的最大干預不匹配位置數。
@@ -4399,7 +4399,7 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Wildcard
+  - Wildcard(萬用字元)
 
     ```json
     //查詢user.id時，使用萬用字元
