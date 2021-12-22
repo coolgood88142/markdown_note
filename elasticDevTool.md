@@ -73,14 +73,13 @@
        - geo_shape
        - point
        - shape
-     - 
-
+   
    3.3.analyzer
-
+   
    - 原理
    - 如何使用iK分詞
    - 同義詞、分詞字點檔設定/使用
-
+   
 4. Query DSL介紹
 
    4.1 查詢語法
@@ -111,7 +110,7 @@
 
 | 項目      | Elasticsearch            | solr                           |
 | --------- | ------------------------ | ------------------------------ |
-| 格式      | xml、csv、json           | json                           |
+| 格式      | json                     | xml、csv、json                 |
 | 查詢方式  | 查詢文字、過濾、數據統計 | 文字                           |
 | 索引值    | 一個索引值可建立多種類型 | 一個索引值無法建立多種類型     |
 | 同義詞    | V                        | V                              |
@@ -119,7 +118,7 @@
 | Query DSL | V                        | solr 7以上可以使用JSON API查詢 |
 |           |                          |                                |
 
-Elasticsearch在查詢方面比solr強的多，Elasticsearch有包含複雜的時間、排序等條件做查詢篩選，
+Elasticsearch在查詢效率比solr強的多，Elasticsearch有包含複雜的時間、排序等條件做查詢篩選，solr卻可以支援多種格式，如果想要在資料做查詢時，還可以針對資料多分析、存取的話，Elasticsearch會比較好。
 
 
 
@@ -149,7 +148,7 @@ elasticsearch可以用索引值來做資料搜尋，有利於程式的logs或數
 - 但跟資料庫不一樣的是，JSON 格式靈活不受限，不須預先定義格式
 - 每個 Key/Value 的類型(string, number, boolean … etc) 可以自己指定或是由 Elasticsearch 幫忙推算
 
-term是指field的單位，跟match的用意是一樣，兩種都是做Query用的，差別在於match可以對field做分詞查詢，但是term不行
+term是指field的單位，跟match的用意是一樣，兩種都是做Query用的，差別在於match可以對field做分詞查詢，但是term不行，term只會查詢完整匹配的資料
 
 #### 3.1 Index組成
 
@@ -253,8 +252,7 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
   - number_of_shards：index能存放多少單位
   - provided_name：設定index名稱
   - creation_date：index建立日期
-  - number_of_replicas
-
+  
   ```json
   //my-index每個欄位可編輯
   {
@@ -282,9 +280,9 @@ term是指field的單位，跟match的用意是一樣，兩種都是做Query用�
   }
   
   ```
-
+  
   elasticsearch 需要3個檔案配置
-
+  
   - easticsearch.yml：設定elasticsearch的索引值內容與外掛或檔案儲存的路徑，以及設定對外http服務的port
   - jvm.options：因為elasicsearch 主要是用java虛擬機在執行，主要是設定JAVA_HOME的路徑，一般是不會去設定
   - log4j2.properties：設定elasticsearch的log內容，例如：檔案位置、屬性、大小等等
@@ -481,12 +479,11 @@ Document Scource
 
   檔案大小
 
-  ```
+  ```bash
   //安裝插件
-  sudo bin/elasticsearch-plugin install mapper-size
+  sudo bin/elasticsearch-plugin install mapper-siz
   ```
 
-  
 
 Doc Count
 
@@ -515,9 +512,8 @@ Doc Count
         "counts" : [8, 17, 8, 7, 6, 2]
      },
     "_doc_count": 62 
-  }
-  ```
   
+  ```
   
 
 Indexing
@@ -571,7 +567,6 @@ Routing
   GET my-index-000001/_doc/1?routing=user1 
   ```
 
-  
 
 Other
 
@@ -620,7 +615,6 @@ Other
   }
   ```
 
-  
 
 ##### 	data type
 
@@ -1013,18 +1007,17 @@ Other
 
     如果欄位有包含很多層資料時，一般的做法是針對欄位用動態查詢，但是可以用flattened，這種做法好處是如果不知道資料型別，可以用欄位的某個部份資料做搜尋
 
-    參數
-
-    - boost
-    - depth_limit
-    - doc_values
-    - eager_global_ordinals
-    - ignore_above
-    - index
-    - index_options
-    - null_value
-    - similarity
-    - split_queries_on_whitespace
+    - boost：設定查詢時間
+    - depth_limit：設定欄位的搜尋個數
+    - doc_values：設定每個doc的件數
+    - eager_global_ordinals：是否載入全域變數
+    - ignore_above：設定某個文字不會被找到，這裡要注意，只限制flattened。
+    - index：確認文字是否當作索引。
+    - index_options：設定索引要存放那些資料，
+    - null_value：設定欄位資料為null時，來做代替
+    - similarity：設定使用哪種演算法，如果不寫預設值為BM25
+    - 應該使用 哪種評分算法或相似性。默認為BM25
+    - split_queries_on_whitespace：設定欄位資料是否要用分割，例如可以用空格做分割。
 
     ```json
     //設定title為text，labels為flattened
@@ -1153,8 +1146,6 @@ Other
     }
     ```
 
-    
-
   - join
 
     設定欄位做父子類別
@@ -1200,8 +1191,7 @@ Other
     }
     
     ----------------------------
-    
-    //
+    //查詢子類別answer，id為1的資料
     GET my-index1/_search
     {
     "query": {
@@ -1213,9 +1203,8 @@ Other
     }
     ```
     
-    
 
-- Structured data types(結構話資料類型)
+- Structured data types(結構化資料類型)
 
   - range
 
@@ -1259,125 +1248,112 @@ Other
 
     - ip_range：搜尋ip範圍
 
-      每種可加參數，來設定更詳細的範圍資料
 
-      - coerce
-      - boost
-      - index
-      - store
-
-    ```json
-    //設定expected_attendees搜尋integer資料範圍，time_frame搜尋date資料範圍，日期格式為日期加時間或只有日期
-    PUT range_index
-    {
-      "settings": {
-        "number_of_shards": 2
+```json
+//設定expected_attendees搜尋integer資料範圍，time_frame搜尋date資料範圍，日期格式為日期加時間或只有日期
+PUT range_index
+{
+  "settings": {
+    "number_of_shards": 2
+  },
+  "mappings": {
+    "properties": {
+      "expected_attendees": {
+        "type": "integer_range"
       },
-      "mappings": {
-        "properties": {
-          "expected_attendees": {
-            "type": "integer_range"
-          },
-          "time_frame": {
-            "type": "date_range", 
-            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd"
-          }
-        }
+      "time_frame": {
+        "type": "date_range", 
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd"
       }
     }
-    
-    //更新my-index-000001的doc，id為1的資料，將expected_attendees資料範圍設定為10-20，time_frame資料範圍設定為2015-10-31 12:00:00至2015-11-01
-    PUT range_index/_doc/1?refresh
-    {
-      "expected_attendees" : { 
-        "gte" : 10,
-        "lt" : 20
-      },
-      "time_frame" : {
-        "gte" : "2015-10-31 12:00:00", 
-        "lte" : "2015-11-01"
-      }
-    }
-    
-    //查詢索引值range_index的expected_attendees資料，是否有包含12
-    GET range_index/_search
-    {
-      "query" : {
-        "term" : {
-          "expected_attendees" : {
-            "value": 12
-          }
-        }
-      }
-    }
-    
-    //查詢索引值range_index的time_frame資料，是否在2015-10-31至2015-11-01範圍內
-    GET range_index/_search
-    {
-      "query" : {
-        "range" : {
-          "time_frame" : { 
-            "gte" : "2015-10-31",
-            "lte" : "2015-11-01",
-            "relation" : "within" 
-          }
-        }
-      }
-    }
-    
-    ----------------------------
-    
-    //例如：查詢成績合格的資料
-    GET range-grades/_search
-    {
-      "query" : {
-        "range" : {
-          "grades" : {
-              "get" : 60,
-              "lte" : 100,
-          }
-        }
-      }
-    }
-    
-    
-    //range_index的ip_allowlist設定為ip_range
-    PUT range_index/_mapping
-    {
-      "properties": {
-        "ip_allowlist": {
-          "type": "ip_range"
-        }
-      }
-    }
-    
-    //更新range_index，id為2的資料，ip_allowlist設定為192.168.0.0/16
-    PUT range_index/_doc/2
-    {
-      "ip_allowlist" : "192.168.0.0/16"
-    }
-    
-    ----------------------------
-    
-    
-    
-    ```
+  }
+}
 
-    
+//更新my-index-000001的doc，id為1的資料，將expected_attendees資料範圍設定為10-20，time_frame資料範圍設定為2015-10-31 12:00:00至2015-11-01
+PUT range_index/_doc/1?refresh
+{
+  "expected_attendees" : { 
+    "gte" : 10,
+    "lt" : 20
+  },
+  "time_frame" : {
+    "gte" : "2015-10-31 12:00:00", 
+    "lte" : "2015-11-01"
+  }
+}
+
+//查詢索引值range_index的expected_attendees資料，是否有包含12
+GET range_index/_search
+{
+  "query" : {
+    "term" : {
+      "expected_attendees" : {
+        "value": 12
+      }
+    }
+  }
+}
+
+//查詢索引值range_index的time_frame資料，是否在2015-10-31至2015-11-01範圍內
+GET range_index/_search
+{
+  "query" : {
+    "range" : {
+      "time_frame" : { 
+        "gte" : "2015-10-31",
+        "lte" : "2015-11-01",
+        "relation" : "within" 
+      }
+    }
+  }
+}
+
+----------------------------
+
+//例如：查詢成績合格的資料
+GET range-grades/_search
+{
+  "query" : {
+    "range" : {
+      "grades" : {
+          "get" : 60,
+          "lte" : 100,
+      }
+    }
+  }
+}
+
+//range_index的ip_allowlist設定為ip_range
+PUT range_index/_mapping
+{
+  "properties": {
+    "ip_allowlist": {
+      "type": "ip_range"
+    }
+  }
+}
+
+//更新range_index，id為2的資料，ip_allowlist設定為192.168.0.0/16
+PUT range_index/_doc/2
+{
+  "ip_allowlist" : "192.168.0.0/16"
+}
+
+----------------------------
+```
 
   - ip
 
     設定IP欄位，可加參數來查詢，縮小範圍
 
-    - boost
-    - dimension
-    - doc_values
-    - ignore_malformed
-    - index
-    - null_value
-    - on_script_error
-    - script
-    - store
+    - boost：設定欄位的權重，可以優先做查詢
+    - doc_values：是否將文字使用拿來用排序、聚合或腳本編寫？
+    - ignore_malformed：是否要忽略錯誤的IP格式
+    - index：設定文字是否要被索引值找到
+    - null_value：接受替換任何顯式null值的 IPv4 或 IPv6值
+    - on_script_error：定義如果`script`參數定義的腳本在建立索引時拋出錯誤時要執行的操作。Accepts `reject`（默認），這將導致整個文檔被拒絕，並且`ignore`，它將在文檔的[`_ignored`](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-ignored-field.html)元數據字段中註冊該 字段並繼續索引。該參數只有在`script`字段也被設置的情況下才能設置。
+    - script：如果設置了此參數，則該字段將索引此腳本生成的值，而不是直接從源讀取值。如果在輸入文檔上為此字段設置了值，則文檔將被拒絕並顯示錯誤。腳本與它們的[運行時等效](https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime-mapping-fields.html)格式 [相同](https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime-mapping-fields.html)，並且應該發出包含 IPv4 或 IPv6 格式地址的字符串。
+    - store：設定文字是否與_source做分開存儲與查詢
 
     ```json
     //設定ip_addr為IP
@@ -1421,8 +1397,6 @@ Other
     }
     ```
 
-    
-
   - version
 
     設定版本欄位，多個mapping做版本區分，如果沒使用range、fuzzy做查詢的話，可以用version來做查詢
@@ -1455,18 +1429,20 @@ Other
     }
     ```
 
-    
-
   - murmur3
 
-    mapper-murmur3套件，可以協助查詢
+    mapper-murmur3套件，可以協助查詢，在索引時計算資料在索引值存取的能力，適用於計算聚合和大量資料。
 
-    ```
-    sudo bin/elasticsearch-plugin install mapper-murmur3
-    ```
-
+    [官網載點](https://artifacts.elastic.co/downloads/elasticsearch-plugins/mapper-murmur3/mapper-murmur3-7.16.1.zip)
     
-
+    ```bash
+    //安裝mapper-murmur3
+    sudo bin/elasticsearch-plugin install mapper-murmur3
+    
+    //移除mapper-murmur3
+    sudo bin/elasticsearch-plugin remove mapper-murmur3
+    ```
+    
 - Aggregate data types(聚合資料類型)
 
   - aggregate_metric_double
@@ -1608,24 +1584,24 @@ Other
 
   - text fields
 
-    - analyzer
-    - boost
-    - eager_global_ordinals
-    - fielddata
-    - fielddata_frequency_filter
-    - fields
-    - index
-    - index_options
-    - index_prefixes
+    - analyzer：設定資料使用分詞功能
+    - boost：設定資料優先查詢
+    - eager_global_ordinals：是否載入全域變數
+    - fielddata：設定資料是否要進行排序、聚合或腳本編寫?
+    - fielddata_frequency_filter：允許決定在fielddata 啟用時將哪些值加載到內存中的專家設置。默認情況下加載所有值。
+    - fields：設定同一種資料，可以在不同的欄位進行查詢
+    - index：設定資料是否要被索引值找到
+    - index_options：設定文字在索引值裡，在查詢時會顯示
+    - index_prefixes：設定資料在查詢時，每筆資料的前幾個字符做搜尋
     - index_phrases
-    - norms
-    - position_increment_gap
-    - store
-    - search_analyzer
+    - norms：設定資料在查詢時，是否要對文字長度進行評分
+    - position_increment_gap：設定每個資料中的元素設定為至
+    - store：設定資料是否要跟_source做分開查詢或儲存
+    - search_analyzer：設定分詞搜尋
     - search_quote_analyzer
-    - similarity
-    - term_vector
-    - meta
+    - similarity：設定使用哪種演算法，預設為BM25
+    - term_vector：是否應為字段存儲術語向量
+    - meta：設定資料中的文字
 
     ```json
     //索引值my-index-000001設定full_name的type為text
@@ -1683,8 +1659,12 @@ Other
 
     使用mapper-annotated-text套件
 
-    ```
+    ```json
+    //安裝mapper-annotated-text
     sudo bin/elasticsearch-plugin install mapper-annotated-text
+    
+    //移除mapper-annotated-text
+    sudo bin/elasticsearch-plugin remove mapper-annotated-text
     ```
 
     
@@ -1800,6 +1780,7 @@ Other
       }
     }
     
+    //設定索引值my-index1，設定create_date類型為date
     PUT my-index1
     {
       "mappings": {
@@ -1874,7 +1855,7 @@ Other
 
 - Document ranking types(文件排名)
 
-  - dense_vector
+  - dense_vector(密集向量)
 
     ```json
     //索引值my-index-000001，將my_vector設定為dense_vector，並且只能放3個資料，my_text設定為text
@@ -2225,7 +2206,122 @@ Other
 
     
 
-  - - 
+  - shape
+
+    ```json
+    //索引值my-index-000001，設定location的類型為shape
+    PUT my-index-000001
+    {
+      "mappings": {
+        "properties": {
+          "geometry": {
+            "type": "shape"
+          }
+        }
+      }
+    }
+    ```
+
+    - Point
+
+      ```json
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "point",
+          "coordinates" : [-377.03653, 389.897676]
+        }
+      }
+      
+      POST /example/_doc
+      {
+        "location" : "POINT (-377.03653 389.897676)"
+      }
+      ```
+
+    - LineString
+
+      ```json
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "linestring",
+          "coordinates" : [[-377.03653, 389.897676], [-377.009051, 389.889939]]
+        }
+      }
+      
+      POST /example/_doc
+      {
+        "location" : "LINESTRING (-377.03653 389.897676, -377.009051 389.889939)"
+      }
+      ```
+
+    - polygon
+
+      ```json
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "polygon",
+          "coordinates" : [
+            [ [1000.0, -1001.0], [1001.0, -1001.0], [1001.0, -1000.0], [1000.0, -1000.0], [1000.0, -1001.0] ]
+          ]
+        }
+      }
+      
+      POST /example/_doc
+      {
+        "location" : "POLYGON ((1000.0 -1001.0, 1001.0 -1001.0, 1001.0 -1000.0, 1000.0 -1000.0, 1000.0 -1001.0))"
+      }
+      
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "polygon",
+          "coordinates" : [
+            [ [1000.0, -1001.0], [1001.0, -1001.0], [1001.0, -1000.0], [1000.0, -1000.0], [1000.0, -1001.0] ],
+            [ [1000.2, -1001.2], [1000.8, -1001.2], [1000.8, -1001.8], [1000.2, -1001.8], [1000.2, -1001.2] ]
+          ]
+        }
+      }
+      
+      POST /example/_doc
+      {
+        "location" : "POLYGON ((1000.0 1000.0, 1001.0 1000.0, 1001.0 1001.0, 1000.0 1001.0, 1000.0 1000.0), (1000.2 1000.2, 1000.8 1000.2, 1000.8 1000.8, 1000.2 1000.8, 1000.2 1000.2))"
+      }
+      
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "polygon",
+          "orientation" : "clockwise",
+          "coordinates" : [
+            [ [1000.0, 1000.0], [1000.0, 1001.0], [1001.0, 1001.0], [1001.0, 1000.0], [1000.0, 1000.0] ]
+          ]
+        }
+      }
+      ```
+
+    - MultPoint
+
+      ```json
+      POST /example/_doc
+      {
+        "location" : {
+          "type" : "multipoint",
+          "coordinates" : [
+            [1002.0, 1002.0], [1003.0, 2000.0]
+          ]
+        }
+      }
+      
+      POST /example/_doc
+      {
+        "location" : "MULTIPOINT (1002.0 2000.0, 1003.0 2000.0)"
+      }
+      ```
+
+      
 
 - Other type
 
@@ -3855,7 +3951,7 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Percolate
+  - Percolate Query(滲透查詢)
 
     ```json
     //建立索引值my-index-00001，message欄位為文字，query欄位為percolator
@@ -3872,20 +3968,35 @@ ik有提供3種內建詞典分別是：
         }
       }
     }
+    
+    PUT /my-index-00001/_doc/1?refresh
+    {
+      "query": {
+        "match": {
+          "message": "bonsai tree"
+        }
+      }
+    }
+    
+    GET /my-index-00001/_search
+    {
+      "query": {
+        "percolate": {
+          "field": "query",
+          "document": {
+            "message": "A new bonsai tree in the office"
+          }
+        }
+      }
+    }
     ```
 
     
 
-  - Rank feature
-
-    - field
-    - boost
-    - saturation
-    - log
-    - sigmoid
-    - linear
+  - Rank feature Query(排名特徵查詢)
 
     ```json
+    //索引值test，pagerank類型為rank_feature，url_length類型為rank_feature，topics類型為rank_feature
     PUT /test
     {
       "mappings": {
@@ -3903,13 +4014,91 @@ ik有提供3種內建詞典分別是：
         }
       }
     }
+    
+    //更新test，id為1的資料
+    PUT /test/_doc/1?refresh
+    {
+      "url": "https://en.wikipedia.org/wiki/2016_Summer_Olympics",
+      "content": "Rio 2016",
+      "pagerank": 50.3,
+      "url_length": 42,
+      "topics": {
+        "sports": 50,
+        "brazil": 30
+      }
+    }
+    
+    //更新test，id為2的資料
+    PUT /test/_doc/2?refresh
+    {
+      "url": "https://en.wikipedia.org/wiki/2016_Brazilian_Grand_Prix",
+      "content": "Formula One motor race held on 13 November 2016",
+      "pagerank": 50.3,
+      "url_length": 47,
+      "topics": {
+        "sports": 35,
+        "formula one": 65,
+        "brazil": 20
+      }
+    }
+    
+    //更新test，id為3的資料
+    PUT /test/_doc/3?refresh
+    {
+      "url": "https://en.wikipedia.org/wiki/Deadpool_(film)",
+      "content": "Deadpool is a 2016 American superhero film",
+      "pagerank": 50.3,
+      "url_length": 37,
+      "topics": {
+        "movies": 60,
+        "super hero": 65
+      }
+    }
+    
+    //查詢索引值test，content為2016，並且pagerank、url_length、topics.sports做排名
+    GET /test/_search
+    {
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "match": {
+                "content": "2016"
+              }
+            }
+          ],
+          "should": [
+            {
+              "rank_feature": {
+                "field": "pagerank"
+              }
+            },
+            {
+              "rank_feature": {
+                "field": "url_length",
+                "boost": 0.1
+              }
+            },
+            {
+              "rank_feature": {
+                "field": "topics.sports",
+                "boost": 0.4
+              }
+            }
+          ]
+        }
+      }
+    }
     ```
 
     
 
-  - Script
+  - Script Query(腳本查詢)
+
+    適合用於欄位、所有查詢、聚合
 
     ```json
+    //查詢type.value為expense，將amount.value減一，並且回傳布林值，amount.value是否大於10
     GET /_search
     {
       "query": {
@@ -3932,14 +4121,10 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Script score
-
-    - query
-    - script
-    - min_score
-    - boost
+  - Script score Query(腳本分數查詢)
 
     ```json
+    //查詢message為elasticsearch，並且找出my-int.value可以被10整除的資料
     GET /_search
     {
       "query": {
@@ -3957,9 +4142,12 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Wrapper
+  - Wrapper Query(包裝查詢)
+
+    可以接受base64編碼文字
 
     ```json
+    //查詢欄位的編碼資料
     GET /_search
     {
       "query": {
@@ -3972,13 +4160,10 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Pinned Query
-
-    - ids
-    - docs
-    - organic
+  - Pinned Query(固定查詢)
 
     ```json
+    //查詢doc id為1、4、100的資料，針對doc任何一個欄位都可以查的到iphone
     GET /_search
     {
       "query": {
@@ -3998,9 +4183,10 @@ ik有提供3種內建詞典分別是：
 
 - Term-level queries
 
-  - Exists
+  - Exists Query(存在查詢)
 
-    ```
+    ```json
+    //查詢是否有user欄位
     GET /_search
     {
       "query": {
@@ -4013,16 +4199,10 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Fuzzy
-
-    - value
-    - fuzziness
-    - max_expansions
-    - prefix_length
-    - transpositions
-    - rewrite
+  - Fuzzy Query(模糊查詢)
 
     ```json
+    //查詢user.id資料中有包含ki的資料
     GET /_search
     {
       "query": {
@@ -4037,9 +4217,10 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - IDs
+  - IDs  Query(ID查詢)
     
     ```json
+    //查詢doc id為1、4、100的資料
     GET /_search
     {
       "query": {
@@ -4052,9 +4233,10 @@ ik有提供3種內建詞典分別是：
     
     
     
-  - Prefix
+  - Prefix Query(前綴查詢)
 
-    ```
+    ```json
+    //查詢user.id資料中，開頭是ki的資料
     GET /_search
     {
       "query": {
@@ -4069,9 +4251,10 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Range
+  - Range Query(範圍查詢)
 
-    ```
+    ```json
+    //查詢年齡資料中10-20之間的資料
     GET /_search
     {
       "query": {
@@ -4088,9 +4271,10 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Regexp
+  - Regexp Query(正規化表示法)
 
-    ```
+    ```json
+    //查詢時使用正規化表示法，查user.id的value找出k-y之間，有多個文字的資料，最多查到1萬筆
     GET /_search
     {
       "query": {
@@ -4109,9 +4293,10 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Term
+  - Term Query(完整查詢)
 
-    ```
+    ```json
+    //查詢user.id為kimchy的資料
     GET /_search
     {
       "query": {
@@ -4127,9 +4312,10 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Terms
+  - Terms Query(多筆完整查詢)
 
-    ```
+    ```json
+    //查詢user.id為kimchy、elkbee的資料
     GET /_search
     {
       "query": {
@@ -4143,9 +4329,10 @@ ik有提供3種內建詞典分別是：
 
     
 
-  - Terms set
+  - Terms set Query
 
-    ```
+    ```json
+    //設定job-candidates索引值，有包含name、programming_languages、required_matches三個欄位
     PUT /job-candidates
     {
       "mappings": {
@@ -4162,13 +4349,44 @@ ik有提供3種內建詞典分別是：
         }
       }
     }
+    
+    //更新job-candidates，id為1的資料，name為Jane Smith，programming_languages為c++、java，設定查詢時，找前兩筆有符合條件的資料
+    PUT /job-candidates/_doc/1?refresh
+    {
+      "name": "Jane Smith",
+      "programming_languages": [ "c++", "java" ],
+      "required_matches": 2
+    }
+    
+    //更新job-candidates，id為2的資料，name為Jason Response，programming_languages為java、php設定查詢時，找前兩筆有符合條件的資料
+    PUT /job-candidates/_doc/2?refresh
+    {
+      "name": "Jason Response",
+      "programming_languages": [ "java", "php" ],
+      "required_matches": 2
+    }
+    
+    //查詢索引值job-candidates，找出programming_languages完整的c++、java、php，並且使用最小匹配
+    GET /job-candidates/_search
+    {
+      "query": {
+        "terms_set": {
+          "programming_languages": {
+            "terms": [ "c++", "java", "php" ],
+            "minimum_should_match_field": "required_matches"
+          }
+        }
+      }
+    }
     ```
 
     
 
-  - Type Query
+  - Type Query(類型查詢)
 
-    ```
+    在7.0版本時被棄用
+
+    ```json
     GET /_search
     {
       "query": {
@@ -4183,7 +4401,8 @@ ik有提供3種內建詞典分別是：
 
   - Wildcard
 
-    ```
+    ```json
+    //查詢user.id時，使用萬用字元
     GET /_search
     {
       "query": {
@@ -4197,30 +4416,34 @@ ik有提供3種內建詞典分別是：
       }
     }
     ```
-
+    
     
 
-- minimum_should_match parameter
+- minimum_should_match parameter(最小匹配的參數)
 
-  - Integer
-  - Negative integer
-  - Percentage
-  - Negative percentage
-  - Combination
-  - Multiple combinations
+  在bool query中minimum_should_match只能放在should的後面，不然會拋錯
 
-- rewrite parameter
+  - Integer：整數
+  - Negative integer：負數
+  - Percentage：百分比
+  - Negative percentage：負百分比
+  - Combination：寫條件式，使用大於等於小於
+  - Multiple combinations：多個條件式
 
-  - fuzzy
-  - prefix
-  - query_string
-  - regexp
-  - wildcard
+- rewrite parameter(重寫參數)
+
+  設定重新寫入索引值的某個欄位資料
+
+  - fuzzy：模糊查詢
+  - prefix：前綴查詢
+  - query_string：查詢文字
+  - regexp：正規化表示法
+  - wildcard：萬用字元查詢
 
 - Regular expression syntax
 
-  - regexp
-  - query_string
+  - regexp：正規化表示法
+  - query_string：查詢文字
 
 **Dev Tools**
 
