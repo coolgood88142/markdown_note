@@ -135,6 +135,8 @@ print(pd.DataFrame(stock_dividend).head())  # 顯示前五筆資料
 
 
 
+
+
 ### 參考資料
 
 https://finmindtrade.com/
