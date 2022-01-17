@@ -139,6 +139,50 @@
 
 提供給chrome線上應用程式商店，要填寫套件介紹、Icon、宣傳圖、類型、上架國家、收費與否、語言等資訊，寫完後上傳即可。
 
+### 範例
+
+製作搜尋Youtube影片，以及Youtube的影片資訊
+
+程式碼
+
+```javascript
+window.onload = function () {
+  let clickedViedo = null
+    
+  function generateReport(request, sender, sendResponse) {
+    // show error message if getUrl is false or clickImg is null
+    if (!request.getUrl || !clickedViedo) { return showErrorMessage() }
+    // generate tbody
+    //根據目前的網址來確認是否為YT，不是YT就顯示訊息，如果是YT的嵌入式影片要另外抓資料
+    if(clickedViedo.baseURI.indexOf('https://www.youtube.com/watch') != -1){
+      generateTbody(location.href.indexOf('='))
+    }else if(clickedViedo.localName == 'iframe'){
+      generateTbody(clickedViedo.src.indexOf('='))
+    }
+    // generate the report with tbody
+    // generateTable(tbodyInnerHTML)
+    // listen to url click to copy url
+    document.querySelectorAll('.url').forEach(link => link.addEventListener('click', copyUrl))
+    // listen to reload button click to lead user back to image page
+    document.getElementById('reload').addEventListener('click', () => location.reload())
+  }
+
+  // listen to contextmenu being opened and save the target image
+  document.addEventListener('contextmenu', event => clickedViedo = event.target)
+
+
+  // listen to message request from the extension: background.js
+  chrome.runtime.onMessage.addListener(generateReport)
+
+}
+```
+
+https://developer.chrome.com/docs/extensions/reference/contextMenus/
+
+https://ingtt.com/10317/youtube-embed-autoplay
+
+
+
 ### 參考資料
 
 - https://medium.com/%E9%BA%A5%E5%85%8B%E7%9A%84%E5%8D%8A%E8%B7%AF%E5%87%BA%E5%AE%B6%E7%AD%86%E8%A8%98/%E7%AD%86%E8%A8%98-%E5%BE%9E%E9%9B%B6%E9%96%8B%E5%A7%8B%E8%A3%BD%E4%BD%9C-chrome-%E5%A5%97%E4%BB%B6%E5%88%B0%E4%B8%8A%E6%9E%B6%E5%95%86%E5%BA%97-4971ed79ac77
