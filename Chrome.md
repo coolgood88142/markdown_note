@@ -45,6 +45,8 @@
 - permissions：設定套件會使用到的 Chrome API 和網頁權限
 - icons：套件將使用到的各尺寸的圖像檔
 
+這裡要注意如果要上架的話，manifest_version要改用3，[參考資料](https://developer.chrome.com/docs/extensions/mv3/intro/mv3-migration/)
+
 ```json
 {
   "name": "Search Youtube Video",
@@ -57,6 +59,7 @@
     "48": "images/image48.png",
     "128": "images/image128.png"
   },
+  "manifest_version": 3
  ...
 ```
 
@@ -173,11 +176,9 @@ Manifest.js
   "version": "1.2",
   "description": "Quickly Search Youtube ",
   "permissions": [
-    "contextMenus",
-    "activeTab",
-    "https://www.youtube.com/"
+    "contextMenus"
   ],
-  "browser_action": {
+  "action": {
     "default_popup": "popup.html",
     "default_icon": {
       "16": "images/image16.png",
@@ -187,10 +188,7 @@ Manifest.js
     }
   },
   "background": {
-    "scripts": [
-      "js/background.js"
-    ],
-    "persistent": false
+    "service_worker": "js/background.js"
   },
   "icons": {
     "16": "images/image16.png",
@@ -209,7 +207,7 @@ Manifest.js
       ]
     }
   ],
-  "manifest_version": 2
+  "manifest_version": 3
 }
 ```
 
@@ -261,3 +259,4 @@ https://ingtt.com/10317/youtube-embed-autoplay
 
 - https://medium.com/%E9%BA%A5%E5%85%8B%E7%9A%84%E5%8D%8A%E8%B7%AF%E5%87%BA%E5%AE%B6%E7%AD%86%E8%A8%98/%E7%AD%86%E8%A8%98-%E5%BE%9E%E9%9B%B6%E9%96%8B%E5%A7%8B%E8%A3%BD%E4%BD%9C-chrome-%E5%A5%97%E4%BB%B6%E5%88%B0%E4%B8%8A%E6%9E%B6%E5%95%86%E5%BA%97-4971ed79ac77
 - https://github.com/smallpaes/find-placeholder-image
+- https://developer.chrome.com/docs/extensions/mv3/intro/mv3-migration/
