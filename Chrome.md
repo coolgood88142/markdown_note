@@ -143,7 +143,81 @@
 
 製作搜尋Youtube影片，以及Youtube的影片資訊
 
-程式碼
+頁面
+
+```html
+<body>
+  <!--Find Royalty Free Viedo-->
+  <section class="bg-white border rounded p-2">
+    <form id='search-viedo'>
+      <legend class='text-secondary'>搜尋Youtube影片</legend>
+      <!--Second row-->
+      <div class="input-group input-group-sm my-2 ">
+        <input type="text" class="form-control form-control-sm" id="search-string" placeholder="keyWord" required>
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="submit" id='open-all'>搜尋</button>
+        </div>
+      </div>
+
+      <div id="viedo"></div>
+    </form>
+  </section>
+</body>
+```
+
+Manifest.js
+
+```javascript
+{
+  "name": "Search Youtube Video",
+  "version": "1.2",
+  "description": "Quickly Search Youtube ",
+  "permissions": [
+    "contextMenus",
+    "activeTab",
+    "https://www.youtube.com/"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/image16.png",
+      "32": "images/image32.png",
+      "48": "images/image48.png",
+      "128": "images/image128.png"
+    }
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ],
+    "persistent": false
+  },
+  "icons": {
+    "16": "images/image16.png",
+    "32": "images/image32.png",
+    "48": "images/image48.png",
+    "128": "images/image128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "js/axios.min.js",
+        "js/content.js"
+      ]
+    }
+  ],
+  "manifest_version": 2
+}
+```
+
+
+
+
+
+
 
 ```javascript
 window.onload = function () {
