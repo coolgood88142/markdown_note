@@ -25,7 +25,7 @@
 
 #### 搜尋youtube的影片
 
-使用者在輸入完影片的關鍵字後，點選「Search」按鈕，網頁會新增一個分頁，獲取youtube查詢關鍵字的所有相關影片
+使用者在輸入完影片的關鍵字後，點選「搜尋」按鈕，網頁會新增一個分頁，獲取youtube查詢關鍵字的所有相關影片
 
 ![chrome1](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/chrome1.png>)
 
@@ -45,8 +45,6 @@
 - permissions：設定套件會使用到的 Chrome API 和網頁權限
 - icons：套件將使用到的各尺寸的圖像檔
 
-這裡要注意如果要上架的話，manifest_version要改用3，[參考資料](https://developer.chrome.com/docs/extensions/mv3/intro/mv3-migration/)
-
 ```json
 {
   "name": "Search Youtube Video",
@@ -59,9 +57,27 @@
     "48": "images/image48.png",
     "128": "images/image128.png"
   },
-  "manifest_version": 3
+  "manifest_version": 2
  ...
 ```
+
+manifest目前v2、v3版本，如果是自行開發自己用的話，用v2即可，但是要上架的話，就必須要用到v3。
+
+chrome管理員有提有v2改用v3的寫法，[參考資料](https://developer.chrome.com/docs/extensions/mv3/intro/mv3-migration/)
+
+Manifest V2與Manifest V3，在Manifest.json的差異
+
+
+
+|                  | Manifest V2                         | Manifest V3                                                  |
+| ---------------- | ----------------------------------- | ------------------------------------------------------------ |
+| manifest_version | 2                                   | 3                                                            |
+| permissions      | chrome擴充功能的API物件、特定的網址 | chrome擴充功能的API物件、特地的網址需要額外建一個host_permissions來做設定 |
+|                  |                                     |                                                              |
+
+
+
+
 
 #### Background Script
 
@@ -144,7 +160,7 @@
 
 ### 範例
 
-製作搜尋Youtube影片，以及Youtube的影片資訊
+製作搜尋Youtube影片，以及顯示Youtube的影片資訊
 
 頁面
 
@@ -248,6 +264,10 @@ window.onload = function () {
 
 }
 ```
+
+流程說明：開啟套件後，可輸入關鍵字後按搜尋，顯示關鍵字相關的Youtube影片資料，會影片名稱、發佈者、發佈日期、影片連結，另一個功能在Youtube影片，滑鼠右鍵點選「showVideoInfo」，會開啟新分頁顯示該影片的資訊，用表格呈現
+
+
 
 https://developer.chrome.com/docs/extensions/reference/contextMenus/
 
