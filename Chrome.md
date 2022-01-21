@@ -69,15 +69,13 @@ Manifest V2與Manifest V3，在Manifest.json的差異
 
 
 
-|                  | Manifest V2                         | Manifest V3                                                  |
-| ---------------- | ----------------------------------- | ------------------------------------------------------------ |
-| manifest_version | 2                                   | 3                                                            |
-| permissions      | chrome擴充功能的API物件、特定的網址 | chrome擴充功能的API物件、特地的網址需要額外建一個host_permissions來做設定 |
-|                  |                                     |                                                              |
-
-
-
-
+|                          | Manifest V2                         | Manifest V3                                                  |
+| ------------------------ | ----------------------------------- | ------------------------------------------------------------ |
+| manifest_version         | 2                                   | 3                                                            |
+| permissions              | chrome擴充功能的API物件、特定的網址 | chrome擴充功能的API物件、特地的網址需要額外建一個host_permissions來做設定 |
+| Content security policy  |                                     | extension_pages、sandbox                                     |
+| action                   | browser_action、page_action         | action                                                       |
+| web_accessible_resources | RESOURCE_PATHS                      | resources": [RESOURCE_PATHS],   "matches": [MATCH_PATTERNS],   "extension_ids": [EXTENSION_IDS],   optional "use_dynamic_url": boolean |
 
 #### Background Script
 
@@ -149,6 +147,8 @@ Manifest V2與Manifest V3，在Manifest.json的差異
 要支付5美元的註冊費用
 
 ![chrome7](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/chrome7.png>)
+
+![chrome8](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/chrome8.png>)
 
 #### 上傳套件
 
