@@ -1,15 +1,15 @@
-# 製作 Chrome 套件到上架商店
+# 用Youtube Data API 製作 Chrome 套件
 
 ### 大綱
 
 - 什麼是Chrome 套件
+- 什麼是Youtube Data ApI (v3)
 - 製作Chrome套件
   - 搜尋youtube的影片
 - 開發Chrome套件
   - Manifest
   - Background Script
   - UI Elements
-
 - 上傳 Chrome 套件
 - 上架 Chrome Web Store
   - 前往Chrome 線上應用程式商店開發人員主頁
@@ -20,6 +20,15 @@
 ### 什麼是Chrome 套件
 
 主要是擴充google瀏覽器的功能，讓瀏覽器顯示某個網站的通知、變更某個網站的CSS等等。Chrome套件本身也是以JavaScript、HTML或是CSS等網路技術寫成。
+
+### 什麼是Youtube Data ApI (v3)
+
+目前Youtube Data ApI最新的版本為v3，API有分為4種
+
+- Subscriptions.insert：用API去訂閱Youtuber
+- channels.list：用API查詢播放列表
+- search.list：用API搜尋影片資料
+- videos.update：上傳自己的影片
 
 ### 製作Chrome套件
 
