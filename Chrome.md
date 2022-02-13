@@ -40,6 +40,12 @@
 
 ![chrome2](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/chrome2.png>)
 
+
+
+![chrome9](C:\xampp\htdocs\markdown_note\assets\images\chrome9.png)
+
+
+
 ### 	開發Chrome套件
 
 開發套件之前，先介紹幾個套件的元素
@@ -171,7 +177,7 @@ Manifest V2與Manifest V3，在Manifest.json的差異
 
 製作搜尋Youtube影片，以及顯示Youtube的影片資訊
 
-頁面
+#### pupop.html
 
 ```html
 <body>
@@ -181,19 +187,19 @@ Manifest V2與Manifest V3，在Manifest.json的差異
       <legend class='text-secondary'>搜尋Youtube影片</legend>
       <!--Second row-->
       <div class="input-group input-group-sm my-2 ">
-        <input type="text" class="form-control form-control-sm" id="search-string" placeholder="keyWord" required>
+        <input type="text" class="form-control form-control-sm" id="search-string" placeholder="請輸入關鍵字" required>
         <div class="input-group-append">
-          <button class="btn btn-primary" type="submit" id='open-all'>搜尋</button>
+          <button class="btn btn-primary" type="submit" id='searchVideo'>搜尋</button>
         </div>
       </div>
-
+	  <input id="YouTube-video-id" type="hidden" value="" size="12" pattern="[_\-0-9A-Za-z]{11}" onchange="youTubePlayerChangeVideoId();">
       <div id="viedo"></div>
     </form>
   </section>
 </body>
 ```
 
-Manifest.js
+#### Manifest.js
 
 ```javascript
 {
@@ -238,9 +244,274 @@ Manifest.js
 
 
 
+#### popup.js
+
+```javascript
+const searchViedoForm = document.getElementById('search-viedo')
+const searchString = document.getElementById('search-string')
+const key = 'youtube data api key'
+let url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&key=' + key
+
+const youTubePlayer;
+function imgClickVideo(img, index) {
+  img.addEventListener('click', function() {
+    let playVideoId = document.getElementById('playVideoId' + index)
+    youTubePlayer.cueVideoById({suggestedQuality: 'tiny',
+                                videoId: playVideoId.value
+                               });
+    youTubePlayer.pauseVideo();
+    document.getElementById('videoPlayerImg').src = this.src
+    document.getElementById('videoData').style.display = 'none'
+    document.getElementById('videoPlayer').style.display = ''
+  })
+}
+
+function onYouTubeIframeAPIReady() {
+  'use strict';
+
+  var inputVideoId = document.getElementById('YouTube-video-id');
+  var videoId = inputVideoId.value;
+  var suggestedQuality = 'tiny';
+  var height = 180;
+  var width = 320;
+  var youTubePlayerVolumeItemId = 'YouTube-player-volume';
 
 
+  function onError(event) {
+      youTubePlayer.personalPlayer.errors.push(event.data);
+  }
 
+
+  function onReady(event) {
+      var player = event.target;
+
+      player.loadVideoById({suggestedQuality: suggestedQuality,
+                            videoId: videoId
+                           });
+      player.pauseVideo();
+  }
+
+
+  function onStateChange(event) {
+      var volume = Math.round(event.target.getVolume());
+      var volumeItem = document.getElementById(youTubePlayerVolumeItemId);
+
+      if (volumeItem && (Math.round(volumeItem.value) != volume)) {
+          volumeItem.value = volume;
+      }
+  }
+
+
+  youTubePlayer = new YT.Player('YouTube-player',
+                                {videoId: videoId,
+                                 height: height,
+                                 width: width,
+                                 playerVars: {'autohide': 0,
+                                              'cc_load_policy': 0,
+                                              'controls': 2,
+                                              'disablekb': 1,
+                                              'iv_load_policy': 3,
+                                              'modestbranding': 1,
+                                              'rel': 0,
+                                              'showinfo': 0,
+                                              'start': 3
+                                             },
+                                 events: {'onError': onError,
+                                          'onReady': onReady,
+                                          'onStateChange': onStateChange
+                                         }
+                                });
+
+  // Add private data to the YouTube object
+  youTubePlayer.personalPlayer = {'currentTimeSliding': false,
+                                  'errors': []};
+}
+
+function youTubePlayerActive() {
+  'use strict';
+
+  return youTubePlayer && youTubePlayer.hasOwnProperty('getPlayerState');
+}
+
+
+/**
+ * Pause.
+ */
+ function youTubePlayerPause() {
+  'use strict';
+
+  if (youTubePlayerActive()) {
+      youTubePlayer.pauseVideo();
+  }
+}
+
+/**
+ * Play.
+ */
+ function youTubePlayerPlay() {
+  'use strict';
+
+  if (youTubePlayerActive()) {
+      youTubePlayer.playVideo();
+  }
+}
+
+//建立分頁事件，每下一頁或上一頁，會拿到nextPageToken或prevPageToken
+const li = document.getElementsByTagName("li");
+for( var x=0; x < li.length; x++ ) {
+  li[x].onclick = function(){
+    url = url + '&q=' + searchString.value
+    if(this.id == 'Next' && $('#nextPageToken').val() != ''){
+      setVideoInfo(url, $('#nextPageToken').val(), function(items){
+        setVideoHtml(items)
+      })
+    }else if(this.id == 'Previous' && $('#prevPageToken').val() != ''){
+      setVideoInfo(url, $('#prevPageToken').val(), function(items){
+        setVideoHtml(items)
+      })
+    }
+  }
+}
+
+
+//搜尋影片關鍵字事件
+searchViedoForm.addEventListener('submit', event => {
+  event.preventDefault()
+  let url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&key=' + key + '&q=' + searchString.value
+  setVideoInfo(url, null, function(items){
+    setVideoHtml(items)
+    document.getElementsByClassName('isPagination')[0].style['display'] = 'inline'
+  })
+ 
+//設定影片關鍵字，打api抓影片資料
+function setVideoInfo(url, pageToken, callBackFunction){
+  if(pageToken != null){
+    url += '&pageToken=' + pageToken
+  }
+
+  axios.get(url).then((response) => {
+    let items = response.data.items
+
+    //更換按鈕的token的資料
+    $('#nextPageToken').val(response.data.nextPageToken)
+    $('#prevPageToken').val(response.data.prevPageToken)
+      
+    if(callBackFunction != null){
+      callBackFunction(items)
+    }
+  
+  }).catch((error) => {
+    if (error.response) {
+      console.log(error.response.data)
+      console.log(error.response.status)
+      console.log(error.response.headers)
+    } else {
+      console.log("Error", error.message)
+    }
+  })
+}
+    
+function setVideoHtml(items) {
+  let context = ''
+  let videoId = []
+  let videoObj = []
+  let videoImg = []
+  items.forEach((el, index) => {
+    //發佈日期用的格式轉換
+    let date = new Date(el.snippet.publishTime);
+
+    //這裡要改用createElement的方式建立，之後要定義圖片元件要使用點擊事件
+    // const div = document.createElement('div');
+    // div.setAttribute('class', 'style-scope ytd-item-section-renderer');
+    context += 
+      		  '...影片標籤'+
+              '<div id="channel-info" class="style-scope ytd-video-renderer">' +
+                '<h6>發佈者：' + el.snippet.channelTitle +'</h6>' +
+              '</div>' + 
+              '<div class="metadata-snippet-container style-scope ytd-video-renderer">' +
+                '<small>影片資訊：'+ el.snippet.description +'<small/>' +
+                '<p>發佈日期：'+ date.getFullYear() + "-" + ((date.getMonth() + 1) < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1) + "-" + (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +'<p/>' +
+              '</div>' +
+            '</div>' +  
+        '</div>' +  
+      '</div>';   
+
+      videoId.push(el.id.videoId)
+      videoObj.push(new Object())
+      videoImg.push(el.snippet.thumbnails.medium.url)
+  });
+
+  document.getElementById("viedo").innerHTML = context    
+  chrome.storage.local.clear()
+  chrome.storage.local.set({
+    "body": context,
+    "videoImg": videoImg
+  })
+
+  const video = document.getElementsByTagName('iframe')
+  const count = video.length
+
+
+  if(video != undefined && count > 0){
+    imgClickVideo(document.getElementById('playVideoImg0'), 0)
+    '...'
+  }
+
+  chrome.runtime.sendMessage({
+    saveState: true, 
+    state: document.getElementsByTagName("body")[0],
+  })
+}
+
+const videoPlay = document.getElementById('play_pause')
+videoPlay.addEventListener('click', () => {
+  if(document.getElementById("playImg").style.display == 'none'){
+    document.getElementById("playImg").style.display = ''
+    document.getElementById("pauseImg").style.display = 'none'
+    youTubePlayerPause()
+  } else if(document.getElementById("pauseImg").style.display == 'none'){
+    document.getElementById("playImg").style.display = 'none'
+    document.getElementById("pauseImg").style.display = ''
+    youTubePlayerPlay()
+  }
+});
+
+const backVideoData = document.getElementById('backVideoData')
+backVideoData.addEventListener('click', () => {
+  document.getElementById('videoPlayerImg').src = ''
+  document.getElementById('videoData').style.display = ''
+  document.getElementById('videoPlayer').style.display = 'none'
+})
+
+```
+
+#### background.js
+
+```javascript
+// 建立顯示右鍵事件，網頁上任一個地方，都會顯示showVideoInfo
+chrome.contextMenus.create( {  
+  "id": "showVideoInfo",
+  "title": "ShowVideoInfo",
+  "contexts": ["all"] 
+})
+
+//建立右鍵點擊showVideoInfo事件
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
+    //判斷右鍵上列表是否為showVideoInfo
+    if (info.menuItemId === "showVideoInfo") { 
+      console.log(info)
+      // send a message from the extension to content script of current tab
+      chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+        //發送目前分頁的物件
+        chrome.tabs.sendMessage(tabs[0].id, { getUrl: true })
+      })
+    }else{
+      return
+    }
+})
+```
+
+#### content.js
 
 ```javascript
 window.onload = function () {
