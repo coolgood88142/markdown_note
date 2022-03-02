@@ -207,7 +207,10 @@ Manifest V2與Manifest V3，在Manifest.json的差異
   "version": "1.2",
   "description": "Quickly Search Youtube ",
   "permissions": [
-    "contextMenus"
+    "contextMenus",
+    "activeTab",
+    "tabs",
+    "storage"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -219,7 +222,7 @@ Manifest V2與Manifest V3，在Manifest.json的差異
     }
   },
   "background": {
-    "service_worker": "js/background.js"
+    "service_worker": "background.js"
   },
   "icons": {
     "16": "images/image16.png",
@@ -234,11 +237,22 @@ Manifest V2與Manifest V3，在Manifest.json的差異
       ],
       "js": [
         "js/axios.min.js",
-        "js/content.js"
+        "js/content.js",
+        "script.js",
+        "www-widgetapi.js"
       ]
     }
   ],
-  "manifest_version": 3
+  "manifest_version": 3,
+  "web_accessible_resources": [
+    {
+      "resources": [ "www-widgetapi.js" ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "sendbox": "script-src 'self' https://www.youtube.com; object-src 'self'"
+  }
 }
 ```
 
@@ -518,19 +532,14 @@ window.onload = function () {
   let clickedViedo = null
     
   function generateReport(request, sender, sendResponse) {
-    // show error message if getUrl is false or clickImg is null
     if (!request.getUrl || !clickedViedo) { return showErrorMessage() }
-    // generate tbody
     //根據目前的網址來確認是否為YT，不是YT就顯示訊息，如果是YT的嵌入式影片要另外抓資料
     if(clickedViedo.baseURI.indexOf('https://www.youtube.com/watch') != -1){
       generateTbody(location.href.indexOf('='))
     }else if(clickedViedo.localName == 'iframe'){
       generateTbody(clickedViedo.src.indexOf('='))
     }
-    // generate the report with tbody
-    // generateTable(tbodyInnerHTML)
-    // listen to url click to copy url
-    document.querySelectorAll('.url').forEach(link => link.addEventListener('click', copyUrl))
+
     // listen to reload button click to lead user back to image page
     document.getElementById('reload').addEventListener('click', () => location.reload())
   }
@@ -543,20 +552,32 @@ window.onload = function () {
   chrome.runtime.onMessage.addListener(generateReport)
 
 }
+
+//接收popup.js或background.js傳過來的資料做判斷
+ chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+      //拿到影片ID做設定瀏覽器的背景影片
+      if( request.videoId !== undefined && request.videoId !== null ) {
+        document.getElementById('YouTube-video-id').value = request.videoId
+        youTubePlayer.cueVideoById({suggestedQuality: 'tiny',
+                                videoId: request.videoId
+                               });
+        youTubePlayer.pauseVideo();
+      //
+      } else if(request.backgroundVideoPlay !== undefined && request.backgroundVideoPlay !== null ){
+        youTubePlayerPlay()
+      } else if(request.backgroundVideoPause !== undefined && request.backgroundVideoPause !== null ){
+        youTubePlayerPause()
+      }
+    }
+  );
 ```
 
-流程說明：開啟套件後，可輸入關鍵字後按搜尋，顯示關鍵字相關的Youtube影片資料，會影片名稱、發佈者、發佈日期、影片連結，另一個功能在Youtube影片，滑鼠右鍵點選「showVideoInfo」，會開啟新分頁顯示該影片的資訊，用表格呈現
-
-
-
-https://developer.chrome.com/docs/extensions/reference/contextMenus/
-
-https://ingtt.com/10317/youtube-embed-autoplay
-
-
+流程說明：開啟套件後，可輸入關鍵字後按搜尋，顯示關鍵字相關的Youtube影片資料，有影片名稱、發佈者、發佈日期、影片連結，點選圖片後可進行背景播放，另一個功能在Youtube影片網站，滑鼠右鍵點選「showVideoInfo」，會開啟新分頁顯示該影片的資訊，用表格呈現
 
 ### 參考資料
 
 - https://medium.com/%E9%BA%A5%E5%85%8B%E7%9A%84%E5%8D%8A%E8%B7%AF%E5%87%BA%E5%AE%B6%E7%AD%86%E8%A8%98/%E7%AD%86%E8%A8%98-%E5%BE%9E%E9%9B%B6%E9%96%8B%E5%A7%8B%E8%A3%BD%E4%BD%9C-chrome-%E5%A5%97%E4%BB%B6%E5%88%B0%E4%B8%8A%E6%9E%B6%E5%95%86%E5%BA%97-4971ed79ac77
 - https://github.com/smallpaes/find-placeholder-image
 - https://developer.chrome.com/docs/extensions/mv3/intro/mv3-migration/
+- https://www.letswrite.tw/youtube-iframe-api/
