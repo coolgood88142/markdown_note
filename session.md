@@ -15,8 +15,6 @@ summary: "說明登入流程使用session機制"
 
 補上記住我的循序圖(cookie、session id)
 
-
-
 以下使用會員登入說明Form Submit使用Session機制:
 
 ### 登入介面
@@ -58,7 +56,7 @@ summary: "說明登入流程使用session機制"
       }elseif ($result['password']!=''||$result['account']!='') {
                   header("location:./?error=輸入不完全");
       }
-      
+
  ?>
 ```
 
@@ -83,21 +81,15 @@ $_SESSION['member']會隨著切換頁面存在，代表目前已登入的狀態
 </html>
 ```
 
-
-
 ## 問題
 
 #### session存在哪?client怎麼取得
 
 session存在於server端，會隨著切換頁面存在，client端有seesion ID存在cookie裡，當使用者要轉頁面時會跟server端要資料時，可由session的ID去跟取得資料，回傳到client端確認目前是否已登入。
 
-
-
 #### 要如何識別已登入，例如:有個session id為member記錄已登入狀態
 
 第一次登入時，Client端向Server端檢查帳號密碼是否正確，確定後在設定session id名為member為true，存在Server端，之後將member回傳給Client端記錄在cookie裡，當網頁轉頁時Client端將cookie裡member傳給Server端，確認session id名為member的值是什麼，在回傳給Client端，表示目前已登入狀態，達到網頁保持已登入。
-
-
 
 #### 網頁執行記住我的話，client要怎麼在瀏覽器關閉的情況下，在開啟網頁達到自動登入?(session與cookie怎麼運作)
 
@@ -107,13 +99,7 @@ client端的session id存在時間是依據使用cookie的存活週期，例如:
 
 如何將cookie的session id防止別人攔截或著換哪種機制?
 
-
-
 實做:1.輸入帳號密碼頁面 2.驗證帳號密碼資料與記錄session id與cookie的檔案 3.當cookie回傳到client端時，因為有cookie記錄命名session id的資料，再次與server端建立對話用cookie記錄命名session id，取得目前是否已登入
-
-
-
-
 
 參考資料:
 
@@ -130,4 +116,3 @@ client端的session id存在時間是依據使用cookie的存活週期，例如:
 <https://ithelp.ithome.com.tw/questions/10188708>、
 
 [https://james670818.pixnet.net/blog/post/2444045-%5Bphp%5D-session](https://james670818.pixnet.net/blog/post/2444045-[php]-session)
-

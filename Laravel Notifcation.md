@@ -9,20 +9,20 @@ laravel是用Notifiable做發送，發送方式可分兩種
 發送通知用Notifiable Trait，將每個通知都用一個class做通知，建立一個Notifications的class，用`notify()`或`facade()`
 
 - notify：執行用model去接收通知，例如：user model接收`InvoicePaid()`
-
+  
   ```php
   class User extends Authenticatable
   {
       use Notifiable;
   }
   ```
-
+  
   ```php
   $user->notify(new InvoicePaid($invoice));
   ```
 
 - facade：用send做發送，例如：user model與`InvoicePaid()`發送
-
+  
   ```php
   Notification::send($users, new InvoicePaid($invoice));
   ```
@@ -60,9 +60,9 @@ $user->notify((new InvoicePaid($invoice))->delay($when));
 ```
 
 - **notify**
-
+  
   notify是用接收notification的method
-
+  
   ```php
   use App\Notifications\InvoicePaid;
   
@@ -70,14 +70,12 @@ $user->notify((new InvoicePaid($invoice))->delay($when));
   ```
 
 - **facade**
-
+  
   要用send
-
+  
   ```php
   Notification::send($users, new InvoicePaid($invoice));
   ```
-
-  
 
 #### EMail
 
@@ -97,8 +95,6 @@ public function toMail($notifiable)
 ```
 
 在寄信之前要在config/app.php，設定name(要確認為什麼官網要這樣設定)
-
-
 
 #### Markdown Mail
 
@@ -121,24 +117,13 @@ public function toMail($notifiable)
 }
 ```
 
-
-
 Database
-
-
 
 Broadcast
 
-
-
 SMS
 
-
-
 Slack
-
-
-
 
 參考資料：
 

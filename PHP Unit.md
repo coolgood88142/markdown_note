@@ -10,7 +10,7 @@ summary: "介紹用laravel使用PHP Unit"
 在介紹之前講單元測試、整合測試
 
 - 單元測試：是指測試程式中最小的單位，包含function、class、Object等等，所以我們要寫一支測試的程式中，會有很多個單元測試。
-
+  
   ```php
   class ComputerTest extends TestCase
   {
@@ -26,13 +26,11 @@ summary: "介紹用laravel使用PHP Unit"
       }
   }
   ```
-
+  
   以上範例，測試ComputerTest的testComputer()，確認route的computer，回傳的Status code是否為200
 
-  
-
 - 整合測試：是測試的程式與外部的關係，例如：兩支程式的關係、資料庫、session、cookie等等，通常會測試兩支程式的關聯，是否沒問題。
-
+  
   ```php
   class ComputerServiceTest extends TestCase
   {
@@ -49,40 +47,36 @@ summary: "介紹用laravel使用PHP Unit"
       }
   }
   ```
-
+  
   以上範例，ComputerServiceTest的testComputer()，執行ComputerService的test_plus()，將2 + 3做加法
-
 
 #### TDD
 
 開發團隊在開發前，會先寫測試再開發，這種步驟稱為TDD(Test-Driven Development)，稱為測試驅動開發，有助於釐清撰寫程式的設計，測試程式的好處，是經過測試得知的結果，來驗證程式是否符合預期，以下介紹TDD分為5個步驟
 
 1. 選定功能，新增測試案例
-
+   
    - 設計怎麼使用測試程式
    - 此階段尚未撰寫程式
 
 2. 執行測試，得到Failed(紅燈)
-
+   
    - 設計初步測試程式，沒有撰寫測試功能
    - 確認測試程式可以使用
 
 3. 實作「夠用」的產生程式
-
+   
    - 實做測試功能，不需要過多個程式碼，只要測試功能正常即可
    - 用最快的速度通過測試
 
 4. 再做執行測試，得到Passed(綠燈)
-
+   
    - 確保已完成執行測試程式
    - 此階段可以開始撰寫開發程式，並寫測試程式與開發程式可正常運作
 
 5. 重構程式
-
+   
    - 優化測試功能，可更好維護測試功能
-
-
-
 
 PHP Unit是一個可以將PHP的程式進行單位測試或整合測試，來驗證自己寫的function有沒有問題，在我們新增程式或修改程式時，能確保不會影響到原本的功能，一般都會先寫好測試，才會開始寫功能需求。
 
@@ -91,31 +85,31 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
 #### 指令
 
 1. 建立測試檔案，例如：BasicTest
-
+   
    ```bash
    php artisan make:test BasicTest 在test/Feature資料夾裡新增檔案
    php artisan make:test BasicTest --unit  要補上unit才會新增到test/FUnit資料夾裡
    ```
 
 2. 測試全部class
-
+   
    ```bash
    ./vendor/bin/phpunit 這個指令會顯示很詳細的資訊
    php artisan test 顯示簡化的資訊
    ```
 
 3. 測試Feature或Unit全部的class
-
+   
    ```bash
    php artisan test --testsuite=Feature
    php artisan test --testsuite=Unit
    ```
 
 4. 測試某個class，例如：測試Unit/BasicTest
-
+   
    ```bash
    php artisan test --filter 'Tests\\Unit\\BasicTest'
-    
+   
    //如果加function名稱，可以只測試某個class的某個function
    php artisan test --filter 'Tests\\Unit\\BasicTest::test_example'
    ```
@@ -125,16 +119,16 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
 向http做請求，檢查響應的stats code
 
 1. Making Requests
-
+   
    ```php
    //用get方式發出請求，在確認回傳的status code是否為200
    public function test_a_basic_request()
    {
        //測試route localhost
-   	$response = $this->get('/');
+       $response = $this->get('/');
    
        //測試localhost的status code是否為200
-   	$response->assertStatus(200);
+       $response->assertStatus(200);
    }
    
    //自行定義表頭
@@ -146,7 +140,7 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
    
         $response->assertStatus(201);
     }
-    
+   
     //cookie
     public function test_interacting_with_cookies()
     {
@@ -156,13 +150,13 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
             'name' => 'Taylor',
         ])->get('/');
     }
-    
+   
     //session
     public function test_interacting_with_the_session()
     {
         $response = $this->withSession(['banned' => false])->get('/');
     }
-    
+   
     //dump，顯示表頭、session、頁面標籤的資訊
     public function test_basic_test()
     {
@@ -183,7 +177,7 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
        public function test_plus(){
            $a = 1;
            $b = 2;
-           
+   
            //呼叫route plus，使用POST，帶test1與test2參數
            $response = $this->call('POST', '/plus', ['test1' => $a, 'test2' => $b]);
    
@@ -194,7 +188,7 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
        public function test_toSubtract(){
            $a = 5;
            $b = 2;
-           
+   
            //呼叫route toSubtract，使用POST，帶test1與test2參數
            $response = $this->call('POST', '/toSubtract', ['test1' => $a, 'test2' => $b]);
    
@@ -205,7 +199,7 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
        public function test_multiply(){
            $a = 4;
            $b = 3;
-           
+   
            //呼叫route multiply，使用POST，帶test1與test2參數
            $response = $this->call('POST', '/multiply', ['test1' => $a, 'test2' => $b]);
    
@@ -216,7 +210,7 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
        public function test_divided(){
            $a = 10;
            $b = 2;
-           
+   
            //呼叫route divided，使用POST，帶test1與test2參數
            $response = $this->call('POST', '/divided', ['test1' => $a, 'test2' => $b]);
    
@@ -227,7 +221,7 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
 
 2. Testing JSON APIs
    測試執行API回傳json格式
-
+   
    ```php
    public function test_making_an_api_request()
     {
@@ -239,7 +233,7 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
                 'created' => true,
             ]);
     }
-    
+   
     public function test_fluent_json()
     {
         $response = $this->json('GET', '/users/1');
@@ -256,7 +250,7 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
 
 3. Testing File Uploads
    測試上傳檔案
-
+   
    ```php
    public function test_avatars_can_be_uploaded()
    {
@@ -272,7 +266,7 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
 
 4. Testing Views
    測試頁面
-
+   
    ```php
    public function test_a_welcome_view_can_be_rendered()
    {
@@ -280,10 +274,9 @@ laravel本身就包含PHP Unit，會一個phpunit.xml做配置，分別在`Featu
    
         $view->assertSee('Taylor');
    }
-   
-   
    ```
 
+```
 HTTP Test適合測試請求網頁做回傳，來確認有沒有問題，例如route的回傳的資料或狀態，以及API
 
 #### Console Test
@@ -293,30 +286,30 @@ HTTP Test適合測試請求網頁做回傳，來確認有沒有問題，例如ro
 ```php
 public function test_console_command()
 {
-    //測試訊息名稱為question
-    $this->artisan('question')
-        
-    //建立問題What is your name?(你叫什麼名字?)，答：Taylor Otwell
-    ->expectsQuestion('What is your name?', 'Taylor Otwell')
-            
-    //建立問題Which language do you prefer?(你喜歡哪種程式語言?)，答：PHP
-    ->expectsQuestion('Which language do you prefer?', 'PHP')
-     
-    //顯示你要的訊息Your name is Taylor Otwell and you prefer PHP
-    ->expectsOutput('Your name is Taylor Otwell and you prefer PHP.')
-           
-    //顯示測試訊息Your name is Taylor Otwell and you prefer Ruby.
-    ->doesntExpectOutput('Your name is Taylor Otwell and you prefer Ruby.')
-            
-    //結束
-    ->assertExitCode(0);
-    
-    //測試訊息名稱為module:import
-    $this->artisan('module:import')
-        //建立問題Do you really wish to run this command?答：no
-        ->expectsConfirmation('Do you really wish to run this command?', 'no')
-        //結束
-        ->assertExitCode(1);
+ //測試訊息名稱為question
+ $this->artisan('question')
+
+ //建立問題What is your name?(你叫什麼名字?)，答：Taylor Otwell
+ ->expectsQuestion('What is your name?', 'Taylor Otwell')
+
+ //建立問題Which language do you prefer?(你喜歡哪種程式語言?)，答：PHP
+ ->expectsQuestion('Which language do you prefer?', 'PHP')
+
+ //顯示你要的訊息Your name is Taylor Otwell and you prefer PHP
+ ->expectsOutput('Your name is Taylor Otwell and you prefer PHP.')
+
+ //顯示測試訊息Your name is Taylor Otwell and you prefer Ruby.
+ ->doesntExpectOutput('Your name is Taylor Otwell and you prefer Ruby.')
+
+ //結束
+ ->assertExitCode(0);
+
+ //測試訊息名稱為module:import
+ $this->artisan('module:import')
+     //建立問題Do you really wish to run this command?答：no
+     ->expectsConfirmation('Do you really wish to run this command?', 'no')
+     //結束
+     ->assertExitCode(1);
 }
 ```
 
@@ -377,17 +370,17 @@ php artisan dusk
 ```php
 public function test_basic_example()
 {
-	$user = User::factory()->create([\
-		'email' => 'taylor@laravel.com',
-	]);
+    $user = User::factory()->create([\
+        'email' => 'taylor@laravel.com',
+    ]);
 
-	$this->browse(function ($browser) use ($user) {
-		$browser->visit('/login')
-			->type('email', $user->email)
-			->type('password', 'password')
-			->press('Login')
-			->assertPathIs('/home');
-	});
+    $this->browse(function ($browser) use ($user) {
+        $browser->visit('/login')
+            ->type('email', $user->email)
+            ->type('password', 'password')
+            ->press('Login')
+            ->assertPathIs('/home');
+    });
 }
 ```
 
@@ -398,9 +391,9 @@ route的用法
 ```php
 $browser->visit('/login');     //訪問route
 $browser->visitRoute('login'); //訪問命名的route
-$browser->back();			   //回上一頁
-$browserforward();		  //回下一頁
-$browser->refresh(); 		  //重新整理
+$browser->back();               //回上一頁
+$browserforward();          //回下一頁
+$browser->refresh();           //重新整理
 $browser->resize(1920, 1080); //設定瀏覽器大小
 ```
 
@@ -439,7 +432,6 @@ class UserFactory extends Factory
     }
 
     // ...
-
 ```
 
 用seeder建立資料庫來做測試
@@ -504,7 +496,7 @@ $this->assertSoftDeleted($user);
 #### 範例：我們建立一個測試假資料寫入到db
 
 1. 先建立測試檔案
-
+   
    ```bash
    php artisan make:test PostTest --unit
    ```
@@ -520,34 +512,34 @@ $this->assertSoftDeleted($user);
            ->toArray();
    }
    ```
-   
-2. 建立factory
 
+2. 建立factory
+   
    ```bash
    php artisan make:factory PostFactory --model=Post
    ```
-
+   
    在利用laravel的Faker，自動產生資料庫的資料
-
+   
    ```php
    $factory->define(App\Post::class, function (Faker $faker) {
        return [
            'user_id' => function () {
-   	        return factory(App\User::class)->create()->id;
+               return factory(App\User::class)->create()->id;
            },
            'title' => $faker->sentence,
            'body' => $faker->paragraph
        ];
    });
    ```
-
- 3. 建立測試function
-
-    ```php
-    class PostTest extends TestCase
-    {
+   
+   3. 建立測試function
+      
+      ```php
+      class PostTest extends TestCase
+      {
         use RefreshDatabase;
-    
+      
         public function testArchives()
         {
             // Given I have two records in the database that art posts,
@@ -556,24 +548,24 @@ $this->assertSoftDeleted($user);
             $second = factory(Post::class)->create([
                'created_at' => \Carbon\Carbon::now()->subMonth()
             ]);
-    
+      
             // When I fetch the archives.
             $posts = Post::archives(spy);
-    
+      
             // Then the response should be in the proper format.
             $this->assertCount(2, $posts);
         }
-    }
-    ```
+      }
+      ```
 
-4. 執行指令
-
+3. 執行指令
+   
    ```bash
    php artisan test --filter 'Tests\\Unit\\PostTest::testArchives'
    ```
-
+   
    這裡要注意 laravel 8版本需要，在執行前需要安裝legacy-factories
-
+   
    ```
    composer require laravel/legacy-factories
    ```
@@ -585,13 +577,13 @@ $this->assertSoftDeleted($user);
 #### 範例：我們測試用POST請求來建立資料
 
 1. 建立測試檔案
-
+   
    ```bash
    php artisan make:test InsertionTest
    ```
 
 2. 更換下面的程式碼
-
+   
    ```php
    public function test_that_a_task_can_be_added()
    {
@@ -604,11 +596,11 @@ $this->assertSoftDeleted($user);
        $this->assertTrue(count(Task::all()) > 1);
    }
    ```
-
+   
    先執行`withoutExceptionHandling()`，會列出所有PHPUnit會拋錯的訊息，以方便追蹤程式，在去做post請求`tasks/create`，帶`name`、`description`兩個參數，在用assertStatus確認response的status code是否為200，最後再用assertTrue，確認Task的資料是否有一筆以上。
 
 3. 建立route
-
+   
    ```php
    Route::prefix('task')->group(function () {
        Route::get('/{task}', [TaskController::class, 'show']);
@@ -616,21 +608,20 @@ $this->assertSoftDeleted($user);
        Route::patch('{task}/complete', [TaskController::class, 'mark_task_as_completed']);
        Route::delete('/{id}', [TaskController::class, 'destroy']);
    });
-   
    ```
-
+   
    在rotues/web.php，新增下面這段程式碼
 
 4. 建立Model、Controllers、Factory、Migration、Seeders
-
+   
    ```bash
    php artisan make:model Task -a
    ```
-
+   
    執行上面的指定會自動建立 `App\Models\Task.php`、`App\Http\Controllers\TaskController.php`、`Database\Factories\TaskFactory.php`、`Database\migrations\CreateTasksTable.php`、`Database\Seeders\TaskSeeder.php`
 
 5. 建立Table
-
+   
    ```php
    class CreateTasksTable extends Migration
    {
@@ -646,26 +637,26 @@ $this->assertSoftDeleted($user);
        }
    }
    ```
-
+   
    Tasks table建立name、description、completed等3個欄位，將CreateTasksTable.php的up()，調整成上面這段程式，在執行下面這段指令
-
+   
    ```bash
    php artisan migrate
    ```
 
 6. 調整Model
-
+   
    ```php
    class Task extends Model
    {
        protected $fillable = ['name', 'description', 'status'];
-       
+   
        public function mark_task_as_completed()
        {
            $this->completed = 1;
            $this->save();
        }
-       
+   
        public function is_completed()
        {
            return $this->completed;
@@ -674,7 +665,7 @@ $this->assertSoftDeleted($user);
    ```
 
 7. 調整Factory
-
+   
    ```php
    class TaskFactory extends Factory
    {
@@ -688,11 +679,11 @@ $this->assertSoftDeleted($user);
        }
    }
    ```
-
+   
    建立假資料，`name`指定4個字元、`description`指定20個字元、`completed`產生0或1的數字
 
 8. 調整Controller
-
+   
    ```php
    class TaskController extends Controller
    {
@@ -714,8 +705,8 @@ $this->assertSoftDeleted($user);
                'message' => 'task successfully marked as updated'
            ], 200);
        }
-       
-   	public function create_task(Request $request)
+   
+       public function create_task(Request $request)
        {
            DB::table('task')->insert([
                'name' => $request->name,
@@ -729,7 +720,7 @@ $this->assertSoftDeleted($user);
    ```
 
 9. 補上測試function
-
+   
    ```php
    class InsertionTest extends TestCase
    {
@@ -775,28 +766,25 @@ $this->assertSoftDeleted($user);
          }
    }
    ```
-
+   
    先執行`withoutExceptionHandling()`，會列出所有PHPUnit會拋錯的訊息，以方便追蹤程式，在建立Task的資料，拿id去設定route後執行，這時會回傳response物件，在用id去查詢，這筆資料的completed欄位，資料是否為1，再把response物件，確認json格式資料是不是key=message，value=task successfully marked as updated，之後在確認status code是否為200
 
-
-
 DataBase Test適合
-
 
 #### Mock
 
 是偽造的物件來替換要執行的function，我們每個程式都去呼叫各種其他程式，但我們在編寫時，又不希望隨意呼叫，這時我們會用到Mock，不管有沒有通過測試，並不會影響到要測試的目標。
 
 - ##### 原理
-
+  
   Mock是監聽測試function事件，建立Mock物件，是在測試檔案建立新的物件，去執行Mock物件的測試function，所以在自己的測試目錄執行，並不會影響其他檔案。
-
+  
   這裡注意的是Mock，是繼承的Service的物件，所以要在寫指向Service的function才會被執行
 
 - Function Test(功能測試)
-
+  
   大部分的測試，都算是功能測試，例如我們在測試程式要使用request，用 Mock 來做替身並且改寫，在Mockery的library的MockeryTestCaseSetUp，用Mock 物件時，會使用setUp()和tearDown()
-
+  
   ```php
   namespace Mockery\Adapter\Phpunit;
   
@@ -815,11 +803,11 @@ DataBase Test適合
       }
   }
   ```
-  
+
 - ##### spy
-
+  
   在寫mock的時候，會看到spy，它與mock有什麼差異?
-
+  
   spy跟mock很像，在測試程式裡，mock需要建立一個相同物件，來驗證呼叫的funtion是否一樣，但是spy是不用呼叫function，直接執行function後，來驗證某個function有沒有被spy使用
   
   spy的目的是驗證呼叫的function，有沒有真的被執行，mock則是模擬的資料，是否跟預期的資料符合。
@@ -831,10 +819,6 @@ DataBase Test適合
 ![Mock-1](C:\xampp\htdocs\markdown_note\assets\images\Mock-1.png)
 
 我們寫function測試，一般我們會在TestCase寫成繼承，讓每個測試檔案都可以直接用instance(class)，執行Mock。
-
-
-
-
 
 ```php
 class TestCase extends BaseTestCase
@@ -864,12 +848,12 @@ class TestCase extends BaseTestCase
 
 class OrderServiceTest extends TestCase
 {
- 	public function testNewOrder()
+     public function testNewOrder()
     {
         $invoiceReturn = [
             'invoice_number' = '001'
         ];
-        
+
         $data = [
             "invoice1", "invoice2"
         ];
@@ -879,8 +863,8 @@ class OrderServiceTest extends TestCase
             ->once()
             ->with($data)
             ->andReturn($invoiceReturn);
-        
-		$test = $mock->newInvoice($data);
+
+        $test = $mock->newInvoice($data);
     }
 }
 ```
@@ -940,17 +924,11 @@ public function test2TestCase() {
 
 `test2TestCase()`執行route index，回傳response，確認是否為Succeeded!
 
-
-
 https://phpunit.readthedocs.io/en/9.5/test-doubles.html?highlight=Mock#mock-objects
 
 https://www.cnblogs.com/bourneli/archive/2012/06/29/2570440.html
 
 https://www.cnblogs.com/cjjjj/p/10623534.html
-
-
-
-
 
 #### 問題
 
@@ -959,15 +937,14 @@ https://www.cnblogs.com/cjjjj/p/10623534.html
 - Mock做了哪些事：將我們要測試的function，包裝成Mock之後，在執行測試
 
 - 為什麼Mock可以代替 ：Mock是繼承service的物件，所以可以代替測試的fcunction，也並不會影響資料被改變
-  
-- Mock產生出來的結果是什麼：會建立測試function的Mock物件，去模擬執行測試function
 
+- Mock產生出來的結果是什麼：會建立測試function的Mock物件，去模擬執行測試function
 
 #### 錯誤
 
 - 如果只建立Mock物件，沒指向function會顯示錯誤：
    Method newInvoice(....) from Mockery_0_App_Services_InvoiceService should be called exactly 1 times but called 0 times.
-
+  
   代表建立一個Mock物件，執行0次，以上面的範例少寫$test = $mock->newInvoice()，會顯示錯誤。
 
 參考資料：
@@ -982,12 +959,3 @@ https://www.cnblogs.com/cjjjj/p/10623534.html
 - https://blog.givemin5.com/tdd-1-unit-test-3a-yuan-ze/
 - https://github.com/recca0120/fight-editor
 - https://www.jyt0532.com/2018/01/04/test-double-spy/
-
-
-
-
-
-
-
-
-

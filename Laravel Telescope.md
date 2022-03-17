@@ -95,7 +95,7 @@ protected function gate()
 {
     Gate::define('viewTelescope', function ($user) {
         return in_array($user->email, [
-        	'user@email.com',
+            'user@email.com',
         ]);
     });
 }
@@ -105,7 +105,7 @@ protected function gate()
 
 ```php
 return in_array($user->id, [
-	1, 2, 3,
+    1, 2, 3,
 ]);
 ```
 
@@ -171,11 +171,6 @@ return in_array($user->id, [
 ],
 ```
 
-
-
-
-
 參考資料:
 
 https://laravel.com/docs/8.x/telescope、https://github.com/laravel/telescope/issues/954、https://hoohoo.top/blog/laravel-telescope/
-

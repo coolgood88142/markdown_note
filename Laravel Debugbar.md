@@ -125,11 +125,6 @@ debugbar.createIndicator("time", "cogs", "Request duration");
 
 與其他套件比較
 
-
-
-
-
 參考資料:
 
 https://github.com/itsgoingd/clockwork、https://chrome.google.com/webstore/detail/clockwork/dmggabnehkmmfmdffgajcflpdjlnoemp?hl=zh-TW、https://blog.csdn.net/tanmx219/article/details/78915890
-
