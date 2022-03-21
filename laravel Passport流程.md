@@ -77,9 +77,7 @@
       
       做了什麼事：當程式拋錯的時候，要前往哪個url
    
-   4. 檔案路徑：
-      
-      vendor\laravel\framework\src\Illuminate\Foundation\Exceptions\Handler.php
+   4. 檔案路徑：vendor\laravel\framework\src\Illuminate\Foundation\Exceptions\Handler.php
       
       function：unauthenticated()
       
@@ -87,9 +85,7 @@
       
       做了什麼事：如果是的話，顯示401錯誤訊息，用json格式回傳，如果不是的話，將rediect物件設定response
    
-   5. 檔案路徑：
-      
-      vendor\laravel\framework\src\Illuminate\Routing\Redirector.php
+   5. 檔案路徑：vendor\laravel\framework\src\Illuminate\Routing\Redirector.php
       
       function：guest()
       
@@ -97,9 +93,7 @@
       
       做了什麼事：判斷Request是否用GET、是否有route、格式是否為json，如果有的話，回傳完整的URL，如果不是，回傳request的header中referer資料
    
-   6. 檔案路徑：
-      
-      vendor\laravel\framework\src\Illuminate\Routing\Redirector.php
+   6. 檔案路徑：vendor\laravel\framework\src\Illuminate\Routing\Redirector.php
       
       function：to()
       
@@ -107,9 +101,7 @@
       
       做了什麼事：建立新的rediect物件
    
-   7. 檔案路徑：
-      
-      vendor\laravel\framework\src\Illuminate\Routing\Redirector.php
+   7. 檔案路徑：vendor\laravel\framework\src\Illuminate\Routing\Redirector.php
       
       function：createRedirect()
       
@@ -117,9 +109,7 @@
       
       做了什麼事：建立新的rediect物件，並且設定到response
    
-   8. 檔案路徑：
-      
-      vendor\laravel\framework\src\Illuminate\Support\helpers.php
+   8. 檔案路徑：vendor\laravel\framework\src\Illuminate\Support\helpers.php
       
       function：tap()
       
@@ -127,9 +117,7 @@
       
       做了什麼事：建立新的rediect物件，並且設定到response，判斷rediect物件的session，有資料就設定session裡，在將rediect物件設定request物件
    
-   9. 檔案路徑：
-      
-      app\Http\Middleware\Authenticate.php
+   9. 檔案路徑：app\Http\Middleware\Authenticate.php
       
       function：! $request->expectsJson()
       
@@ -137,9 +125,7 @@
       
       做了什麼事：如果不是就跑route login
    
-   10. 檔案路徑：
-       
-       resources\views\auth\login.blade.php
+   10. 檔案路徑：resources\views\auth\login.blade.php
        
        function：submit()
        
@@ -147,9 +133,55 @@
        
        做了什麼事：將帳密資料做驗證
 
-5. middleware (LoginController.php)
+5. Controller (LoginController.php)
+   
+   1. 檔案路徑：app\Http\Controllers\Auth\LoginController.php
+      
+      function：__construct()
+      
+      用途：先跑建構值
+      
+      做了什麼事：執行middleware guest
+   
+   2. 檔案路徑：app\Http\Kernel.php
+      
+      function：syncMiddlewareToRouter()
+      
+      用途：去找routeMiddleware的key guest，value是什麼?
+      
+      做了什麼事：在Kernel的routeMiddleware陣列中，有個key叫guest，指向的class是RedirectIfAuthenticated
+   
+   3. 檔案路徑：app\Http\Middleware\RedirectIfAuthenticated.php
+      
+      function：handle()
+      
+      用途：處理請求的資料
+      
+      做了什麼事：檢查是否有被登入，沒有導頁到登入畫面
 
-6. 
+6. route (larvel_passport-web.php)
+   
+   檔案路徑：route\web.php
+   
+   function：Route::get('/home', 'HomeController@index')->name('home')
+   
+   用途：跑home route，在HomeController的index()
+
+7. Controller (HomeController.php)
+   
+   檔案路徑：app\Http\Controllers\HomeController.php
+   
+   function：index()
+   
+   用途：跑首頁
+
+8. blade (welcome.blade.php)
+   
+   檔案路徑：resources\views\welcome.blade.php
+   
+   function：Route::has('login')
+   
+   用途：判斷是否有登入，有的話就顯示
 
 在Kai Blog按下FB登入
 
@@ -241,12 +273,6 @@ laravel_client\resources\views\welcome.blade.php
     route name為passport.authorizations.deny
 
         3.4.6 AuthorizationController跑authorize()
-
-
-
-
-
-
 
 目的：再進入oauth/authorize route之前，要先用middleware判斷帳號是否登入，遇到尚未登入時，卻沒有轉址到想要去的第三方登入頁
 
