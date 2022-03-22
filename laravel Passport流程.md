@@ -117,7 +117,7 @@
       
       做了什麼事：建立新的rediect物件，並且設定到response，判斷rediect物件的session，有資料就設定session裡，在將rediect物件設定request物件
    
-   9. 檔案路徑：app\Http\Middleware\Authenticate.php
+   9. 檔案路徑：app\Http\Middleware\OauthAuthenticate.php
       
       function：! $request->expectsJson()
       
@@ -181,7 +181,29 @@
    
    function：Route::has('login')
    
-   用途：判斷是否有登入，有的話就顯示
+   用途：判斷是否有登入，有的話就顯示登入後畫面，沒有就顯示登入畫面
+
+9. Controller(AuthorizationController.php)
+   
+   1. 檔案路徑：app\Http\Controllers\AuthorizationController.php
+      
+      function：authorizationCode()
+      
+      用途：授權給client端要訪問的帳號
+   
+   2. 檔案路徑：app\Http\Controllers\HandlesOAuthErrors.php
+      
+      function：withErrorHandling()
+      
+      用途：檢查要執行function 拋錯時執行指定的Exception
+   
+   3. 檔案路徑：vendor\league\oauth2-server\src\AuthorizationServer.php
+      
+      function：validateAuthorizationRequest()
+      
+      用途：驗證要請求的授權資料
+   
+   4. 
 
 在Kai Blog按下FB登入
 
