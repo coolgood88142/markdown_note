@@ -13,19 +13,12 @@ headers包含html版本、瀏覽器、編碼、伺服器資訊等，用來提供
 
 當我們得到HTML內容後，解析內容透過字串處理、正規化等過濾抓取我們要的資料。
 
-
-
 ### 架構
 
 ![crawler](<https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/crawler.png>)
-
-
 
 參考資料:
 
 <http://yanlong4869.blogspot.com/2015/09/python-crawler.html>、
 
 [https://medium.com/dualcores-studio/python-x-%E7%B6%B2%E8%B7%AF%E7%88%AC%E8%9F%B2-c30ffda0ad78](https://medium.com/dualcores-studio/python-x-網路爬蟲-c30ffda0ad78)
-
-
-

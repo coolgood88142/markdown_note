@@ -105,9 +105,9 @@
       
       function：createRedirect()
       
-      用途：建立新的rediect物件
+      用途：建立RedirectResponse物件
       
-      做了什麼事：建立新的rediect物件，並且設定到response
+      做了什麼事：建立RedirectResponse物件，並且設定到Response
    
    8. 檔案路徑：vendor\laravel\framework\src\Illuminate\Support\helpers.php
       
@@ -203,7 +203,13 @@
       
       用途：驗證要請求的授權資料
    
-   4. 
+   4. 檔案路徑：
+
+
+
+
+
+
 
 在Kai Blog按下FB登入
 
