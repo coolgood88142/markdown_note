@@ -940,6 +940,14 @@ https://www.cnblogs.com/cjjjj/p/10623534.html
 
 - Mock產生出來的結果是什麼：會建立測試function的Mock物件，去模擬執行測試function
 
+- 跑測試顯示錯誤
+  
+  PHPUnit 9.5.0 by Sebastian Bergmann and contributors.
+  
+  Warning:       Your XML configuration validates against a deprecated schema.
+  
+  Suggestion:    Migrate your XML configuration using "--migrate-configuration"!
+
 #### 錯誤
 
 - 如果只建立Mock物件，沒指向function會顯示錯誤：

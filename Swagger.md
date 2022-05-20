@@ -76,10 +76,98 @@ http://127.0.0.1:8080/api/documentation
 
 ![](C:\xampp\htdocs\markdown_note\assets\images\swagger1.png)
 
+### 範例
 
+以下示範，用laravel passport做第三方登入
+
+在AuthorizationController補充這行
+
+```
+    /**
+     * @SWG\Get(
+     *     path="/authorizationCode",
+     *     summary="取得authorizationCode",
+     *     tags={"AuthorizationCode"},
+     *     produces={"application/json"},
+     *     @SWG\Parameter(
+     *          name="client_id",
+     *          in="query",
+     *          description="client端ID",
+     *          required=true,
+     *          type="string",
+     *     ),
+     *     @SWG\Parameter(
+     *          name="redirect_uri",
+     *          in="query",
+     *          description="導頁的Uri",
+     *          required=true,
+     *          type="string",
+     *     ),
+     *     @SWG\Parameter(
+     *          name="response_type",
+     *          in="query",
+     *          description="授權類型",
+     *          required=true,
+     *          type="string",
+     *     ),
+     *     @SWG\Parameter(
+     *          name="scope",
+     *          in="query",
+     *          description="存取資料範圍",
+     *          required=false,
+     *          type="string",
+     *     ),
+     *     @SWG\Parameter(
+     *          name="state",
+     *          in="query",
+     *          description="授權編碼",
+     *          required=true,
+     *          type="string",
+     *     ),
+     *     @SWG\Response(
+     *          response="200",
+     *          description="Successful creation",
+     *     )
+     * )
+     */
+
+```
+
+在UserController補充這行
+
+```
+/**
+     * @SWG\Get(
+     *     path="/api/user",
+     *     summary="取得使用者資訊",
+     *     tags={"UserInfo"},
+     *     produces={"application/json"},
+     *      @SWG\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *      ),
+     *     @SWG\Response(
+     *          response="401",
+     *          description="Unauthenticated",
+     *     ),
+     *     @SWG\Response(
+     *          response="403",
+     *          description="Forbidden",
+     *     ),
+     *     @SWG\Response(
+     *          response="400",
+     *          description="Bad Request",
+     *     ),
+     *     @SWG\Response(
+     *          response="404",
+     *          description="not found",
+     *     ),
+     * )
+     */
+```
+
+ 
 
 ### 參考資料
 
 - [GitHub - DarkaOnLine/L5-Swagger: OpenApi or Swagger integration to Laravel](https://github.com/DarkaOnLine/L5-Swagger)
-  
-  
