@@ -53,8 +53,10 @@ draft: false
 
 ### 5.編輯config.toml，baseURL改成你的github帳號名稱
 
+例如：abc123
+
 ```
-baseURL = "https://coolgood88142.github.io/" #改成你github帳號名稱
+baseURL = "https://abc123.github.io/" #改成你github帳號名稱
 languageCode = "zh-tw"
 title = "我的第一個部落格" #標題可自行更改
 theme = "loveit" #主題名稱
@@ -74,12 +76,14 @@ hugo server -D
 
 ### 1.在GitHub建立兩個repositories
 
-在Github建立`hugo_blog`和`'your account'.github.io`(使用自己的GitHub帳號)
+例如：abc123
+
+在Github建立`hugo_blog`和`abc123.github.io`(使用自己的GitHub帳號)
 
 ### 2.建立public資料夾，並連結GitHub 上自己帳號的repositories
 
 ```
-git submodule add -f https://github.com/'your account'/'your account'.github.io.git public
+git submodule add -f https://github.com/abc123/abc123.github.io.git public
 ```
 
 這時public資料夾是新增連結而不是專案
@@ -108,7 +112,7 @@ git push origin master
 ```
 cd ..
 git init
-git remote add origin https://github.com/coolgood88142/hugo_blog.git
+git remote add origin https://github.com/abc123/hugo_blog.git
 ```
 
 ### 6.將hugo_blog資料夾上版
@@ -119,7 +123,7 @@ git commit -m "my-hugo-file"
 git push origin master
 ```
 
-上版後，在瀏覽器輸入自己帳號的網址`http://'your account'.github.io`，會看到跟本機看到的部落格是一樣的。
+上版後，在瀏覽器輸入自己帳號的網址`http://abc123.github.io`，會看到跟本機看到的部落格是一樣的。
 
 ### 參考資料:
 
