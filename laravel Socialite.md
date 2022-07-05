@@ -18,7 +18,7 @@ Laravel提供Laravel Socialite可通過OAuth提供程序進行身份驗證的簡
 
 官網提供[Socialite Providers](https://socialiteproviders.netlify.com/about.html)，網站中有各式可供第三方服務的登入認證，以Github為範例
 
-![laravelSocialite1.png](C:\xampp\htdocs\markdown_note\assets\images\laravelSocialite1.png)
+![laravelSocialite1.png](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/laravelSocialite1.png)
 
 ## 安裝步驟
 
@@ -106,15 +106,15 @@ Route::get('login/github/callback', 'Auth\LoginController@handleProviderCallback
 
 1. 進入GitHub選擇setting，在選到Developer settings
    
-   ![laravelSocialite2.png](C:\xampp\htdocs\markdown_note\assets\images\laravelSocialite2.png)
+   ![laravelSocialite2.png](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/laravelSocialite2.png)
 
 2. 建立OAuth application
    
-   ![laravelSocialite3.png](C:\xampp\htdocs\markdown_note\assets\images\laravelSocialite3.png)
+   ![laravelSocialite3.png](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/laravelSocialite3.png)
 
 3. 成功之後，將ClientID、Client secrets，新增到config/services.php
    
-   ![laravelSocialite4.png](C:\xampp\htdocs\markdown_note\assets\images\laravelSocialite4.png)
+   ![laravelSocialite4.png](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/laravelSocialite4.png)
    
    ```php
    'github' => [
@@ -128,7 +128,7 @@ Route::get('login/github/callback', 'Auth\LoginController@handleProviderCallback
 
 執行php artisan serve，在網址跑http://127.0.0.1:8000/login/github/callback，會顯示下面的畫面
 
-<img src="file:///C:/xampp/htdocs/markdown_note/assets/images/laravelSocialite5.png" title="" alt="laravelSocialite5.png" width="646">
+<img title="" src="https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/laravelSocialite5.png" alt="laravelSocialite5.png" width="646">
 
 ### 建立laravel Ui
 
@@ -140,7 +140,7 @@ composer require laravel/ui --dev
 php artisan ui vue --auth
 ```
 
-![laravelSocialite6.png](C:\xampp\htdocs\markdown_note\assets\images\laravelSocialite6.png)
+![laravelSocialite6.png](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/laravelSocialite6.png)
 
 ### 建立User Table
 
@@ -171,7 +171,7 @@ php artisan migrate
  </a>
 ```
 
-![laravelSocialite7.png](C:\xampp\htdocs\markdown_note\assets\images\laravelSocialite7.png)
+![laravelSocialite7.png](https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/laravelSocialite7.png)
 
 ### 建立第三方登入程式碼
 
@@ -182,10 +182,10 @@ public function handleProviderCallback()
     {    
         //建立github第3方登入物件，取得使用者資料
         $user = Socialite::driver('github')->user();
-        
+
         //比對資料表與使用者資料
         $account = User::where('email',$user->email)->first();
-        
+
         //如果沒資料，就會直接建立新增使用者資料
         if(!$account){
             User::create([
@@ -194,14 +194,14 @@ public function handleProviderCallback()
                 'password'=>bcrypt('githubtest')
             ]);
         }
-    
+
          // 登入並且「記住」使用者
         Auth::login($account);
         //回到首頁
         return redirect('/');
 ```
 
-輸入http://127.0.0.1:8000/login ，點選<img title="" src="file:///C:/xampp/htdocs/markdown_note/assets/images/laravelSocialite8.png" alt="laravelSocialite8.png" width="160">，系統會導頁到GitHub登入頁面 
+輸入http://127.0.0.1:8000/login ，點選<img title="" src="https://raw.githubusercontent.com/coolgood88142/markdown_note/master/assets/images/laravelSocialite8.png" alt="laravelSocialite8.png" width="160"> 系統會導頁到GitHub登入頁面 
 
 ### 參考資料
 
