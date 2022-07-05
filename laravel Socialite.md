@@ -6,10 +6,15 @@
 - 安裝步驟
   - 安裝套件
   - 設定config/app.php
-  - 建立金鑰
-  - 資料庫遷移
-  - 建立可存取資料的Access Token
-- 範例
+  - 設定config/services.php
+- 建立Contorller
+- 設定route
+- 註冊GitHub應用程式
+- 測試跑GitHub
+- 建立laravel Ui
+- 建立User Table
+- 新增GitHub第三方登入按鈕
+- 建立第三方登入程式碼
 - 參考資料
 
 ## 什麼是laravel Socialite
