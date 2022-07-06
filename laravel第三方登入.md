@@ -4,6 +4,7 @@
 
 - 什麼是laravel passport
 - 循序圖
+- 產生client、client_secret
 - 新增第三方驗證
 - 參考資料
 
@@ -58,6 +59,24 @@ Client->Resource Owner: 登入成功
 8. Client 檢查User Info是否有註冊，沒有就建立資料做登入後，有的話就直接登入
 
 9. Resourse Owner(user) 看到登入成功畫面
+
+### 產生client、client_secret
+
+跑api建立client、client_secret
+
+```php
+public function oauthCilentData(){
+    $client = Str::random(10);
+    $client_secret = Str::random(40);
+    
+    $oauthCilent = new oauthCilent();
+    $oauthCilent->client = $client;
+    $oauthCilent->client_secret = $client_secret;
+    $oauthCilent->save();
+    
+    return $oauthCilent;
+}
+```
 
 ### 新增第三方驗證
 
