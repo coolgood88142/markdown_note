@@ -9,17 +9,53 @@
 
 ### 簡介
 
+用laravel passport開發第三方登入，用OAuth2 的Authorization Code模式，在本機開發兩個站台，一個laravel做登入，另一個做第三方登入
+
 以下介紹使用postman 取得AuthorizationCode、AccessToken、UserInfo
 
 ### AuthorizationCode
 
+在跑AuthorizationCode之前，要從登入再登入取得session
 
+![postmanPassport1.png](C:\xampp\htdocs\markdown_note\assets\images\postmanPassport1.png)
+
+拿到跑AuthorizationCode，補上client_id、redirect_uri、response_type、scope、state，再把session放到Authorization的Value裡，前面還要加上Bearer，要在空一格，放到後面
+
+![postmanPassport2.png](C:\xampp\htdocs\markdown_note\assets\images\postmanPassport2.png)
+
+成功之後，會得到AuthorizationCode
+
+![postmanPassport3.png](C:\xampp\htdocs\markdown_note\assets\images\postmanPassport3.png)
 
 ### AccessToken
 
+輸入參數grant_type、redirect_uri、code、client_id、client_secret
+
+![postmanPassport5.png](C:\xampp\htdocs\markdown_note\assets\images\postmanPassport5.png)
+
+成功之後，會拿到AccessToken
+
+![postmanPassport6.png](C:\xampp\htdocs\markdown_note\assets\images\postmanPassport6.png)
+
 ### UserInfo
 
-使用postman 
+postman可以跑OAuth 2.0，直接拿到AccessToken，在Authorization的Type選擇OAuth 2.0，按create New Access Token按鈕
+
+![postmanPassport7.png](C:\xampp\htdocs\markdown_note\assets\images\postmanPassport7.png)
+
+輸入帳密後點選登入按鈕
+
+![postmanPassport8.png](C:\xampp\htdocs\markdown_note\assets\images\postmanPassport8.png)
+
+等幾秒鐘，系統會給Access Token，點選右上角的Use Token，系統就會把Access Token丟到參數裡
+
+![postmanPassport9.png](C:\xampp\htdocs\markdown_note\assets\images\postmanPassport9.png)
+
+![postmanPassport10.png](C:\xampp\htdocs\markdown_note\assets\images\postmanPassport10.png)
+
+之後輸入完發送的網址再發送，就會拿到user資料
+
+![postmanPassport11.png](C:\xampp\htdocs\markdown_note\assets\images\postmanPassport11.png)
 
 ### 參考資料
 

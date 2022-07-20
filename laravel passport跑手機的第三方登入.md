@@ -1,8 +1,9 @@
-# laravel passport跑第三方登入
+# laravel passport跑手機的第三方登入
 
 ## 大綱
 
 - 什麼是laravel passport
+- 介紹
 - 循序圖
 - 產生client、client_secret
 - 新增第三方驗證
@@ -16,21 +17,17 @@
 
 使用者資料會有userID、姓名、大頭照等等，但是Scope則是會告知系統，我只會拿使用者的userID、姓名，並不會拿該使用者的全部資料
 
+### 介紹
+
+以下介紹使用手機在Kai Blog做第三方登入(FB)，使用者登入後系統會確認，該帳號有沒有client，有的話就繼續，沒有就建立
+
 ### 循序圖
 
 ```sequence
-Resource Owner->Client: 前往登入網頁
-Note right of Client: 按下第三方登入按鈕
-Client->Auth Server: 檢查client_id
+Moblie-->Auth Server: 請求Authorization Code
 Note right of Auth Server: 進入authorize route
-Auth Server-->Resource Owner: 導頁到passport的登入畫面
-Resource Owner->Auth Server: 輸入帳號與密碼
-Auth Server->Auth Server: 帳密資料做身份驗證
-Note right of Auth Server: 驗證成功後\n顯示授權畫面
-Auth Server-->Resource Owner: user 受是否同意授權
-Resource Owner->Auth Server: 同意授權
-Note right of Auth Server: 授權同意後\n回傳Authorization Code
-Auth Server-->Client: 傳 Authization Code
+Auth Server->Moblie: 回傳Authorization Code
+Moblie-->Client: 傳Authorization Code
 Client->Auth Server: 用Authization Code拿Access Token
 Note right of Auth Server: 拿Authization Code\n回傳Access Token
 Auth Server-->Client: 傳 Access Token
@@ -39,26 +36,96 @@ Note right of Resource Server: 拿Access Token\n回傳User Info
 Resource Server-->Client: 傳User Info
 Client->Client: 驗證user info
 Note right of Client: 檢查User Info是否有註冊\n沒有就建立資料做登入後\n有的話就直接登入
-Client->Resource Owner: 登入成功
+Client->Moblie: 登入成功
 ```
 
-1. Resourse Owner(user) 按下第三方登入按鈕
+1. Mobile(user) 按下第三方登入按鈕
 
-2. Client 請求Authorization Code 檢查client_id 進到authorize route
+2. Mobile 請求Authorization Code 檢查client_id 進到authorize route
 
-3. Resourse Owner(user) 輸入帳密後做身份驗證
+3. Mobile(user) 拿到Authorization Code
 
-4. laravel passport 驗證帳密成功後顯示授權畫面
+4. Mobile(user) 拿到Authorization Code給Client
 
-5. Resourse Owner(user) 授權同意後回傳Authorization Code
+5. Client 拿Authorization Code 回傳Access Token
 
-6. Client 拿Authorization Code 回傳Access Token
+6. Client 拿Access Token 回傳User Info
 
-7. Client 拿Access Token 回傳User Info
+7. Client 檢查User Info是否有註冊，沒有就建立資料做登入後，有的話就直接登入
 
-8. Client 檢查User Info是否有註冊，沒有就建立資料做登入後，有的話就直接登入
+8. Mobile(user) 看到登入成功畫面
 
-9. Resourse Owner(user) 看到登入成功畫面
+### 跑authorize route
+
+跑進來之前會先到laravel Middleware，跑登入畫面，登入之後才會到authorize，會先確認登入的使用者有沒有Cilent ID，沒有就建一個，這時就會去controller 的authorizationCode拿Authorization Code
+
+```php
+ Route::get('/authorize', function (Request $request) {
+    $userId = Auth::user()->id;
+    $oauthAuthCodes = OauthAuthCodes::where('user_id', '=', $userId)->first();
+    $oauthCilent = '';
+    $clientId = '';
+    $redirectUri= '';
+    $state = Str::random(40);
+
+    if($oauthAuthCodes->count() == 0){
+      $oauthCilents = this->oauthCilentData();
+      $clientId = $oauthCilents->client_id;
+      $redirectUri= $oauthCilents->redirect_uri;
+    }else{
+      $clientId = $oauthAuthCodes->client_id;
+      $redirectUri= $oauthAuthCodes->redirect_uri;
+    }
+
+    $query = http_build_query([
+        'client_id' => $clientId,
+        'redirect_uri' => $redirectUri,
+        'response_type' => 'code',
+        'scope' => '',
+        'state' => $state,
+    ]);
+
+    return redirect('http://127.0.0.1:8000/authorizationCode?'.$query);
+});
+```
+
+### login登入
+
+使用者用手機點第三方登入會跑到登入畫面，輸入完之後先驗證帳密
+
+```php
+public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+            'remember_me' => 'boolean'
+        ]);
+
+        $credentials = request(['email', 'password']);
+
+        if(!Auth::attempt($credentials))
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+
+        $user = $request->user();
+
+        $tokenResult = $user->createToken('Personal Access Token');
+        $token = $tokenResult->token;
+
+        $token->expires_at = Carbon::now()->addWeeks(1);
+        $token->save();
+
+        return response()->json([
+            'access_token' => $tokenResult->accessToken,
+            'token_type' => 'Bearer',
+            'expires_at' => Carbon::parse(
+                $tokenResult->token->expires_at
+            )->toDateTimeString()
+        ]);
+    }
+```
 
 ### 產生client、client_secret
 
@@ -67,14 +134,13 @@ Client->Resource Owner: 登入成功
 ```php
 public function oauthCilentData(){
     $client = Str::random(10);
-    $client_secret = Str::random(40);
-    
-    $oauthCilent = new oauthCilent();
-    $oauthCilent->client = $client;
-    $oauthCilent->client_secret = $client_secret;
+
+    $oauthCilent = new oauthCilent();
+    $oauthCilent->client = $client;
+    $oauthCilent->redirect = 'http://127.0.0.1:8080/callback';
     $oauthCilent->save();
-    
-    return $oauthCilent;
+
+    return $oauthCilent;
 }
 ```
 
@@ -108,7 +174,7 @@ public function authorizationCode(ServerRequestInterface $psrRequest,
 成功之後，再跑一次api跑callback，檢查使用者給的authorizationCode、client_id、client_secret
 
 ```php
-pubile function callback(Request $request){
+public function callback(Request $request){
      $http     = new GuzzleHttp\Client;
     $response = $http->post('http://127.0.0.1:8000/oauth/token', [
         'form_params' => [
@@ -152,6 +218,7 @@ public function verifyUserInfo(Request $request) {
                 'password' => $request->password,
             ]);
         }
+        //進入登入畫面
         Auth::login($user);
         return redirect()->route('login');
     }
@@ -163,3 +230,6 @@ public function verifyUserInfo(Request $request) {
 - [Node.js: social login in ExpressJS using Twitter, Google, Facebook and Linkedin with Passport | Gabriele Romanato](https://gabrieleromanato.name/nodejs-social-login-in-expressjs-using-twitter-google-facebook-and-linkedin-with-passport)
 - https://developers.facebook.com/docs/facebook-login/android/?translation
 - [Laravel Passport - Laravel - The PHP Framework For Web Artisans](https://laravel.com/docs/6.x/passport)
+- [security - Authorization Code Flow, sending the code from a mobile app to a REST API - Stack Overflow](https://stackoverflow.com/questions/62703856/authorization-code-flow-sending-the-code-from-a-mobile-app-to-a-rest-api)
+- [What is mobile authentication? - Definition from WhatIs.com](https://www.techtarget.com/searchsecurity/definition/mobile-authentication)
+- [Request a mobile authorization code without server · Issue #4 · square/reader-sdk-ios-quickstart · GitHub](https://github.com/square/reader-sdk-ios-quickstart/issues/4)
