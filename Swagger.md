@@ -34,31 +34,47 @@ composer require 'zircote/swagger-php:2.*'
 L5Swagger\L5SwaggerServiceProvider::class
 ```
 
-設定env
+**設定env**
 
-新增這行
+新增這幾行
 
 ```
- L5_SWAGGER_GENERATE_ALWAYS=true
+ L5_SWAGGER_GENERATE_ALWAYS=true  //啟動swagger
+ SWAGGER_VERSION=3.0    //swagger版本為3.0
 ```
 
 新增資訊
 
-在Controller.php，新增這行
+新增app/Docs/Info.php，存放swagger資訊
 
 ```
+<?php
 /**
- * @SWG\Swagger(
- *     @SWG\Info(
- *         version="1.0.0",
- *         title="Laravel Passport Authorization Code API",
- *         description="Authorization Code API description",
- *         @SWG\Contact(
- *             email="coolgood88142@gmail.com"
- *         ),
- *     )
- * )
- */
+**
+* @OA\OpenApi(
+*   @OA\Info(
+*      title="Swagger-Demo",
+*      version="1.0.0",
+*   ),
+* )
+*
+*
+* @OA\Tag(name="AuthorizationCode", description="取得authorizationCode")
+* @OA\Tag(name="AccessToken", description="取得Access Token")
+* @OA\Tag(name="UserInfo", description="取得UserInfo")
+*/
+```
+
+新增app/Docs/Server.php，存放swagger資訊
+
+```php
+<?php
+/**
+* @OA\Server(
+*       url = "http://127.0.0.1:8000",
+*       description="local"
+* )
+*/
 ```
 
 產生文件
@@ -80,90 +96,167 @@ http://127.0.0.1:8080/api/documentation
 
 以下示範，用laravel passport做第三方登入
 
-在AuthorizationController補充這行
+在AuthorizationController的class上面補充這行
 
 ```
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/authorizationCode",
-     *     summary="取得authorizationCode",
      *     tags={"AuthorizationCode"},
-     *     produces={"application/json"},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *          name="client_id",
      *          in="query",
      *          description="client端ID",
      *          required=true,
-     *          type="string",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *          name="redirect_uri",
      *          in="query",
      *          description="導頁的Uri",
      *          required=true,
-     *          type="string",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *          name="response_type",
      *          in="query",
      *          description="授權類型",
      *          required=true,
-     *          type="string",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *          name="scope",
      *          in="query",
      *          description="存取資料範圍",
-     *          required=false,
-     *          type="string",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *          name="state",
      *          in="query",
      *          description="授權編碼",
      *          required=true,
-     *          type="string",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *          response="200",
-     *          description="Successful creation",
+     *          description="Successful creation"
+     *     ),
+     *     @OA\Response(
+     *        response=401,
+     *        description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *        response=400,
+     *        description="Bad Request"
+     *     ),
+     *     @OA\Response(
+     *        response=404,
+     *        description="not found"
+     *     ),
+     *     @OA\Response(
+     *        response=403,
+     *        description="Forbidden"
      *     )
      * )
      */
+```
+
+在Controller的class上面補充這行
+
+```
+/**
+ *  @OA\Post(
+ *     path="/oauth/token",
+ *     tags={"AccessToken"},
+ *     @OA\RequestBody(
+ *        @OA\MediaType(
+ *           mediaType="multipart/form-data",
+ *           @OA\Schema(
+ *              @OA\Property(
+ *                  property="grant_type",
+ *                  type="string"
+ *              ),
+ *              @OA\Property(
+ *                  property="redirect_uri",
+ *                  type="string"
+ *              ),
+ *              @OA\Property(
+ *                  property="code",
+ *                  type="string"
+ *              ),
+ *              @OA\Property(
+ *                  property="client_id",
+ *                  type="Integer"
+ *              ),
+ *              @OA\Property(
+ *                  property="client_secret",
+ *                  type="string"
+ *              ),
+ *              example={
+ *                  "grant_type": "authorization_code",
+ *                  "redirect_uri": "http://127.0.0.1:8080/getAuthorizationCode",
+ *                  "code": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+ *                  "client_id": 18,
+ *                  "client_secret": "har2ePG2kSTW2BPNaqVWdiyhg5U3SarVxNpLxZgD"
+ *              }
+ *           )
+ *        )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Successful operation",
+ *     )
+ *  )
+ */
 ```
 
 在UserController補充這行
 
 ```
 /**
-     * @SWG\Get(
+     **
+     * @OA\Get(
      *     path="/api/user",
-     *     summary="取得使用者資訊",
      *     tags={"UserInfo"},
-     *     produces={"application/json"},
-     *      @SWG\Response(
+     *     @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *      ),
-     *     @SWG\Response(
+     *     ),
+     *     @OA\Response(
      *          response="401",
      *          description="Unauthenticated",
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *          response="403",
      *          description="Forbidden",
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *          response="400",
      *          description="Bad Request",
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *          response="404",
      *          description="not found",
      *     ),
+     *     security={
+     *          {"passport":{}}
+     *     },
      * )
+     *
      */
 ```
+
+
 
 ### 參考資料
 
